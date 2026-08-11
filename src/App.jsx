@@ -5,6 +5,9 @@ import { getDataPokemon } from "./api/pokeapi"
 import useDebounce from "./hooks/useDebounce"
 import useLocalStorage from "./hooks/useLocalStorage"
 import { getTypeColor } from "./constants/typeColors"
+import { Route, Routes } from "react-router"
+import PokemonDetailPage from "./pages/PokemonDetailPage"
+import PokemonGridPage from "./pages/PokemonGridPage"
 
 const App = () => {
 	const [pokemonList, setPokemonList] = useState([])
@@ -140,6 +143,11 @@ const App = () => {
 					/>
 				</>
 			)}
+
+			<Routes>
+				<Route element={<PokemonGridPage />} path="/" />
+				<Route element={<PokemonDetailPage />} path="/pokemon/:name" />
+			</Routes>
 		</div>
 	)
 }
