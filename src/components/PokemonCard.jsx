@@ -1,6 +1,14 @@
+import { Link } from "react-router"
 import { getTypeColor } from "../constants/typeColors"
 
-const PokemonCard = ({ id, name, image, types, onSelectPokemon, onAddFavorite }) => {
+const PokemonCard = ({
+	id,
+	name,
+	image,
+	types,
+	onSelectPokemon,
+	onAddFavorite,
+}) => {
 	return (
 		<li className="pokemon-card">
 			<img className="pokemon-card-image" src={image} alt={name} />
@@ -21,9 +29,9 @@ const PokemonCard = ({ id, name, image, types, onSelectPokemon, onAddFavorite })
 			)}
 
 			<div className="card-actions">
-				<button className="btn" onClick={() => onSelectPokemon(id)}>
+				<Link className="btn" to={`/pokemon/${name}`}>
 					See Detail
-				</button>
+				</Link>
 
 				<button className="btn btn-primary" onClick={() => onAddFavorite(id)}>
 					Add to Favorites
