@@ -144,12 +144,14 @@
 
 /* ===== Buttons ===== */
 .btn {
+	display: inline-block;
 	border-radius: 999px;
 	border: 1px solid var(--border);
 	background: var(--bg);
 	color: var(--text-h);
 	padding: 8px 16px;
 	font-size: 14px;
+	text-decoration: none;
 	cursor: pointer;
 	transition:
 		background 0.15s ease,
