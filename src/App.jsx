@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react"
 import "./App.css"
-import PokemonList from "./components/PokemonList"
 import { getDataPokemon } from "./api/pokeapi"
-import useDebounce from "./hooks/useDebounce"
-import useLocalStorage from "./hooks/useLocalStorage"
-import { getTypeColor } from "./constants/typeColors"
 import { Route, Routes } from "react-router"
 import PokemonDetailPage from "./pages/PokemonDetailPage"
 import PokemonGridPage from "./pages/PokemonGridPage"
@@ -13,10 +9,6 @@ const App = () => {
 	const [pokemonList, setPokemonList] = useState([])
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState(null)
-	const [favoritePokemonList, setFavoritePokemonList] = useLocalStorage(
-		"Favorites Pokemon",
-		[],
-	)
 
 	useEffect(() => {
 		const fetchPokemon = async () => {
@@ -35,14 +27,9 @@ const App = () => {
 		fetchPokemon()
 	}, [])
 
-	const handleAddFavorite = (id) => {
-		const isAlreadyFavorite = favoritePokemonList.some(
-			(favorite) => favorite.id === id,
-		)
-		if (isAlreadyFavorite) return
-
-		const pokemon = pokemonList.find((item) => item.id === id)
-		setFavoritePokemonList((prev) => [...prev, pokemon])
+	const handleLoadMoreData = async () => {
+		const morePokemonData = await getDataPokemon(10, pokemonList.length)
+		setPokemonList((prev) => [...prev, ...morePokemonData])
 	}
 
 	return (
@@ -57,19 +44,13 @@ const App = () => {
 						element={
 							<PokemonGridPage
 								pokemonList={pokemonList}
-								favoritePokemonList={favoritePokemonList}
-								onAddFavorite={handleAddFavorite}
+								onLoadMore={handleLoadMoreData}
 							/>
 						}
 						path="/"
 					/>
 					<Route
-						element={
-							<PokemonDetailPage
-								pokemonList={pokemonList}
-								onAddFavorite={handleAddFavorite}
-							/>
-						}
+						element={<PokemonDetailPage pokemonList={pokemonList} />}
 						path="/pokemon/:name"
 					/>
 				</Routes>
