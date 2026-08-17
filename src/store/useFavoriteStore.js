@@ -21,6 +21,20 @@ export const useFavoriteStore = create(
 					}
 				})
 			},
+
+			removeFavorite: (pokemonId) => {
+				const newFavoriteList = get().favorites.filter(
+					(f) => f.id !== pokemonId,
+				)
+
+				set((state) => {
+					return {
+						favorites: newFavoriteList,
+					}
+				})
+
+				console.log(get().favorites, "cek ini")
+			},
 		}),
 
 		{
