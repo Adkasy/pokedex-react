@@ -8,6 +8,9 @@ const PokemonGridPage = ({ pokemonList, onLoadMore }) => {
 	const [searchTerm, setSearchTerm] = useState("")
 	const debouncedSearch = useDebounce(searchTerm, 300)
 	const favoritePokemonList = useFavoriteStore((state) => state.favorites)
+	const removeFavoritePokemon = useFavoriteStore(
+		(state) => state.removeFavorite,
+	)
 	const onaddFavorite = useFavoriteStore((state) => state.addFavorite)
 
 	const handleAddFavorite = (id) => {
@@ -61,6 +64,12 @@ const PokemonGridPage = ({ pokemonList, onLoadMore }) => {
 								{favoritePokemonList.map((pokemon) => (
 									<li key={pokemon.id} className="favorites-list-item">
 										{pokemon.name}
+										<button
+											className="remove-favorite"
+											onClick={() => removeFavoritePokemon(pokemon.id)}
+										>
+											x
+										</button>
 									</li>
 								))}
 							</ul>
