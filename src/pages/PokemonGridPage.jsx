@@ -1,56 +1,24 @@
-import { useState } from "react"
 import PokemonList from "../components/PokemonList"
-import useDebounce from "../hooks/useDebounce"
 import { useFavoriteStore } from "../store/useFavoriteStore"
-import { SearchIcon, CloseIcon } from "../components/TypeIcon"
 
-const PokemonGridPage = ({ pokemonList, onLoadMore }) => {
-	const [searchTerm, setSearchTerm] = useState("")
-	const debouncedSearch = useDebounce(searchTerm, 300)
+const PokemonGridPage = ({ pokemonList, keyword }) => {
 	const favoritePokemonList = useFavoriteStore((state) => state.favorites)
 	const removeFavoritePokemon = useFavoriteStore(
 		(state) => state.removeFavorite,
 	)
-	const onaddFavorite = useFavoriteStore((state) => state.addFavorite)
+	const addFavoritePokemon = useFavoriteStore((state) => state.addFavorite)
 
 	const handleAddFavorite = (id) => {
 		const pokemon = pokemonList.find((item) => item.id === id)
-		onaddFavorite(pokemon)
+		addFavoritePokemon(pokemon)
 	}
 
 	const filteredPokemon = pokemonList.filter((pokemon) =>
-		pokemon.name
-			.toLowerCase()
-			.trim()
-			.includes(debouncedSearch.toLowerCase().trim()),
+		pokemon.name.toLowerCase().trim().includes(keyword.toLowerCase().trim()),
 	)
 
 	return (
 		<>
-			<div className="search-bar">
-				<div className="search-input-wrapper">
-					<span className="search-input-icon">
-						<SearchIcon size={18} />
-					</span>
-					<input
-						className="search-input"
-						type="text"
-						placeholder="Cari Pokemon"
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
-					/>
-					{searchTerm && (
-						<button
-							className="search-clear-btn"
-							onClick={() => setSearchTerm("")}
-							aria-label="Clear search"
-						>
-							<CloseIcon size={12} />
-						</button>
-					)}
-				</div>
-			</div>
-
 			{filteredPokemon.length === 0 ? (
 				<p className="status-message">Pokemon not found</p>
 			) : (
@@ -80,12 +48,6 @@ const PokemonGridPage = ({ pokemonList, onLoadMore }) => {
 						data={filteredPokemon}
 						onAddFavorite={handleAddFavorite}
 					/>
-
-					<div className="load-more-wrapper">
-						<button className="btn btn-load-more" onClick={onLoadMore}>
-							Load More...
-						</button>
-					</div>
 				</>
 			)}
 		</>

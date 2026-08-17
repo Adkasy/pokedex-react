@@ -4,11 +4,13 @@ import { getDataPokemon } from "./api/pokeapi"
 import { Route, Routes } from "react-router"
 import PokemonDetailPage from "./pages/PokemonDetailPage"
 import PokemonGridPage from "./pages/PokemonGridPage"
+import TopBar from "./components/TopBar"
 
 const App = () => {
 	const [pokemonList, setPokemonList] = useState([])
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState(null)
+	const [keyword, setKeyword] = useState("")
 
 	useEffect(() => {
 		const fetchPokemon = async () => {
@@ -27,35 +29,35 @@ const App = () => {
 		fetchPokemon()
 	}, [])
 
-	const handleLoadMoreData = async () => {
-		const morePokemonData = await getDataPokemon(10, pokemonList.length)
-		setPokemonList((prev) => [...prev, ...morePokemonData])
+	const handleSearch = (value) => {
+		setKeyword(value)
 	}
 
 	return (
-		<div className="app">
-			{isLoading ? (
-				<p className="status-message">Loading...</p>
-			) : error ? (
-				<p className="status-message status-error">{error.message}</p>
-			) : (
-				<Routes>
-					<Route
-						element={
-							<PokemonGridPage
-								pokemonList={pokemonList}
-								onLoadMore={handleLoadMoreData}
-							/>
-						}
-						path="/"
-					/>
-					<Route
-						element={<PokemonDetailPage pokemonList={pokemonList} />}
-						path="/pokemon/:name"
-					/>
-				</Routes>
-			)}
-		</div>
+		<>
+			<TopBar onSearch={handleSearch} />
+
+			<div className="app">
+				{isLoading ? (
+					<p className="status-message">Loading...</p>
+				) : error ? (
+					<p className="status-message status-error">{error.message}</p>
+				) : (
+					<Routes>
+						<Route
+							element={
+								<PokemonGridPage pokemonList={pokemonList} keyword={keyword} />
+							}
+							path="/"
+						/>
+						<Route
+							element={<PokemonDetailPage pokemonList={pokemonList} />}
+							path="/pokemon/:name"
+						/>
+					</Routes>
+				)}
+			</div>
+		</>
 	)
 }
 
