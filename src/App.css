@@ -7,6 +7,61 @@
 	box-sizing: border-box;
 }
 
+.top-bar {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 14px 20px;
+	background: var(--bg);
+	border-bottom: 1px solid var(--border);
+	backdrop-filter: blur(8px);
+}
+
+.top-bar-brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 20px;
+	font-weight: 800;
+	color: var(--text-h);
+	text-decoration: none;
+}
+
+.top-bar-logo {
+	display: inline-flex;
+	color: var(--accent);
+}
+
+.top-bar-nav {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.top-bar-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 14px;
+	border-radius: 999px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text);
+	text-decoration: none;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease;
+}
+
+.top-bar-link:hover {
+	background: var(--accent-bg);
+	color: var(--accent);
+}
+
 /* ===== Search bar ===== */
 .search-bar {
 	display: flex;
@@ -167,6 +222,97 @@
 
 .remove-favorite:hover {
 	cursor: pointer;
+}
+
+/* ===== Type filter ===== */
+.type-filter {
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 10px 12px;
+	background: var(--code-bg);
+}
+
+.type-filter-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 6px;
+}
+
+.type-filter-title {
+	font-weight: 600;
+	color: var(--text-h);
+	font-size: 13px;
+}
+
+.type-filter-reset {
+	appearance: none;
+	-webkit-appearance: none;
+	border: none;
+	background: none;
+	color: var(--accent);
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 2px 7px;
+	border-radius: 999px;
+	transition: background 0.15s ease;
+}
+
+.type-filter-reset:hover {
+	background: var(--accent-bg);
+}
+
+.type-filter-grid {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 2px 4px;
+}
+
+.type-filter-option {
+	display: flex;
+	align-items: center;
+	flex: 0 1 102px;
+	gap: 5px;
+	padding: 3px 6px;
+	border-radius: 7px;
+	font-size: 11px;
+	font-weight: 500;
+	color: var(--text);
+	text-transform: capitalize;
+	cursor: pointer;
+	transition: background 0.15s ease;
+}
+
+.type-filter-option:hover {
+	background: var(--bg);
+}
+
+.type-filter-option.is-selected {
+	background: var(--bg);
+	color: var(--text-h);
+	font-weight: 700;
+	box-shadow: 0 0 0 1px var(--border);
+}
+
+.type-filter-option input[type="checkbox"] {
+	width: 12px;
+	height: 12px;
+	margin: 0;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.type-filter-swatch {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+	border-radius: 999px;
+	color: #fff;
+	flex-shrink: 0;
 }
 
 /* ===== Pokemon grid ===== */
@@ -600,6 +746,34 @@
 	.app {
 		padding: 16px 12px 32px;
 		gap: 16px;
+	}
+
+	.top-bar {
+		padding: 12px 14px;
+	}
+
+	.type-filter {
+		padding: 8px 10px;
+	}
+
+	.type-filter-grid {
+		gap: 2px 4px;
+	}
+
+	.type-filter-option {
+		flex-basis: 92px;
+	}
+
+	.top-bar-brand {
+		font-size: 17px;
+	}
+
+	.top-bar-link-text {
+		display: none;
+	}
+
+	.top-bar-link {
+		padding: 8px;
 	}
 
 	.pokemon-grid {
