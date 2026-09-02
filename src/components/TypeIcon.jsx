@@ -70,8 +70,6 @@ export const StarIcon = ({ filled = false, size = 16 }) => (
 	</svg>
 )
 
-// Ornamen dekoratif — dipake buat ngisi ruang kosong biar section detail
-// gak keliatan sepi/kosong doang.
 export const PokeballIcon = ({ size = 120 }) => (
 	<svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
 		<circle
@@ -114,6 +112,31 @@ export const SearchIcon = ({ size = 18 }) => (
 		<circle cx="11" cy="11" r="7" />
 		<path d="M21 21l-4.35-4.35" />
 	</svg>
+)
+
+export const PlayIcon = ({ size = 14 }) => (
+	<svg
+		width={size}
+		height={size}
+		viewBox="0 0 24 24"
+		fill="currentColor"
+		stroke="none"
+		aria-hidden="true"
+	>
+		<path d="M7 4.5v15l13-7.5-13-7.5z" />
+	</svg>
+)
+
+export const WaveformIcon = ({ playing = false, size = 14, bars = 60 }) => (
+	<span
+		className={`waveform${playing ? " is-playing" : ""}`}
+		style={{ height: size }}
+		aria-hidden="true"
+	>
+		{Array.from({ length: bars }).map((_, i) => (
+			<span key={i} style={{ animationDelay: `${(i % 5) * 0.09}s` }} />
+		))}
+	</span>
 )
 
 export const CloseIcon = ({ size = 14 }) => (
