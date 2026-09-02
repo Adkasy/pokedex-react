@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import PokemonList from "../components/PokemonList"
 import { TypeFilter } from "../components/TypeFilter"
 import { useFavoriteStore } from "../store/useFavoriteStore"
+import { useSearchParams } from "react-router"
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 21
 
 const PokemonGridPage = ({ pokemonList, keyword }) => {
-	// --- state ---
 	const favoritePokemonList = useFavoriteStore((state) => state.favorites)
 	const removeFavoritePokemon = useFavoriteStore(
 		(state) => state.removeFavorite,
 	)
 	const addFavoritePokemon = useFavoriteStore((state) => state.addFavorite)
-	const [selectedTypes, setSelectedTypes] = useState([])
-	const [currentPage, setCurrentPage] = useState(1)
+	const [searchParams, setSearchParams] = useSearchParams({})
+	const selectedTypes = searchParams.getAll("type")
+	const currentPage = Number(searchParams.get("page")) || 1
 
-	// --- derived value ---
 	const filteredPokemon = pokemonList.filter((pokemon) => {
 		const matchSearch = pokemon.name
 			.toLowerCase()
@@ -36,28 +36,58 @@ const PokemonGridPage = ({ pokemonList, keyword }) => {
 		currentPage * PAGE_SIZE,
 	)
 
-	// --- handler ---
 	const handleAddFavorite = (id) => {
 		const pokemon = pokemonList.find((item) => item.id === id)
 		addFavoritePokemon(pokemon)
 	}
 
 	const toggleType = (typeName) => {
-		setSelectedTypes((prev) =>
-			prev.includes(typeName)
-				? prev.filter((t) => t !== typeName)
-				: [...prev, typeName],
-		)
+		setSearchParams((prev) => {
+			const next = new URLSearchParams(prev)
+			const currentTypes = next.getAll("type")
+
+			next.delete("type")
+
+			const updatedTypes = currentTypes.includes(typeName)
+				? currentTypes.filter((t) => t !== typeName)
+				: [...currentTypes, typeName]
+
+			updatedTypes.forEach((type) => next.append("type", type))
+
+			next.delete("page")
+
+			return next
+		})
 	}
 
 	const handleResetTypes = () => {
-		setSelectedTypes([])
+		setSearchParams((prev) => {
+			const next = new URLSearchParams(prev)
+
+			next.delete("type")
+			next.delete("page")
+
+			return next
+		})
 	}
 
-	// --- effect ---
+	const goToPage = (page) => {
+		setSearchParams((prev) => {
+			const next = new URLSearchParams(prev)
+
+			if (page === 1) {
+				next.delete("page")
+			} else {
+				next.set("page", page)
+			}
+
+			return next
+		})
+	}
+
 	useEffect(() => {
-		setCurrentPage(1)
-	}, [selectedTypes, keyword])
+		window.scrollTo({ top: 0, behavior: "smooth" })
+	}, [currentPage])
 
 	return (
 		<>
@@ -101,7 +131,7 @@ const PokemonGridPage = ({ pokemonList, keyword }) => {
 						<button
 							className="btn"
 							disabled={currentPage === 1}
-							onClick={() => setCurrentPage((prev) => prev - 1)}
+							onClick={() => goToPage(currentPage - 1)}
 						>
 							Previous
 						</button>
@@ -111,7 +141,7 @@ const PokemonGridPage = ({ pokemonList, keyword }) => {
 						<button
 							className="btn"
 							disabled={currentPage === totalPages}
-							onClick={() => setCurrentPage((prev) => prev + 1)}
+							onClick={() => goToPage(currentPage + 1)}
 						>
 							Next
 						</button>

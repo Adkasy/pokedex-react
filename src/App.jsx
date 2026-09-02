@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import "./App.css"
 import { getDataPokemon } from "./api/pokeapi"
-import { Route, Routes } from "react-router"
+import { Route, Routes, useSearchParams } from "react-router"
 import PokemonDetailPage from "./pages/PokemonDetailPage"
 import PokemonGridPage from "./pages/PokemonGridPage"
 import TopBar from "./components/TopBar"
@@ -10,7 +10,9 @@ const App = () => {
 	const [pokemonList, setPokemonList] = useState([])
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState(null)
-	const [keyword, setKeyword] = useState("")
+	const [searchParams, setSearchParams] = useSearchParams()
+
+	const keyword = searchParams.get("search") ?? ""
 
 	useEffect(() => {
 		const fetchPokemon = async () => {
@@ -29,13 +31,31 @@ const App = () => {
 		fetchPokemon()
 	}, [])
 
-	const handleSearch = (value) => {
-		setKeyword(value)
-	}
+	const handleSearch = useCallback(
+		(value) => {
+			setSearchParams((prev) => {
+				const currentSearch = prev.get("search") ?? ""
+				if (value === currentSearch) return prev
+
+				const next = new URLSearchParams(prev)
+
+				next.delete("page")
+
+				if (value) {
+					next.set("search", value)
+				} else {
+					next.delete("search")
+				}
+
+				return next
+			})
+		},
+		[setSearchParams],
+	)
 
 	return (
 		<>
-			<TopBar onSearch={handleSearch} />
+			<TopBar onSearch={handleSearch} initialSearch={keyword} />
 
 			<div className="app">
 				{isLoading ? (
