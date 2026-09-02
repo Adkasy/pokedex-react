@@ -2,7 +2,7 @@ import { Link } from "react-router"
 import { PokeballIcon, StarIcon } from "./TypeIcon"
 import SearchBar from "./SearchBar"
 
-const TopBar = ({ onSearch }) => {
+const TopBar = ({ onSearch, initialSearch }) => {
 	return (
 		<header className="top-bar">
 			<Link to="/" className="top-bar-brand">
@@ -12,7 +12,7 @@ const TopBar = ({ onSearch }) => {
 				Pokédex
 			</Link>
 
-			<SearchBar onSearch={onSearch} />
+			<SearchBar onSearch={onSearch} initialSearch={initialSearch} />
 
 			<nav className="top-bar-nav">
 				<Link to="/favorites" className="top-bar-link">

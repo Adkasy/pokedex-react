@@ -2,8 +2,8 @@ import { useEffect, useState } from "react"
 import { CloseIcon, SearchIcon } from "./TypeIcon"
 import useDebounce from "../hooks/useDebounce"
 
-const SearchBar = ({ onSearch }) => {
-	const [searchTerm, setSearchTerm] = useState("")
+const SearchBar = ({ onSearch, initialSearch }) => {
+	const [searchTerm, setSearchTerm] = useState(() => initialSearch ?? "")
 	const debouncedSearch = useDebounce(searchTerm, 300)
 
 	useEffect(() => {
