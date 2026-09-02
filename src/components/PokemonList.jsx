@@ -3,8 +3,8 @@ import PokemonCard from "./PokemonCard"
 const PokemonList = ({ data, onAddFavorite }) => {
 	return (
 		<ul className="pokemon-grid">
-			{data.map((pokemon) => {
-				const { id, name, image, types } = pokemon
+			{data.map((pokemon, index) => {
+				const { id, name, image, types, cries } = pokemon
 
 				return (
 					<PokemonCard
@@ -13,6 +13,8 @@ const PokemonList = ({ data, onAddFavorite }) => {
 						name={name}
 						image={image}
 						types={types}
+						cries={cries}
+						index={index}
 						onAddFavorite={onAddFavorite}
 					/>
 				)
