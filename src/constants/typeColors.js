@@ -1,5 +1,3 @@
-// Warna & ikon per type Pokemon — diambil dari Figma design system
-// (file "Pokédex App" by Flavio Farias), bukan tebakan manual lagi.
 export const TYPE_COLORS = {
 	normal: "#9DA0AA",
 	fire: "#FD7D24",
@@ -21,8 +19,6 @@ export const TYPE_COLORS = {
 	fairy: "#ED6EC7",
 }
 
-// Figma-nya pake icon SVG custom per type — di sini dipendekin ke emoji
-// (biar gak perlu import/manage file asset baru), tetep nangkep ide "icon + label".
 export const TYPE_ICONS = {
 	normal: "⚪",
 	fire: "🔥",
@@ -47,7 +43,6 @@ export const TYPE_ICONS = {
 export const getTypeColor = (typeName) => TYPE_COLORS[typeName] ?? "#777777"
 export const getTypeIcon = (typeName) => TYPE_ICONS[typeName] ?? ""
 
-// Buat shadow/overlay yang warnanya ngikutin warna card (bukan abu-abu generic)
 export const hexToRgba = (hex, alpha = 1) => {
 	const clean = hex.replace("#", "")
 	const r = parseInt(clean.substring(0, 2), 16)

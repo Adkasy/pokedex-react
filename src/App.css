@@ -325,8 +325,28 @@
 	gap: 18px;
 }
 
+.pokemon-card-link {
+	display: block;
+	color: inherit;
+	text-decoration: none;
+}
+
+@keyframes card-fade-in {
+	from {
+		opacity: 0;
+		translate: 0 12px;
+	}
+
+	to {
+		opacity: 1;
+		translate: 0 0;
+	}
+}
+
 /* ===== Pokemon card — background warna ngikutin type, gaya Figma ===== */
 .pokemon-card {
+	container-type: inline-size;
+	container-name: pokemon-card;
 	position: relative;
 	overflow: hidden;
 	border-radius: 22px;
@@ -337,6 +357,17 @@
 	justify-content: space-between;
 	gap: 12px;
 	box-sizing: border-box;
+	animation: card-fade-in 0.35s ease both;
+	animation-delay: calc(var(--card-index, 0) * 30ms);
+	transition:
+		transform 0.15s ease,
+		box-shadow 0.15s ease,
+		overflow 0s 0.3s;
+}
+
+.pokemon-card:hover {
+	overflow: visible;
+	z-index: 5;
 	transition:
 		transform 0.15s ease,
 		box-shadow 0.15s ease;
@@ -393,19 +424,38 @@
 
 .pokemon-card-image {
 	position: absolute;
-	right: -8px;
-	bottom: -8px;
-	width: 164px;
-	height: 164px;
+	z-index: 2;
+	right: -10px;
+	bottom: -10px;
+	width: 180px;
+	height: 180px;
 	object-fit: contain;
 	filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.25));
 
-	transition: transform 0.3s ease-in-out;
+	transition:
+		transform 0.3s ease-in-out,
+		filter 0.3s ease-in-out;
 	will-change: transform;
 }
 
-.pokemon-card-image:hover {
-	transform: scale3d(1.1, 1.1, 1.5);
+.pokemon-card:hover .pokemon-card-image {
+	transform: scale3d(1.15, 1.15, 1);
+	filter: drop-shadow(0 14px 16px rgba(0, 0, 0, 0.4));
+	z-index: 3;
+}
+
+@container pokemon-card (max-width: 240px) {
+	.pokemon-card-name {
+		font-size: 22px;
+		margin-bottom: 14px;
+	}
+
+	.pokemon-card-image {
+		width: 132px;
+		height: 132px;
+		right: -6px;
+		bottom: -6px;
+	}
 }
 
 /* ===== Favorite heart button ===== */
@@ -441,6 +491,105 @@
 	z-index: 2;
 	top: 12px;
 	right: 12px;
+}
+
+/* ===== Tombol play suara pokemon ===== */
+.card-play-btn {
+	appearance: none;
+	-webkit-appearance: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 999px;
+	border: none;
+	background: rgba(120, 120, 120, 0.35);
+	color: #fff;
+	cursor: pointer;
+	overflow: hidden;
+	transition:
+		width 0.25s ease,
+		color 0.15s ease,
+		background 0.15s ease,
+		transform 0.15s ease;
+}
+
+.card-play-btn:hover {
+	background: rgba(120, 120, 120, 0.55);
+	transform: scale(1.1);
+}
+
+.card-play-btn.is-playing {
+	width: calc(100% - 28px);
+	background: rgba(0, 0, 0, 0.3);
+	transform: none;
+}
+
+.card-play-btn.is-playing:hover {
+	transform: none;
+}
+
+.pokemon-card .card-play-btn {
+	position: absolute;
+	z-index: 2;
+	bottom: 14px;
+	left: 14px;
+}
+
+.card-play-btn-icon,
+.card-play-btn-wave {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 1;
+	transition: opacity 0.15s ease;
+}
+
+.card-play-btn-wave {
+	opacity: 0;
+	padding: 0 10px;
+}
+
+.card-play-btn.is-playing .card-play-btn-icon {
+	opacity: 0;
+}
+
+.card-play-btn.is-playing .card-play-btn-wave {
+	opacity: 1;
+}
+
+.waveform {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2px;
+	width: 100%;
+}
+
+.waveform span {
+	flex: 1;
+	height: 100%;
+	background: currentColor;
+	border-radius: 1px;
+	transform: scaleY(0.3);
+	transition: transform 0.15s ease;
+}
+
+.waveform.is-playing span {
+	animation: waveform-bounce 0.7s ease-in-out infinite;
+}
+
+@keyframes waveform-bounce {
+	0%,
+	100% {
+		transform: scaleY(0.3);
+	}
+	50% {
+		transform: scaleY(1);
+	}
 }
 
 /* ===== Type badges ===== */
@@ -500,8 +649,6 @@
 	box-shadow: 0 10px 18px -6px var(--accent-border);
 }
 
-/* Tombol yang duduk DI ATAS card berwarna — gak pake .btn biasa (bg putih
-   bakal clash), pake gaya "glass" transparan di atas warna card-nya sendiri. */
 .btn-card {
 	position: relative;
 	z-index: 1;
@@ -544,6 +691,41 @@
 	flex-direction: row;
 	gap: 8px;
 	flex-wrap: wrap;
+}
+
+/* ===== Pagination ===== */
+.pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	padding-top: 8px;
+}
+
+.pagination-info {
+	margin: 0;
+	min-width: 90px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text);
+	text-align: center;
+}
+
+.pagination .btn {
+	width: 100px;
+	text-align: center;
+}
+
+.pagination .btn:not(:disabled):hover {
+	background: var(--accent-bg);
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+.pagination .btn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+	transform: none;
 }
 
 /* ===== Detail page ===== */
@@ -631,7 +813,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 2.5px;
+	gap: 4px;
 	text-align: center;
 }
 
@@ -652,6 +834,7 @@
 
 .detail-type-row {
 	justify-content: center;
+	margin-top: 6px;
 }
 
 .detail-image {
@@ -661,6 +844,15 @@
 	height: 270px;
 	object-fit: contain;
 	filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.25));
+	transition:
+		transform 0.3s ease-in-out,
+		filter 0.3s ease-in-out;
+	will-change: transform;
+}
+
+.detail-image:hover {
+	transform: scale3d(1.1, 1.1, 1);
+	filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.4));
 }
 
 .detail-content {
@@ -825,5 +1017,20 @@
 
 	.search-input-wrapper {
 		max-width: 100%;
+	}
+
+	.pagination {
+		gap: 10px;
+	}
+
+	.pagination .btn {
+		width: 80px;
+		padding: 8px 10px;
+		font-size: 13px;
+	}
+
+	.pagination-info {
+		min-width: 70px;
+		font-size: 13px;
 	}
 }

@@ -32,14 +32,11 @@ export const useFavoriteStore = create(
 						favorites: newFavoriteList,
 					}
 				})
-
-				console.log(get().favorites, "cek ini")
 			},
 		}),
 
 		{
 			name: "Favorites Pokemon",
-			// storage: createJSONStorage(() => sessionStorage),
 		},
 	),
 )

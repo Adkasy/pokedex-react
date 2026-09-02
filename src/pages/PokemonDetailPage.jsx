@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router"
 import { getTypeColor, hexToRgba } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import TypeIcon, { StarIcon, PokeballIcon } from "../components/TypeIcon"
+import { playFavoriteSound } from "../utils/sound"
 
 const STAT_LABELS = {
 	hp: "HP",
@@ -12,19 +13,16 @@ const STAT_LABELS = {
 	speed: "Speed",
 }
 
-// Skala bar stat — bukan angka resmi dari PokeAPI (itu butuh fetch tambahan
-// ke /pokemon-species buat range level-100), ini cuma perkiraan visual biar
-// ada progress bar, base_stat dibagi 200 lalu dibatasin max 100%.
 const STAT_BAR_MAX = 200
 
 const PokemonDetailPage = ({ pokemonList }) => {
 	const { name } = useParams()
 	const pokemon = pokemonList.find((item) => item.name === name)
 	const addFavorite = useFavoriteStore((state) => state.addFavorite)
+	const removeFavorite = useFavoriteStore((state) => state.removeFavorite)
 	const isFavorite = useFavoriteStore((state) =>
 		pokemon ? state.favorites.some((f) => f.id === pokemon.id) : false,
 	)
-
 	if (!pokemon) return <p className="status-message">Pokemon gak ketemu.</p>
 
 	const primaryColor = getTypeColor(pokemon.types?.[0]?.type?.name)
@@ -45,7 +43,14 @@ const PokemonDetailPage = ({ pokemonList }) => {
 
 					<button
 						className={`card-favorite-btn${isFavorite ? " is-favorite" : ""}`}
-						onClick={() => addFavorite(pokemon)}
+						onClick={() => {
+							if (isFavorite) {
+								removeFavorite(pokemon.id)
+							} else {
+								playFavoriteSound()
+								addFavorite(pokemon)
+							}
+						}}
 						aria-label="Toggle favorite"
 					>
 						<StarIcon filled={isFavorite} size={18} />
