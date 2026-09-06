@@ -4,6 +4,7 @@ import { getDataPokemon } from "./api/pokeapi"
 import { Route, Routes, useSearchParams } from "react-router"
 import PokemonDetailPage from "./pages/PokemonDetailPage"
 import PokemonGridPage from "./pages/PokemonGridPage"
+import NotFoundPage from "./pages/NotFoundPage"
 import TopBar from "./components/TopBar"
 import SkeletonCard from "./components/SkeletonCard"
 
@@ -81,6 +82,7 @@ const App = () => {
 							element={<PokemonDetailPage pokemonList={pokemonList} />}
 							path="/pokemon/:name"
 						/>
+						<Route element={<NotFoundPage />} path="*" />
 					</Routes>
 				)}
 			</div>
