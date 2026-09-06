@@ -1038,7 +1038,7 @@
 
 /* ===== Size comparison ===== */
 .size-comparison-label {
-	margin: 0 0 16px;
+	margin: 0 0 18px;
 	font-size: 13px;
 	color: var(--text);
 	text-align: center;
@@ -1048,29 +1048,37 @@
 	display: flex;
 	align-items: flex-end;
 	justify-content: center;
-	gap: 40px;
-	padding-bottom: 12px;
-	border-bottom: 2px solid var(--border);
+	gap: 28px;
+	padding: 24px 20px 16px;
+	border-radius: 16px;
+	background: repeating-linear-gradient(0deg,
+			var(--code-bg),
+			var(--code-bg) 27px,
+			var(--border) 27px,
+			var(--border) 28px);
+	border: 1px solid var(--border);
+	border-bottom: 3px solid var(--text);
 }
 
 .size-comparison-item {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 6px;
+	gap: 8px;
 }
 
 .size-comparison-figure {
 	display: flex;
 	align-items: flex-end;
 	color: var(--text);
-	opacity: 0.55;
+	opacity: 0.7;
 }
 
 .size-comparison-figure img {
 	height: 100%;
 	width: auto;
 	object-fit: contain;
+	filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
 }
 
 .size-comparison-name {
@@ -1084,6 +1092,29 @@
 	font-size: 12px;
 	color: var(--text);
 	opacity: 0.7;
+}
+
+.size-comparison-ruler {
+	position: relative;
+	align-self: flex-end;
+	width: 2px;
+	background: var(--text);
+	opacity: 0.35;
+	flex-shrink: 0;
+}
+
+.size-comparison-tick {
+	position: absolute;
+	left: 0;
+	width: 6px;
+	height: 1px;
+	background: var(--text);
+}
+
+.size-comparison-tick.is-major {
+	width: 11px;
+	height: 2px;
+	background: var(--text);
 }
 
 .stat-row {

@@ -1,5 +1,5 @@
 import { CgPokemon } from "react-icons/cg"
-import { GiBodyHeight } from "react-icons/gi"
+import { IoMdMan } from "react-icons/io"
 
 const PATHS = {
 	normal: "M12 3a9 9 0 100 18 9 9 0 000-18z",
@@ -78,7 +78,7 @@ export const PokeballIcon = ({ size = 120 }) => (
 )
 
 export const HumanIcon = ({ size = 60 }) => (
-	<GiBodyHeight size={size} aria-hidden="true" />
+	<IoMdMan size={size} aria-hidden="true" />
 )
 
 export const SearchIcon = ({ size = 18 }) => (

@@ -93,6 +93,8 @@ const PokemonDetailPage = ({ pokemonList }) => {
 		(AVERAGE_HUMAN_HEIGHT_M / tallestM) * MAX_FIGURE_PX,
 		MIN_FIGURE_PX,
 	)
+	const TICK_INTERVAL_PX = 14
+	const TICK_COUNT = Math.floor(MAX_FIGURE_PX / TICK_INTERVAL_PX)
 
 	return (
 		<div className="detail-page">
@@ -100,7 +102,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 				<p className="detail-watermark">{pokemon.name}</p>
 				<div className="detail-dots" />
 				<div className="detail-header-ornament">
-					<PokeballIcon size={210} />
+					<PokeballIcon size={280} />
 				</div>
 
 				<div className="detail-header-top">
@@ -228,19 +230,6 @@ const PokemonDetailPage = ({ pokemonList }) => {
 						<div className="size-comparison-item">
 							<div
 								className="size-comparison-figure"
-								style={{ height: pokemonFigurePx }}
-							>
-								<img src={pokemon.image} alt={pokemon.name} />
-							</div>
-							<span className="size-comparison-name">{pokemon.name}</span>
-							<span className="size-comparison-value">
-								{pokemonHeightM} m
-							</span>
-						</div>
-
-						<div className="size-comparison-item">
-							<div
-								className="size-comparison-figure"
 								style={{ height: humanFigurePx }}
 							>
 								<HumanIcon size={humanFigurePx} />
@@ -248,6 +237,34 @@ const PokemonDetailPage = ({ pokemonList }) => {
 							<span className="size-comparison-name">Human</span>
 							<span className="size-comparison-value">
 								{AVERAGE_HUMAN_HEIGHT_M} m
+							</span>
+						</div>
+
+						<div
+							className="size-comparison-ruler"
+							style={{ height: MAX_FIGURE_PX }}
+						>
+							{Array.from({ length: TICK_COUNT + 1 }).map((_, i) => (
+								<span
+									key={i}
+									className={`size-comparison-tick${
+										i % 5 === 0 ? " is-major" : ""
+									}`}
+									style={{ bottom: i * TICK_INTERVAL_PX }}
+								/>
+							))}
+						</div>
+
+						<div className="size-comparison-item">
+							<div
+								className="size-comparison-figure"
+								style={{ height: pokemonFigurePx }}
+							>
+								<img src={pokemon.image} alt={pokemon.name} />
+							</div>
+							<span className="size-comparison-name">{pokemon.name}</span>
+							<span className="size-comparison-value">
+								{pokemonHeightM} m
 							</span>
 						</div>
 					</div>
