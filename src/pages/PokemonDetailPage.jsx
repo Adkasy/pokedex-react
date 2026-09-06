@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router"
-import { getTypeColor, hexToRgba } from "../constants/typeColors"
+import { getTypeColor } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import TypeIcon, { StarIcon, PokeballIcon } from "../components/TypeIcon"
 import { playFavoriteSound } from "../utils/sound"

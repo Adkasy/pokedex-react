@@ -1,23 +1,15 @@
 const BASE_URL = "https://pokeapi.co/api/v2"
 
 const getDataPokemon = async (limit = 200, offset = 0) => {
-	try {
-		const res = await fetch(
-			`${BASE_URL}/pokemon?limit=${limit}&offset=${offset}`,
-		)
-		if (!res.ok) throw new Error("Error data all")
-		const allPokemonData = await res.json()
+	const res = await fetch(`${BASE_URL}/pokemon?limit=${limit}&offset=${offset}`)
+	if (!res.ok) throw new Error("Error data all")
+	const allPokemonData = await res.json()
 
-		const detailPromises = allPokemonData.results.map((pokemon) =>
-			getDataDetailPokemon(pokemon.url),
-		)
+	const detailPromises = allPokemonData.results.map((pokemon) =>
+		getDataDetailPokemon(pokemon.url),
+	)
 
-		const pokemonDetails = await Promise.all(detailPromises)
-
-		return pokemonDetails
-	} catch (error) {
-		throw error
-	}
+	return Promise.all(detailPromises)
 }
 
 const getDataDetailPokemon = async (detailURL) => {

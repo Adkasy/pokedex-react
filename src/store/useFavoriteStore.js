@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { createJSONStorage, persist } from "zustand/middleware"
+import { persist } from "zustand/middleware"
 
 export const useFavoriteStore = create(
 	persist(
@@ -27,11 +27,7 @@ export const useFavoriteStore = create(
 					(f) => f.id !== pokemonId,
 				)
 
-				set((state) => {
-					return {
-						favorites: newFavoriteList,
-					}
-				})
+				set({ favorites: newFavoriteList })
 			},
 		}),
 
