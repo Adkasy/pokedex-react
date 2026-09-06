@@ -16,7 +16,7 @@ Screenshots — drop PNGs in docs/screenshots/ and uncomment:
 
 ## Features
 
-- **Pokemon grid** — first 151 Pokemon (Gen 1), fetched once on load
+- **Pokemon grid** — first 200 Pokemon (Gen 1 + part of Gen 2), fetched once on load
 - **Search** — debounced, client-side filtering by name
 - **Filter by type** — multi-select type chips (Fire + Water shows either, not both required)
 - **Pagination** — numbered page buttons (with `…` for gaps on large ranges), not just Prev/Next
@@ -63,38 +63,38 @@ npm run test:coverage        # run unit tests with coverage report
 
 ```
 src/
-  api/pokeapi.js             # PokeAPI fetch layer
+  api/pokeapi.js           # PokeAPI fetch layer
   components/
-    TopBar.jsx                # sticky header — logo, search bar, favorites link
-    SearchBar.jsx              # debounced search input
-    TypeFilter.jsx              # multi-select type filter chips
-    Pagination.jsx               # numbered pagination
-    PokemonList.jsx               # renders the grid of cards
-    PokemonCard.jsx                 # single card — favorite toggle, cry player
-    SkeletonCard.jsx                 # loading placeholder card
-    TypeIcon.jsx                      # inline SVG icons (type icons, star, play, etc.)
+    TopBar.jsx             # sticky header — logo, search bar, favorites link
+    SearchBar.jsx          # debounced search input
+    TypeFilter.jsx         # multi-select type filter chips
+    Pagination.jsx         # numbered pagination
+    PokemonList.jsx        # renders the grid of cards
+    PokemonCard.jsx        # single card — favorite toggle, cry player
+    SkeletonCard.jsx       # loading placeholder card
+    TypeIcon.jsx           # inline SVG icons (type icons, star, play, etc.)
   pages/
-    PokemonGridPage.jsx              # home — grid, filter, pagination
-    PokemonDetailPage.jsx             # single Pokemon detail view
-    FavoritesPage.jsx                  # favorited Pokemon, same card grid as home
-    NotFoundPage.jsx                    # catch-all 404
+    PokemonGridPage.jsx    # home — grid, filter, pagination
+    PokemonDetailPage.jsx  # single Pokemon detail view
+    FavoritesPage.jsx      # favorited Pokemon, same card grid as home
+    NotFoundPage.jsx       # catch-all 404
   store/
-    useFavoriteStore.js                 # favorites, persisted to localStorage (Zustand)
-    useCryPlayerStore.js                 # tracks which cry is currently playing (Zustand)
+    useFavoriteStore.js    # favorites, persisted to localStorage (Zustand)
+    useCryPlayerStore.js   # tracks which cry is currently playing (Zustand)
   hooks/
-    useDebounce.jsx                       # debounced value hook, used for search
-  utils/sound.js                          # synthesized "pop" sound on favorite (Web Audio API)
-  constants/typeColors.js                 # color/icon mapping for Pokemon types
-  App.jsx                                  # routing, top-level fetch, loading/error states
-  App.css                                  # component styling
-  index.css                                # design tokens (colors, base layout, light/dark)
+    useDebounce.jsx        # debounced value hook, used for search
+  utils/sound.js           # synthesized "pop" sound on favorite (Web Audio API)
+  constants/typeColors.js  # color/icon mapping for Pokemon types
+  App.jsx                  # routing, top-level fetch, loading/error states
+  App.css                  # component styling
+  index.css                # design tokens (colors, base layout, light/dark)
 docs/
-  POKEAPI-STARTER-KIT.md                    # PokeAPI quick reference used while building this
+  POKEAPI-STARTER-KIT.md   # PokeAPI quick reference used while building this
 ```
 
 ## Notes
 
-- The first 151 Pokemon (Gen 1) are fetched once on load via `Promise.all` — no infinite scroll or "load more", everything after that is client-side filtering/pagination over that one dataset.
+- The first 200 Pokemon are fetched once on load via `Promise.all` — no infinite scroll or "load more", everything after that is client-side filtering/pagination over that one dataset.
 - `search`, `type`, and `page` are derived directly from `useSearchParams()` — there's no separate `useState` duplicating them, so the URL is the single source of truth.
 - No backend — favorites persist to `localStorage` via Zustand's `persist` middleware.
 
