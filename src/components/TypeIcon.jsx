@@ -1,5 +1,6 @@
 import { CgPokemon } from "react-icons/cg"
 import { IoMdMan } from "react-icons/io"
+import { MdCompareArrows } from "react-icons/md"
 
 const PATHS = {
 	normal: "M12 3a9 9 0 100 18 9 9 0 000-18z",
@@ -79,6 +80,10 @@ export const PokeballIcon = ({ size = 120 }) => (
 
 export const HumanIcon = ({ size = 60 }) => (
 	<IoMdMan size={size} aria-hidden="true" />
+)
+
+export const CompareIcon = ({ size = 16 }) => (
+	<MdCompareArrows size={size} aria-hidden="true" />
 )
 
 export const SearchIcon = ({ size = 18 }) => (

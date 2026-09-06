@@ -5,6 +5,7 @@ import { Route, Routes, useSearchParams } from "react-router"
 import PokemonDetailPage from "./pages/PokemonDetailPage"
 import PokemonGridPage from "./pages/PokemonGridPage"
 import FavoritesPage from "./pages/FavoritesPage"
+import ComparePage from "./pages/ComparePage"
 import NotFoundPage from "./pages/NotFoundPage"
 import TopBar from "./components/TopBar"
 import SkeletonCard from "./components/SkeletonCard"
@@ -84,6 +85,10 @@ const App = () => {
 							path="/pokemon/:name"
 						/>
 						<Route element={<FavoritesPage />} path="/favorites" />
+						<Route
+							element={<ComparePage pokemonList={pokemonList} />}
+							path="/compare"
+						/>
 						<Route element={<NotFoundPage />} path="*" />
 					</Routes>
 				)}
