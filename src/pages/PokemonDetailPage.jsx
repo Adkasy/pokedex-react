@@ -177,6 +177,17 @@ const PokemonDetailPage = ({ pokemonList }) => {
 			</div>
 
 			<div className="detail-content">
+				{flavorTextEntry && (
+					<section className="detail-section">
+						<h2 className="detail-section-title" style={{ color: primaryColor }}>
+							Pokédex Entry
+						</h2>
+						<p className="detail-flavor-text">
+							{cleanFlavorText(flavorTextEntry.flavor_text)}
+						</p>
+					</section>
+				)}
+
 				<section className="detail-section">
 					<h2 className="detail-section-title" style={{ color: primaryColor }}>
 						Pokédex Data
@@ -229,10 +240,41 @@ const PokemonDetailPage = ({ pokemonList }) => {
 					<div className="size-comparison">
 						<div className="size-comparison-item">
 							<div
-								className="size-comparison-figure"
-								style={{ height: humanFigurePx }}
+								className="size-comparison-ruler"
+								style={{ height: MAX_FIGURE_PX }}
 							>
-								<HumanIcon size={humanFigurePx} />
+								{Array.from({ length: TICK_COUNT + 1 }).map((_, i) => (
+									<span
+										key={i}
+										className={`size-comparison-tick${
+											i % 5 === 0 ? " is-major" : ""
+										}`}
+										style={{ bottom: i * TICK_INTERVAL_PX }}
+									/>
+								))}
+							</div>
+							{/* placeholder invisible — reserve baris caption yang sama
+							tingginya kayak 2 kolom lain, biar kaki ruler-nya sejajar
+							sama kaki gambar (bukan sejajar sama bawah teks caption) */}
+							<span className="size-comparison-name" aria-hidden="true">
+								&nbsp;
+							</span>
+							<span className="size-comparison-value" aria-hidden="true">
+								&nbsp;
+							</span>
+						</div>
+
+						<div className="size-comparison-item">
+							<div
+								className="size-comparison-stage"
+								style={{ height: MAX_FIGURE_PX }}
+							>
+								<div
+									className="size-comparison-figure"
+									style={{ height: humanFigurePx }}
+								>
+									<HumanIcon size={humanFigurePx} />
+								</div>
 							</div>
 							<span className="size-comparison-name">Human</span>
 							<span className="size-comparison-value">
@@ -240,27 +282,17 @@ const PokemonDetailPage = ({ pokemonList }) => {
 							</span>
 						</div>
 
-						<div
-							className="size-comparison-ruler"
-							style={{ height: MAX_FIGURE_PX }}
-						>
-							{Array.from({ length: TICK_COUNT + 1 }).map((_, i) => (
-								<span
-									key={i}
-									className={`size-comparison-tick${
-										i % 5 === 0 ? " is-major" : ""
-									}`}
-									style={{ bottom: i * TICK_INTERVAL_PX }}
-								/>
-							))}
-						</div>
-
 						<div className="size-comparison-item">
 							<div
-								className="size-comparison-figure"
-								style={{ height: pokemonFigurePx }}
+								className="size-comparison-stage"
+								style={{ height: MAX_FIGURE_PX }}
 							>
-								<img src={pokemon.image} alt={pokemon.name} />
+								<div
+									className="size-comparison-figure"
+									style={{ height: pokemonFigurePx }}
+								>
+									<img src={pokemon.image} alt={pokemon.name} />
+								</div>
 							</div>
 							<span className="size-comparison-name">{pokemon.name}</span>
 							<span className="size-comparison-value">
@@ -269,17 +301,6 @@ const PokemonDetailPage = ({ pokemonList }) => {
 						</div>
 					</div>
 				</section>
-
-				{flavorTextEntry && (
-					<section className="detail-section">
-						<h2 className="detail-section-title" style={{ color: primaryColor }}>
-							Pokédex Entry
-						</h2>
-						<p className="detail-flavor-text">
-							{cleanFlavorText(flavorTextEntry.flavor_text)}
-						</p>
-					</section>
-				)}
 
 				<section className="detail-section">
 					<h2 className="detail-section-title" style={{ color: primaryColor }}>

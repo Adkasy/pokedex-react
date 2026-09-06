@@ -1067,6 +1067,11 @@
 	gap: 8px;
 }
 
+.size-comparison-stage {
+	display: flex;
+	align-items: flex-end;
+}
+
 .size-comparison-figure {
 	display: flex;
 	align-items: flex-end;
@@ -1096,7 +1101,6 @@
 
 .size-comparison-ruler {
 	position: relative;
-	align-self: flex-end;
 	width: 2px;
 	background: var(--text);
 	opacity: 0.35;
