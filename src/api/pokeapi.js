@@ -39,9 +39,16 @@ const getEvolutionChain = async (url) => {
 	return res.json()
 }
 
+const getTypeDetail = async (name) => {
+	const res = await fetch(`${BASE_URL}/type/${name}`)
+	if (!res.ok) throw new Error("Error data type")
+	return res.json()
+}
+
 export {
 	getDataPokemon,
 	getDataDetailPokemon,
 	getPokemonSpecies,
 	getEvolutionChain,
+	getTypeDetail,
 }

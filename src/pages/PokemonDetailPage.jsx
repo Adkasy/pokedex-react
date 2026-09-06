@@ -4,8 +4,16 @@ import { getTypeColor } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import TypeIcon, { StarIcon, PokeballIcon } from "../components/TypeIcon"
 import { playFavoriteSound } from "../utils/sound"
-import { getPokemonSpecies, getEvolutionChain } from "../api/pokeapi"
+import {
+	getPokemonSpecies,
+	getEvolutionChain,
+	getTypeDetail,
+} from "../api/pokeapi"
 import { flattenEvolutionChain, cleanFlavorText } from "../utils/evolution"
+import {
+	computeTypeEffectiveness,
+	groupTypeEffectiveness,
+} from "../utils/typeEffectiveness"
 
 const STAT_LABELS = {
 	hp: "HP",
@@ -28,6 +36,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 	)
 	const [species, setSpecies] = useState(null)
 	const [evolutionStages, setEvolutionStages] = useState([])
+	const [typeEffectiveness, setTypeEffectiveness] = useState(null)
 
 	useEffect(() => {
 		if (!pokemon) return
@@ -51,7 +60,23 @@ const PokemonDetailPage = ({ pokemonList }) => {
 			}
 		}
 
+		const fetchTypeEffectiveness = async () => {
+			try {
+				const typeDetails = await Promise.all(
+					pokemon.types.map((t) => getTypeDetail(t.type.name)),
+				)
+
+				if (cancelled) return
+
+				const multipliers = computeTypeEffectiveness(typeDetails)
+				setTypeEffectiveness(groupTypeEffectiveness(multipliers))
+			} catch {
+				// same as above — nice-to-have, fail silently
+			}
+		}
+
 		fetchExtra()
+		fetchTypeEffectiveness()
 
 		return () => {
 			cancelled = true
@@ -65,6 +90,10 @@ const PokemonDetailPage = ({ pokemonList }) => {
 	const genus = species?.genera.find((g) => g.language.name === "en")?.genus
 	const flavorTextEntry = species?.flavor_text_entries.find(
 		(f) => f.language.name === "en",
+	)
+	const evolvesFromName = species?.evolves_from_species?.name
+	const evolvesFromMatch = pokemonList.find(
+		(item) => item.name === evolvesFromName,
 	)
 
 	return (
@@ -125,6 +154,19 @@ const PokemonDetailPage = ({ pokemonList }) => {
 							</span>
 						))}
 					</div>
+
+					{evolvesFromName && (
+						<p className="detail-evolves-from">
+							Evolves from{" "}
+							{evolvesFromMatch ? (
+								<Link to={`/pokemon/${evolvesFromName}`}>
+									{evolvesFromName}
+								</Link>
+							) : (
+								<span>{evolvesFromName}</span>
+							)}
+						</p>
+					)}
 				</div>
 
 				<img
@@ -168,6 +210,62 @@ const PokemonDetailPage = ({ pokemonList }) => {
 						</div>
 					)}
 				</section>
+
+				{typeEffectiveness &&
+					(typeEffectiveness.weakTo.length > 0 ||
+						typeEffectiveness.resists.length > 0 ||
+						typeEffectiveness.immuneTo.length > 0) && (
+						<section className="detail-section">
+							<h2
+								className="detail-section-title"
+								style={{ color: primaryColor }}
+							>
+								Type Matchups
+							</h2>
+
+							{typeEffectiveness.weakTo.length > 0 && (
+								<div className="type-matchup-row">
+									<span className="type-matchup-label">Weak to</span>
+									<div className="type-badge-row">
+										{typeEffectiveness.weakTo.map(({ type, value }) => (
+											<span key={type} className="type-badge">
+												<TypeIcon type={type} size={12} />
+												{type} ×{value}
+											</span>
+										))}
+									</div>
+								</div>
+							)}
+
+							{typeEffectiveness.resists.length > 0 && (
+								<div className="type-matchup-row">
+									<span className="type-matchup-label">Resists</span>
+									<div className="type-badge-row">
+										{typeEffectiveness.resists.map(({ type, value }) => (
+											<span key={type} className="type-badge">
+												<TypeIcon type={type} size={12} />
+												{type} ×{value}
+											</span>
+										))}
+									</div>
+								</div>
+							)}
+
+							{typeEffectiveness.immuneTo.length > 0 && (
+								<div className="type-matchup-row">
+									<span className="type-matchup-label">Immune to</span>
+									<div className="type-badge-row">
+										{typeEffectiveness.immuneTo.map(({ type, value }) => (
+											<span key={type} className="type-badge">
+												<TypeIcon type={type} size={12} />
+												{type} ×{value}
+											</span>
+										))}
+									</div>
+								</div>
+							)}
+						</section>
+					)}
 
 				{flavorTextEntry && (
 					<section className="detail-section">
