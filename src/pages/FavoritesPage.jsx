@@ -11,7 +11,7 @@ const FavoritesPage = () => {
 			<h1 className="page-title">Favorites</h1>
 
 			{favorites.length === 0 ? (
-				<p className="status-message">Belum ada pokemon favorit.</p>
+				<p className="status-message">No favorite pokemon yet.</p>
 			) : (
 				<PokemonList data={favorites} onAddFavorite={noop} />
 			)}

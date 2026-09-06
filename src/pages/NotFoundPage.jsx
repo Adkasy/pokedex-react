@@ -4,11 +4,11 @@ import { PokeballIcon } from "../components/TypeIcon"
 const NotFoundPage = () => {
 	return (
 		<div className="not-found-page">
-			<PokeballIcon size={80} />
+			<PokeballIcon size={160} />
 			<h1 className="not-found-title">404</h1>
-			<p className="status-message">Halaman gak ketemu.</p>
+			<p className="status-message">Page not found.</p>
 			<Link className="btn btn-primary" to="/">
-				Balik ke Home
+				Back to Home
 			</Link>
 		</div>
 	)

@@ -178,7 +178,7 @@
 	margin: 12px 0 0;
 	font-size: 48px;
 	font-weight: 800;
-	color: var(--text-h);
+	color: var(--accent);
 }
 
 .not-found-page .btn {
@@ -1095,15 +1095,15 @@
 
 .size-comparison-value {
 	font-size: 12px;
-	color: var(--text);
-	opacity: 0.7;
+	font-weight: 700;
+	color: var(--accent);
 }
 
 .size-comparison-ruler {
 	position: relative;
 	width: 2px;
-	background: var(--text);
-	opacity: 0.35;
+	background: var(--accent);
+	opacity: 0.6;
 	flex-shrink: 0;
 }
 
@@ -1112,13 +1112,13 @@
 	left: 0;
 	width: 6px;
 	height: 1px;
-	background: var(--text);
+	background: var(--accent);
 }
 
 .size-comparison-tick.is-major {
 	width: 11px;
 	height: 2px;
-	background: var(--text);
+	background: var(--accent);
 }
 
 .stat-row {

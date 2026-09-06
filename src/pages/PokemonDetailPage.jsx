@@ -67,7 +67,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 		}
 	}, [pokemon])
 
-	if (!pokemon) return <p className="status-message">Pokemon gak ketemu.</p>
+	if (!pokemon) return <p className="status-message">Pokemon not found.</p>
 
 	const primaryColor = getTypeColor(pokemon.types?.[0]?.type?.name)
 
@@ -102,7 +102,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 				<p className="detail-watermark">{pokemon.name}</p>
 				<div className="detail-dots" />
 				<div className="detail-header-ornament">
-					<PokeballIcon size={280} />
+					<PokeballIcon size={340} />
 				</div>
 
 				<div className="detail-header-top">

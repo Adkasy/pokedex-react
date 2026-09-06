@@ -19,7 +19,7 @@ const SearchBar = ({ onSearch, initialSearch }) => {
 				<input
 					className="search-input"
 					type="text"
-					placeholder="Cari Pokemon"
+					placeholder="Search Pokemon"
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}
 				/>
