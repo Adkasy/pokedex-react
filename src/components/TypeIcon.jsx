@@ -1,3 +1,6 @@
+import { CgPokemon } from "react-icons/cg"
+import { IoMdMan } from "react-icons/io"
+
 const PATHS = {
 	normal: "M12 3a9 9 0 100 18 9 9 0 000-18z",
 	fire: "M12 2c-1 3-4 5-4 9a4 4 0 008 0c0-1.5-1-2.5-1-4 0 1-1.5 2-1.5 3.5A2.5 2.5 0 0111 8c0-2 2-3 1-6z",
@@ -71,30 +74,11 @@ export const StarIcon = ({ filled = false, size = 16 }) => (
 )
 
 export const PokeballIcon = ({ size = 120 }) => (
-	<svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
-		<circle
-			cx="50"
-			cy="50"
-			r="46"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="6"
-		/>
-		<path
-			d="M4 50h30a16 16 0 0032 0h30"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="6"
-		/>
-		<circle
-			cx="50"
-			cy="50"
-			r="10"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="6"
-		/>
-	</svg>
+	<CgPokemon size={size} aria-hidden="true" />
+)
+
+export const HumanIcon = ({ size = 60 }) => (
+	<IoMdMan size={size} aria-hidden="true" />
 )
 
 export const SearchIcon = ({ size = 18 }) => (

@@ -2,18 +2,19 @@ import { Fragment, useEffect, useState } from "react"
 import { useParams, Link } from "react-router"
 import { getTypeColor } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
-import TypeIcon, { StarIcon, PokeballIcon } from "../components/TypeIcon"
+import TypeIcon, {
+	StarIcon,
+	PokeballIcon,
+	HumanIcon,
+} from "../components/TypeIcon"
 import { playFavoriteSound } from "../utils/sound"
-import {
-	getPokemonSpecies,
-	getEvolutionChain,
-	getTypeDetail,
-} from "../api/pokeapi"
+import { getPokemonSpecies, getEvolutionChain } from "../api/pokeapi"
 import { flattenEvolutionChain, cleanFlavorText } from "../utils/evolution"
 import {
-	computeTypeEffectiveness,
-	groupTypeEffectiveness,
-} from "../utils/typeEffectiveness"
+	getCatchDifficulty,
+	getSizeComparisonLabel,
+	AVERAGE_HUMAN_HEIGHT_M,
+} from "../utils/pokedexFacts"
 
 const STAT_LABELS = {
 	hp: "HP",
@@ -36,7 +37,6 @@ const PokemonDetailPage = ({ pokemonList }) => {
 	)
 	const [species, setSpecies] = useState(null)
 	const [evolutionStages, setEvolutionStages] = useState([])
-	const [typeEffectiveness, setTypeEffectiveness] = useState(null)
 
 	useEffect(() => {
 		if (!pokemon) return
@@ -60,30 +60,14 @@ const PokemonDetailPage = ({ pokemonList }) => {
 			}
 		}
 
-		const fetchTypeEffectiveness = async () => {
-			try {
-				const typeDetails = await Promise.all(
-					pokemon.types.map((t) => getTypeDetail(t.type.name)),
-				)
-
-				if (cancelled) return
-
-				const multipliers = computeTypeEffectiveness(typeDetails)
-				setTypeEffectiveness(groupTypeEffectiveness(multipliers))
-			} catch {
-				// same as above — nice-to-have, fail silently
-			}
-		}
-
 		fetchExtra()
-		fetchTypeEffectiveness()
 
 		return () => {
 			cancelled = true
 		}
 	}, [pokemon])
 
-	if (!pokemon) return <p className="status-message">Pokemon gak ketemu.</p>
+	if (!pokemon) return <p className="status-message">Pokemon not found.</p>
 
 	const primaryColor = getTypeColor(pokemon.types?.[0]?.type?.name)
 
@@ -95,6 +79,22 @@ const PokemonDetailPage = ({ pokemonList }) => {
 	const evolvesFromMatch = pokemonList.find(
 		(item) => item.name === evolvesFromName,
 	)
+	const catchDifficulty = getCatchDifficulty(species?.capture_rate)
+	const pokemonHeightM = pokemon.height / 10
+
+	const MAX_FIGURE_PX = 140
+	const MIN_FIGURE_PX = 20
+	const tallestM = Math.max(pokemonHeightM, AVERAGE_HUMAN_HEIGHT_M)
+	const pokemonFigurePx = Math.max(
+		(pokemonHeightM / tallestM) * MAX_FIGURE_PX,
+		MIN_FIGURE_PX,
+	)
+	const humanFigurePx = Math.max(
+		(AVERAGE_HUMAN_HEIGHT_M / tallestM) * MAX_FIGURE_PX,
+		MIN_FIGURE_PX,
+	)
+	const TICK_INTERVAL_PX = 14
+	const TICK_COUNT = Math.floor(MAX_FIGURE_PX / TICK_INTERVAL_PX)
 
 	return (
 		<div className="detail-page">
@@ -102,7 +102,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 				<p className="detail-watermark">{pokemon.name}</p>
 				<div className="detail-dots" />
 				<div className="detail-header-ornament">
-					<PokeballIcon size={210} />
+					<PokeballIcon size={340} />
 				</div>
 
 				<div className="detail-header-top">
@@ -177,6 +177,17 @@ const PokemonDetailPage = ({ pokemonList }) => {
 			</div>
 
 			<div className="detail-content">
+				{flavorTextEntry && (
+					<section className="detail-section">
+						<h2 className="detail-section-title" style={{ color: primaryColor }}>
+							Pokédex Entry
+						</h2>
+						<p className="detail-flavor-text">
+							{cleanFlavorText(flavorTextEntry.flavor_text)}
+						</p>
+					</section>
+				)}
+
 				<section className="detail-section">
 					<h2 className="detail-section-title" style={{ color: primaryColor }}>
 						Pokédex Data
@@ -209,74 +220,87 @@ const PokemonDetailPage = ({ pokemonList }) => {
 							</span>
 						</div>
 					)}
+					{catchDifficulty && (
+						<div className="detail-data-row">
+							<span className="detail-data-label">Catch Difficulty</span>
+							<span className="detail-data-value">{catchDifficulty}</span>
+						</div>
+					)}
 				</section>
 
-				{typeEffectiveness &&
-					(typeEffectiveness.weakTo.length > 0 ||
-						typeEffectiveness.resists.length > 0 ||
-						typeEffectiveness.immuneTo.length > 0) && (
-						<section className="detail-section">
-							<h2
-								className="detail-section-title"
-								style={{ color: primaryColor }}
+				<section className="detail-section">
+					<h2 className="detail-section-title" style={{ color: primaryColor }}>
+						Size Comparison
+					</h2>
+
+					<p className="size-comparison-label">
+						{getSizeComparisonLabel(pokemonHeightM)}
+					</p>
+
+					<div className="size-comparison">
+						<div className="size-comparison-item">
+							<div
+								className="size-comparison-ruler"
+								style={{ height: MAX_FIGURE_PX }}
 							>
-								Type Matchups
-							</h2>
+								{Array.from({ length: TICK_COUNT + 1 }).map((_, i) => (
+									<span
+										key={i}
+										className={`size-comparison-tick${
+											i % 5 === 0 ? " is-major" : ""
+										}`}
+										style={{ bottom: i * TICK_INTERVAL_PX }}
+									/>
+								))}
+							</div>
+							{/* placeholder invisible — reserve baris caption yang sama
+							tingginya kayak 2 kolom lain, biar kaki ruler-nya sejajar
+							sama kaki gambar (bukan sejajar sama bawah teks caption) */}
+							<span className="size-comparison-name" aria-hidden="true">
+								&nbsp;
+							</span>
+							<span className="size-comparison-value" aria-hidden="true">
+								&nbsp;
+							</span>
+						</div>
 
-							{typeEffectiveness.weakTo.length > 0 && (
-								<div className="type-matchup-row">
-									<span className="type-matchup-label">Weak to</span>
-									<div className="type-badge-row">
-										{typeEffectiveness.weakTo.map(({ type, value }) => (
-											<span key={type} className="type-badge">
-												<TypeIcon type={type} size={12} />
-												{type} ×{value}
-											</span>
-										))}
-									</div>
+						<div className="size-comparison-item">
+							<div
+								className="size-comparison-stage"
+								style={{ height: MAX_FIGURE_PX }}
+							>
+								<div
+									className="size-comparison-figure"
+									style={{ height: humanFigurePx }}
+								>
+									<HumanIcon size={humanFigurePx} />
 								</div>
-							)}
+							</div>
+							<span className="size-comparison-name">Human</span>
+							<span className="size-comparison-value">
+								{AVERAGE_HUMAN_HEIGHT_M} m
+							</span>
+						</div>
 
-							{typeEffectiveness.resists.length > 0 && (
-								<div className="type-matchup-row">
-									<span className="type-matchup-label">Resists</span>
-									<div className="type-badge-row">
-										{typeEffectiveness.resists.map(({ type, value }) => (
-											<span key={type} className="type-badge">
-												<TypeIcon type={type} size={12} />
-												{type} ×{value}
-											</span>
-										))}
-									</div>
+						<div className="size-comparison-item">
+							<div
+								className="size-comparison-stage"
+								style={{ height: MAX_FIGURE_PX }}
+							>
+								<div
+									className="size-comparison-figure"
+									style={{ height: pokemonFigurePx }}
+								>
+									<img src={pokemon.image} alt={pokemon.name} />
 								</div>
-							)}
-
-							{typeEffectiveness.immuneTo.length > 0 && (
-								<div className="type-matchup-row">
-									<span className="type-matchup-label">Immune to</span>
-									<div className="type-badge-row">
-										{typeEffectiveness.immuneTo.map(({ type, value }) => (
-											<span key={type} className="type-badge">
-												<TypeIcon type={type} size={12} />
-												{type} ×{value}
-											</span>
-										))}
-									</div>
-								</div>
-							)}
-						</section>
-					)}
-
-				{flavorTextEntry && (
-					<section className="detail-section">
-						<h2 className="detail-section-title" style={{ color: primaryColor }}>
-							Pokédex Entry
-						</h2>
-						<p className="detail-flavor-text">
-							{cleanFlavorText(flavorTextEntry.flavor_text)}
-						</p>
-					</section>
-				)}
+							</div>
+							<span className="size-comparison-name">{pokemon.name}</span>
+							<span className="size-comparison-value">
+								{pokemonHeightM} m
+							</span>
+						</div>
+					</div>
+				</section>
 
 				<section className="detail-section">
 					<h2 className="detail-section-title" style={{ color: primaryColor }}>
