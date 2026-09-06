@@ -1064,6 +1064,7 @@
 .evolution-chain {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	flex-wrap: wrap;
 	gap: 12px;
 }
@@ -1112,6 +1113,19 @@
 	width: 44px;
 	height: 44px;
 	object-fit: contain;
+}
+
+.evolution-node-fallback {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background: var(--border);
+	color: var(--text);
+	opacity: 0.6;
+	flex-shrink: 0;
 }
 
 .evolution-node-text {

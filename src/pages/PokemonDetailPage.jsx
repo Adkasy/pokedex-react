@@ -230,8 +230,12 @@ const PokemonDetailPage = ({ pokemonList }) => {
 														member.name === pokemon.name ? " is-current" : ""
 													}`}
 												>
-													{matched?.image && (
+													{matched?.image ? (
 														<img src={matched.image} alt={member.name} />
+													) : (
+														<span className="evolution-node-fallback">
+															<PokeballIcon size={22} />
+														</span>
 													)}
 													<span className="evolution-node-text">
 														<span className="evolution-node-name">
