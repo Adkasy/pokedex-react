@@ -915,6 +915,38 @@
 	line-height: 1.1;
 }
 
+.detail-genus {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.85);
+	text-transform: capitalize;
+}
+
+.detail-special-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px 10px;
+	border-radius: 999px;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	color: #3a2c00;
+}
+
+.detail-special-badge.is-legendary {
+	background: linear-gradient(135deg, #ffd76a, #ffb347);
+}
+
+.detail-special-badge.is-mythical {
+	background: linear-gradient(135deg, #e6b8ff, #b98cff);
+	color: #2e1a4d;
+}
+
 .detail-type-row {
 	justify-content: center;
 	margin-top: 6px;
@@ -1014,6 +1046,104 @@
 .stat-bar-fill {
 	height: 100%;
 	border-radius: 999px;
+}
+
+/* ===== Pokedex flavor text ===== */
+.detail-flavor-text {
+	margin: 0;
+	padding: 14px 16px;
+	border-radius: 12px;
+	background: var(--code-bg);
+	border: 1px solid var(--border);
+	color: var(--text-h);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+/* ===== Evolution chain ===== */
+.evolution-chain {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.evolution-stage {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.evolution-arrow {
+	color: var(--text);
+	opacity: 0.5;
+	font-size: 20px;
+	flex-shrink: 0;
+}
+
+.evolution-node {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 6px 14px 6px 6px;
+	border-radius: 999px;
+	border: 1px solid var(--border);
+	background: var(--code-bg);
+	color: var(--text-h);
+	text-decoration: none;
+	transition:
+		border-color 0.15s ease,
+		background 0.15s ease;
+}
+
+.evolution-node:hover {
+	border-color: var(--accent);
+	background: var(--accent-bg);
+}
+
+.evolution-node.is-current {
+	border-color: var(--accent);
+	background: var(--accent-bg);
+	color: var(--accent);
+	cursor: default;
+}
+
+.evolution-node img {
+	width: 44px;
+	height: 44px;
+	object-fit: contain;
+}
+
+.evolution-node-fallback {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background: var(--border);
+	color: var(--text);
+	opacity: 0.6;
+	flex-shrink: 0;
+}
+
+.evolution-node-text {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+}
+
+.evolution-node-name {
+	font-size: 13px;
+	font-weight: 700;
+	text-transform: capitalize;
+}
+
+.evolution-node-label {
+	font-size: 11px;
+	color: var(--text);
+	opacity: 0.7;
 }
 
 /* ===== Responsif HP (M7) ===== */
