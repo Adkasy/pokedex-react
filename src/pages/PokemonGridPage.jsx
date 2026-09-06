@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import PokemonList from "../components/PokemonList"
+import Pagination from "../components/Pagination"
 import { TypeFilter } from "../components/TypeFilter"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { useSearchParams } from "react-router"
@@ -127,25 +128,11 @@ const PokemonGridPage = ({ pokemonList, keyword }) => {
 						onAddFavorite={handleAddFavorite}
 					/>
 
-					<div className="pagination">
-						<button
-							className="btn"
-							disabled={currentPage === 1}
-							onClick={() => goToPage(currentPage - 1)}
-						>
-							Previous
-						</button>
-						<p className="pagination-info">
-							Page {currentPage} / {totalPages}
-						</p>
-						<button
-							className="btn"
-							disabled={currentPage === totalPages}
-							onClick={() => goToPage(currentPage + 1)}
-						>
-							Next
-						</button>
-					</div>
+					<Pagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={goToPage}
+					/>
 				</>
 			)}
 		</>

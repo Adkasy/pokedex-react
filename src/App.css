@@ -791,17 +791,9 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-wrap: wrap;
 	gap: 16px;
 	padding-top: 8px;
-}
-
-.pagination-info {
-	margin: 0;
-	min-width: 90px;
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--text);
-	text-align: center;
 }
 
 .pagination .btn {
@@ -819,6 +811,56 @@
 	opacity: 0.4;
 	cursor: not-allowed;
 	transform: none;
+}
+
+.pagination-numbers {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.pagination-number {
+	appearance: none;
+	-webkit-appearance: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 36px;
+	height: 36px;
+	padding: 0 6px;
+	border-radius: 999px;
+	border: 1px solid var(--border);
+	background: var(--bg);
+	color: var(--text-h);
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease,
+		color 0.15s ease;
+}
+
+.pagination-number:hover {
+	background: var(--accent-bg);
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+.pagination-number.is-active {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: #fff;
+	cursor: default;
+}
+
+.pagination-dots {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 20px;
+	color: var(--text);
+	opacity: 0.6;
 }
 
 /* ===== Detail page ===== */
@@ -1122,8 +1164,9 @@
 		font-size: 13px;
 	}
 
-	.pagination-info {
-		min-width: 70px;
+	.pagination-number {
+		min-width: 30px;
+		height: 30px;
 		font-size: 13px;
 	}
 }
