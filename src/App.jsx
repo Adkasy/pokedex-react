@@ -5,6 +5,9 @@ import { Route, Routes, useSearchParams } from "react-router"
 import PokemonDetailPage from "./pages/PokemonDetailPage"
 import PokemonGridPage from "./pages/PokemonGridPage"
 import TopBar from "./components/TopBar"
+import SkeletonCard from "./components/SkeletonCard"
+
+const SKELETON_COUNT = 8
 
 const App = () => {
 	const [pokemonList, setPokemonList] = useState([])
@@ -59,7 +62,11 @@ const App = () => {
 
 			<div className="app">
 				{isLoading ? (
-					<p className="status-message">Loading...</p>
+					<ul className="pokemon-grid">
+						{Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+							<SkeletonCard key={i} />
+						))}
+					</ul>
 				) : error ? (
 					<p className="status-message status-error">{error.message}</p>
 				) : (
