@@ -2,18 +2,19 @@ import { Fragment, useEffect, useState } from "react"
 import { useParams, Link } from "react-router"
 import { getTypeColor } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
-import TypeIcon, { StarIcon, PokeballIcon } from "../components/TypeIcon"
+import TypeIcon, {
+	StarIcon,
+	PokeballIcon,
+	HumanIcon,
+} from "../components/TypeIcon"
 import { playFavoriteSound } from "../utils/sound"
-import {
-	getPokemonSpecies,
-	getEvolutionChain,
-	getTypeDetail,
-} from "../api/pokeapi"
+import { getPokemonSpecies, getEvolutionChain } from "../api/pokeapi"
 import { flattenEvolutionChain, cleanFlavorText } from "../utils/evolution"
 import {
-	computeTypeEffectiveness,
-	groupTypeEffectiveness,
-} from "../utils/typeEffectiveness"
+	getCatchDifficulty,
+	getSizeComparisonLabel,
+	AVERAGE_HUMAN_HEIGHT_M,
+} from "../utils/pokedexFacts"
 
 const STAT_LABELS = {
 	hp: "HP",
@@ -36,7 +37,6 @@ const PokemonDetailPage = ({ pokemonList }) => {
 	)
 	const [species, setSpecies] = useState(null)
 	const [evolutionStages, setEvolutionStages] = useState([])
-	const [typeEffectiveness, setTypeEffectiveness] = useState(null)
 
 	useEffect(() => {
 		if (!pokemon) return
@@ -60,23 +60,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 			}
 		}
 
-		const fetchTypeEffectiveness = async () => {
-			try {
-				const typeDetails = await Promise.all(
-					pokemon.types.map((t) => getTypeDetail(t.type.name)),
-				)
-
-				if (cancelled) return
-
-				const multipliers = computeTypeEffectiveness(typeDetails)
-				setTypeEffectiveness(groupTypeEffectiveness(multipliers))
-			} catch {
-				// same as above — nice-to-have, fail silently
-			}
-		}
-
 		fetchExtra()
-		fetchTypeEffectiveness()
 
 		return () => {
 			cancelled = true
@@ -94,6 +78,20 @@ const PokemonDetailPage = ({ pokemonList }) => {
 	const evolvesFromName = species?.evolves_from_species?.name
 	const evolvesFromMatch = pokemonList.find(
 		(item) => item.name === evolvesFromName,
+	)
+	const catchDifficulty = getCatchDifficulty(species?.capture_rate)
+	const pokemonHeightM = pokemon.height / 10
+
+	const MAX_FIGURE_PX = 140
+	const MIN_FIGURE_PX = 20
+	const tallestM = Math.max(pokemonHeightM, AVERAGE_HUMAN_HEIGHT_M)
+	const pokemonFigurePx = Math.max(
+		(pokemonHeightM / tallestM) * MAX_FIGURE_PX,
+		MIN_FIGURE_PX,
+	)
+	const humanFigurePx = Math.max(
+		(AVERAGE_HUMAN_HEIGHT_M / tallestM) * MAX_FIGURE_PX,
+		MIN_FIGURE_PX,
 	)
 
 	return (
@@ -209,63 +207,51 @@ const PokemonDetailPage = ({ pokemonList }) => {
 							</span>
 						</div>
 					)}
+					{catchDifficulty && (
+						<div className="detail-data-row">
+							<span className="detail-data-label">Catch Difficulty</span>
+							<span className="detail-data-value">{catchDifficulty}</span>
+						</div>
+					)}
 				</section>
 
-				{typeEffectiveness &&
-					(typeEffectiveness.weakTo.length > 0 ||
-						typeEffectiveness.resists.length > 0 ||
-						typeEffectiveness.immuneTo.length > 0) && (
-						<section className="detail-section">
-							<h2
-								className="detail-section-title"
-								style={{ color: primaryColor }}
+				<section className="detail-section">
+					<h2 className="detail-section-title" style={{ color: primaryColor }}>
+						Size Comparison
+					</h2>
+
+					<p className="size-comparison-label">
+						{getSizeComparisonLabel(pokemonHeightM)}
+					</p>
+
+					<div className="size-comparison">
+						<div className="size-comparison-item">
+							<div
+								className="size-comparison-figure"
+								style={{ height: pokemonFigurePx }}
 							>
-								Type Matchups
-							</h2>
+								<img src={pokemon.image} alt={pokemon.name} />
+							</div>
+							<span className="size-comparison-name">{pokemon.name}</span>
+							<span className="size-comparison-value">
+								{pokemonHeightM} m
+							</span>
+						</div>
 
-							{typeEffectiveness.weakTo.length > 0 && (
-								<div className="type-matchup-row">
-									<span className="type-matchup-label">Weak to</span>
-									<div className="type-badge-row">
-										{typeEffectiveness.weakTo.map(({ type, value }) => (
-											<span key={type} className="type-badge">
-												<TypeIcon type={type} size={12} />
-												{type} ×{value}
-											</span>
-										))}
-									</div>
-								</div>
-							)}
-
-							{typeEffectiveness.resists.length > 0 && (
-								<div className="type-matchup-row">
-									<span className="type-matchup-label">Resists</span>
-									<div className="type-badge-row">
-										{typeEffectiveness.resists.map(({ type, value }) => (
-											<span key={type} className="type-badge">
-												<TypeIcon type={type} size={12} />
-												{type} ×{value}
-											</span>
-										))}
-									</div>
-								</div>
-							)}
-
-							{typeEffectiveness.immuneTo.length > 0 && (
-								<div className="type-matchup-row">
-									<span className="type-matchup-label">Immune to</span>
-									<div className="type-badge-row">
-										{typeEffectiveness.immuneTo.map(({ type, value }) => (
-											<span key={type} className="type-badge">
-												<TypeIcon type={type} size={12} />
-												{type} ×{value}
-											</span>
-										))}
-									</div>
-								</div>
-							)}
-						</section>
-					)}
+						<div className="size-comparison-item">
+							<div
+								className="size-comparison-figure"
+								style={{ height: humanFigurePx }}
+							>
+								<HumanIcon size={humanFigurePx} />
+							</div>
+							<span className="size-comparison-name">Human</span>
+							<span className="size-comparison-value">
+								{AVERAGE_HUMAN_HEIGHT_M} m
+							</span>
+						</div>
+					</div>
+				</section>
 
 				{flavorTextEntry && (
 					<section className="detail-section">

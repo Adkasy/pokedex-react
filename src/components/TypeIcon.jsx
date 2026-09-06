@@ -97,6 +97,21 @@ export const PokeballIcon = ({ size = 120 }) => (
 	</svg>
 )
 
+export const HumanIcon = ({ size = 60 }) => (
+	<svg
+		width={size * 0.4}
+		height={size}
+		viewBox="0 0 40 100"
+		fill="currentColor"
+		aria-hidden="true"
+	>
+		<circle cx="20" cy="12" r="12" />
+		<rect x="8" y="26" width="24" height="38" rx="10" />
+		<rect x="9" y="60" width="9" height="38" rx="4" />
+		<rect x="22" y="60" width="9" height="38" rx="4" />
+	</svg>
+)
+
 export const SearchIcon = ({ size = 18 }) => (
 	<svg
 		width={size}
