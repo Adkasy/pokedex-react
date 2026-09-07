@@ -1864,8 +1864,8 @@
 	   tombol bulet kecil ini. Itu penyebab icon-nya "misah" & pas playing
 	   dia ngestretch ke lebar container, bukan ke lebar tombolnya. */
 	position: relative;
-	width: 36px;
-	height: 36px;
+	width: 32px;
+	height: 32px;
 	background: rgba(255, 255, 255, 0.22);
 }
 
