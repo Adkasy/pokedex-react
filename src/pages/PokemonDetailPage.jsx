@@ -35,9 +35,10 @@ import { STAT_LABELS } from "../constants/statLabels"
 import { TYPE_COLORS } from "../constants/typeColors"
 import { getTypeMultiplier } from "../constants/typeChart"
 import { formatGeneration } from "../utils/text"
+import { getGenerationColor } from "../constants/generationColors"
 
 const STAT_BAR_MAX = 200
-const MOVES_PREVIEW_COUNT = 24
+const MOVES_PREVIEW_COUNT = 15
 
 const PokemonDetailPage = ({ index }) => {
 	const { name } = useParams()
@@ -629,6 +630,9 @@ const PokemonDetailPage = ({ index }) => {
 								const effect = detail?.effect_entries.find(
 									(e) => e.language.name === "en",
 								)
+								const genColor = detail
+									? getGenerationColor(detail.generation.name)
+									: null
 
 								return (
 									<div
@@ -652,7 +656,12 @@ const PokemonDetailPage = ({ index }) => {
 											<p className="ability-detail-name">
 												{a.ability.name}
 												{a.is_hidden && (
-													<span className="ability-detail-hidden">Hidden</span>
+													<span
+														className="ability-detail-hidden"
+														title="A Hidden Ability. It's much rarer than this Pokemon's normal abilities and usually needs a special method to get, like a specific catching event."
+													>
+														Hidden
+													</span>
 												)}
 											</p>
 
@@ -663,7 +672,15 @@ const PokemonDetailPage = ({ index }) => {
 													</p>
 													<p className="ability-detail-gen">
 														Introduced in{" "}
-														{formatGeneration(detail.generation.name)}
+														<span
+															className="generation-chip"
+															style={{
+																backgroundColor: genColor.bg,
+																color: genColor.text,
+															}}
+														>
+															{formatGeneration(detail.generation.name)}
+														</span>
 													</p>
 												</>
 											) : (

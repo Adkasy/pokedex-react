@@ -2737,6 +2737,9 @@
 .ability-detail-body {
 	flex: 1;
 	min-width: 0;
+	/* #root punya text-align:center global, jadi butuh di-override
+	   eksplisit di sini biar teks card-nya rata kiri, bukan ketengahan */
+	text-align: left;
 }
 
 .ability-detail-name {
@@ -2751,14 +2754,15 @@
 }
 
 .ability-detail-hidden {
-	padding: 2px 8px;
+	padding: 1px 6px;
 	border-radius: 999px;
 	background: linear-gradient(135deg, #fbbf24, #f472b6);
 	color: #fff;
-	font-size: 10px;
+	font-size: 9px;
 	font-weight: 800;
 	text-transform: uppercase;
 	letter-spacing: 0.3px;
+	cursor: help;
 }
 
 .ability-detail-effect {
@@ -2773,10 +2777,22 @@
 }
 
 .ability-detail-gen {
-	margin: 6px 0 0;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 8px 0 0;
 	color: var(--text);
-	opacity: 0.6;
+	opacity: 0.75;
 	font-size: 11px;
+}
+
+.generation-chip {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 999px;
+	font-size: 10px;
+	font-weight: 800;
+	white-space: nowrap;
 }
 
 /* ===== Pokedex flavor text ===== */
