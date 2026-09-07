@@ -223,6 +223,11 @@
 	color: var(--text-h);
 	font-family: inherit;
 	font-size: 14px;
+	cursor: pointer;
+}
+
+.pokemon-picker-input:focus {
+	cursor: text;
 }
 
 .pokemon-picker-input::placeholder {
@@ -382,7 +387,7 @@
 
 .compare-head-name {
 	margin: 0;
-	font-size: 19px;
+	font-size: 23px;
 	font-weight: 800;
 	text-transform: capitalize;
 }
@@ -1630,7 +1635,7 @@
 	}
 
 	.compare-head-name {
-		font-size: 15px;
+		font-size: 17px;
 	}
 
 	.compare-heads {
