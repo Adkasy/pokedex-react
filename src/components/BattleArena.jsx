@@ -71,10 +71,10 @@ const HitSparks = () => {
 				<line
 					key={s.id}
 					className="battle-hit-spark"
-					x1="82"
-					y1="20"
-					x2="82"
-					y2={20 - s.len}
+					x1="20"
+					y1="89"
+					x2="20"
+					y2={89 - s.len}
 					style={{
 						"--spark-angle": `${s.angle}deg`,
 						"--spark-dist": `${s.dist}px`,
@@ -86,24 +86,27 @@ const HitSparks = () => {
 	)
 }
 
-// 1 blade doang (balik lagi ke single shape, bukan 3 lapis kaya
-// sebelumnya) — runcing di pojok kiri-BAWAH, sapuannya LEBIH melengkung
-// (2 sisi edge-nya sama2 bow ke kiri/atas, bukan diagonal lurus kaya
-// sebelumnya) & LEBIH tipis (gap antara sisi luar/dalemnya dikecilin),
-// ujungnya kanan-ATAS pecah jadi 2 "cabang" kecil (mirip ujung
-// bulu/cakar yang keliatan sompel dikit di referensi, bukan bundar
-// polos) — ditutup sama HitSparks biar ada kesan "percikan" pas kena
+// blade-nya sendiri gambarnya masih di orientasi lama (runcing
+// kiri-bawah, cabang kanan-atas) — TAPI seluruhnya dibungkus <g
+// transform="rotate(180 50 50)"> jadi keliatannya kebalik: runcing
+// kanan-ATAS, cabang/blunt-nya kiri-BAWAH. Muter grup-nya (bukan
+// nulis ulang koordinat) biar path & posisi spark-nya otomatis ikut
+// konsisten tanpa itung ulang manual. Lengkungnya juga ditambah
+// dikit (control point sisi luar/dalem digeser lebih jauh dari garis
+// lurusnya) dibanding versi sebelumnya
 const SlashFX = () => (
 	<svg className="battle-hit-slash" viewBox="0 0 100 100" aria-hidden="true">
-		<path
-			className="battle-hit-slash-claw"
-			d="M20,89
-				C16,58 28,28 62,14
-				C68,11 74,9 80,7
-				L75,14 L70,6 L66,16
-				C50,26 30,44 20,89 Z"
-		/>
-		<HitSparks />
+		<g transform="rotate(180 50 50)">
+			<path
+				className="battle-hit-slash-claw"
+				d="M20,89
+					C12,56 24,24 62,14
+					C68,11 74,9 80,7
+					L75,14 L70,6 L66,16
+					C48,22 26,40 20,89 Z"
+			/>
+			<HitSparks />
+		</g>
 	</svg>
 )
 
