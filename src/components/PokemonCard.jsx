@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router"
-import { getPrimaryTypeColor, hexToRgba } from "../constants/typeColors"
-import TypeIcon, { PlayIcon, StarIcon, WaveformIcon } from "./TypeIcon"
+import { getPrimaryCardColor, hexToRgba } from "../constants/typeColors"
+import { TypeBadge, PlayIcon, StarIcon, WaveformIcon } from "./TypeIcon"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { useCryPlayerStore } from "../store/useCryPlayerStore"
 import { playFavoriteSound } from "../utils/sound"
@@ -17,7 +17,9 @@ const PokemonCard = ({
 	onAddFavorite,
 }) => {
 	const [frozenIndex] = useState(index)
-	const primaryColor = getPrimaryTypeColor(types)
+	// card-nya pake palette soft/pastel (bukan getTypeColor yang vivid)
+	// biar chip type di dalemnya selalu kebeda dari background-nya
+	const primaryColor = getPrimaryCardColor(types)
 	const isFavorite = useFavoriteStore((state) =>
 		state.favorites.some((f) => f.id === id),
 	)
@@ -65,10 +67,7 @@ const PokemonCard = ({
 					{types?.length > 0 && (
 						<div className="type-badge-row">
 							{types.map(({ type }) => (
-								<span key={type.name} className="type-badge">
-									<TypeIcon type={type.name} size={9} />
-									{type.name}
-								</span>
+								<TypeBadge key={type.name} type={type.name} />
 							))}
 						</div>
 					)}

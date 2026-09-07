@@ -6,11 +6,12 @@ import {
 	MdKeyboardArrowDown,
 	MdAutoAwesome,
 } from "react-icons/md"
-import { getPrimaryTypeColor, hexToRgba } from "../constants/typeColors"
+import { getPrimaryTypeColor, getPrimaryCardColor, hexToRgba } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { usePokemonStore } from "../store/usePokemonStore"
 import { useCryPlayerStore } from "../store/useCryPlayerStore"
-import TypeIcon, {
+import {
+	TypeBadge,
 	StarIcon,
 	PokeballIcon,
 	HumanIcon,
@@ -59,7 +60,7 @@ const DetailSection = ({ title, color, children }) => (
 const DetailHeader = ({
 	pokemon,
 	species,
-	primaryColor,
+	headerColor,
 	index,
 	isFavorite,
 	onToggleFavorite,
@@ -73,7 +74,7 @@ const DetailHeader = ({
 	const evolvesFromMatch = index.find((item) => item.name === evolvesFromName)
 
 	return (
-		<div className="detail-header" style={{ backgroundColor: primaryColor }}>
+		<div className="detail-header" style={{ backgroundColor: headerColor }}>
 			<p className="detail-watermark">{pokemon.name}</p>
 			<div className="detail-dots" />
 			<div className="detail-header-ornament">
@@ -156,10 +157,7 @@ const DetailHeader = ({
 
 				<div className="type-badge-row detail-type-row">
 					{pokemon.types.map(({ type }) => (
-						<span key={type.name} className="type-badge">
-							<TypeIcon type={type.name} size={12} />
-							{type.name}
-						</span>
+						<TypeBadge key={type.name} type={type.name} />
 					))}
 				</div>
 
@@ -371,10 +369,7 @@ const WeaknessesSection = ({ pokemon, primaryColor }) => {
 		<DetailSection title="Weaknesses" color={primaryColor}>
 			<div className="type-badge-row detail-weaknesses-row">
 				{weaknesses.map((typeName) => (
-					<span key={typeName} className="type-badge">
-						<TypeIcon type={typeName} size={12} />
-						{typeName}
-					</span>
+					<TypeBadge key={typeName} type={typeName} />
 				))}
 			</div>
 		</DetailSection>
@@ -674,6 +669,10 @@ const PokemonDetailPage = ({ index }) => {
 	}
 
 	const primaryColor = getPrimaryTypeColor(pokemon.types)
+	// header-nya pake palette soft/pastel yang beda (bukan primaryColor
+	// yang vivid) — biar chip type di dalemnya (yang tetep pake warna
+	// vivid) selalu kebeda dari background-nya, gak pernah "nyatu"
+	const headerColor = getPrimaryCardColor(pokemon.types)
 	const flavorTextEntry = species?.flavor_text_entries.find(
 		(f) => f.language.name === "en",
 	)
@@ -683,7 +682,7 @@ const PokemonDetailPage = ({ index }) => {
 			<DetailHeader
 				pokemon={pokemon}
 				species={species}
-				primaryColor={primaryColor}
+				headerColor={headerColor}
 				index={index}
 				isFavorite={isFavorite}
 				onToggleFavorite={() => {

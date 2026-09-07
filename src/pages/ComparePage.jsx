@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import { Link, useSearchParams } from "react-router"
 import { MdShuffle } from "react-icons/md"
-import { getPrimaryTypeColor } from "../constants/typeColors"
+import { getPrimaryTypeColor, getPrimaryCardColor } from "../constants/typeColors"
 import { STAT_LABELS } from "../constants/statLabels"
 import { getStat, getTotalStats } from "../utils/pokemonStats"
-import TypeIcon, { CompareIcon } from "../components/TypeIcon"
+import { TypeBadge, CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
 import BattleArena from "../components/BattleArena"
 import PokemonImage from "../components/PokemonImage"
@@ -58,26 +58,29 @@ const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 	)
 }
 
-const CompareHead = ({ pokemon, color, isStrongerTotal = false }) => (
-	<Link to={`/pokemon/${pokemon.name}`} className="compare-head" style={{ backgroundColor: color }}>
-		{isStrongerTotal && (
-			<span className="compare-head-edge-badge" title="Higher total base stats">
-				Higher Total
-			</span>
-		)}
-		<PokemonImage className="compare-head-image" src={pokemon.image} alt={pokemon.name} iconSize={100} />
-		<p className="compare-head-id">#{String(pokemon.id).padStart(3, "0")}</p>
-		<p className="compare-head-name">{pokemon.name}</p>
-		<div className="type-badge-row">
-			{pokemon.types.map(({ type }) => (
-				<span key={type.name} className="type-badge">
-					<TypeIcon type={type.name} size={12} />
-					{type.name}
+const CompareHead = ({ pokemon, isStrongerTotal = false }) => {
+	// card-nya pake palette soft/pastel (bukan getTypeColor yang vivid)
+	// biar chip type di dalemnya selalu kebeda dari background-nya
+	const color = getPrimaryCardColor(pokemon.types)
+
+	return (
+		<Link to={`/pokemon/${pokemon.name}`} className="compare-head" style={{ backgroundColor: color }}>
+			{isStrongerTotal && (
+				<span className="compare-head-edge-badge" title="Higher total base stats">
+					Higher Total
 				</span>
-			))}
-		</div>
-	</Link>
-)
+			)}
+			<PokemonImage className="compare-head-image" src={pokemon.image} alt={pokemon.name} iconSize={100} />
+			<p className="compare-head-id">#{String(pokemon.id).padStart(3, "0")}</p>
+			<p className="compare-head-name">{pokemon.name}</p>
+			<div className="type-badge-row">
+				{pokemon.types.map(({ type }) => (
+					<TypeBadge key={type.name} type={type.name} />
+				))}
+			</div>
+		</Link>
+	)
+}
 
 // heads + stat bars + battle arena — cuma dirender begitu pokemonA/B
 // keduanya udah ke-load, jadi di-component-in sendiri biar bisa itung
@@ -91,14 +94,14 @@ const CompareResult = ({ pokemonA, pokemonB }) => {
 	return (
 		<div className="compare-result">
 			<div className="compare-heads">
-				<CompareHead pokemon={pokemonA} color={colorA} isStrongerTotal={totalA > totalB} />
+				<CompareHead pokemon={pokemonA} isStrongerTotal={totalA > totalB} />
 				<span
 					className="compare-vs"
 					style={{ "--vs-color-a": colorA, "--vs-color-b": colorB }}
 				>
 					VS
 				</span>
-				<CompareHead pokemon={pokemonB} color={colorB} isStrongerTotal={totalB > totalA} />
+				<CompareHead pokemon={pokemonB} isStrongerTotal={totalB > totalA} />
 			</div>
 
 			<div className="compare-stats">
