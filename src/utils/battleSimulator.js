@@ -52,7 +52,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 	log.push({
 		type: "start",
 		side: null,
-		text: `${capitalize(pokemon[first].name)} moves first (higher Speed)!`,
+		text: `${capitalize(pokemon[first].name)} moves first because it has higher speed!`,
 		hpA: hp.a,
 		hpB: hp.b,
 	})

@@ -460,11 +460,53 @@
 	text-align: left;
 }
 
+.battle-info-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 10px;
+}
+
 .battle-info-title {
-	margin: 0 0 10px;
+	margin: 0;
 	font-size: 13px;
 	font-weight: 700;
 	color: var(--text-h);
+}
+
+.battle-info-close {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	flex-shrink: 0;
+	border-radius: 999px;
+	border: none;
+	background: none;
+	color: var(--text);
+	cursor: pointer;
+}
+
+.battle-info-close:hover {
+	color: var(--accent);
+	background: var(--accent-bg);
+}
+
+.battle-info-formula {
+	display: block;
+	margin: 0 0 14px;
+	padding: 10px 12px;
+	border-radius: 10px;
+	background: var(--accent-bg);
+	color: var(--accent);
+	font-family: var(--mono);
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.5;
+	white-space: normal;
+	word-break: break-word;
 }
 
 .battle-info-list {
@@ -695,11 +737,10 @@
 }
 
 .battle-chat-system {
-	padding-left: 4px;
-	font-size: 12px;
-	font-style: italic;
-	color: var(--text);
-	opacity: 0.75;
+	text-align: center;
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--accent);
 	animation: battle-pop-in 0.25s ease both;
 }
 

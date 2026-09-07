@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { GiCrossedSwords, GiTrophy } from "react-icons/gi"
-import { MdInfoOutline } from "react-icons/md"
+import { MdInfoOutline, MdClose } from "react-icons/md"
 import { simulateBattle } from "../utils/battleSimulator"
 import { getTypeColor } from "../constants/typeColors"
 import { playVictorySound } from "../utils/sound"
@@ -36,6 +36,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	const [showInfo, setShowInfo] = useState(false)
 	const logRef = useRef(null)
 	const arenaRef = useRef(null)
+	const infoWrapRef = useRef(null)
 	const colorA = getTypeColor(pokemonA.types?.[0]?.type?.name)
 	const colorB = getTypeColor(pokemonB.types?.[0]?.type?.name)
 
@@ -70,6 +71,20 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 		if (!battle) return
 		arenaRef.current?.scrollIntoView({ behavior: "auto", block: "start" })
 	}, [battle])
+
+	useEffect(() => {
+		if (!showInfo) return
+
+		// klik di mana pun di luar popover/tombolnya bakal nutup popover-nya
+		const handleClickOutside = (e) => {
+			if (!infoWrapRef.current?.contains(e.target)) {
+				setShowInfo(false)
+			}
+		}
+
+		document.addEventListener("mousedown", handleClickOutside)
+		return () => document.removeEventListener("mousedown", handleClickOutside)
+	}, [showInfo])
 
 	const isSimulating = battle && revealCount < battle.log.length
 
@@ -118,7 +133,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 			{battle && (
 				<div className="battle-arena" ref={arenaRef}>
-					<div className="battle-info-wrap">
+					<div className="battle-info-wrap" ref={infoWrapRef}>
 						<button
 							className="battle-info-btn"
 							onClick={() => setShowInfo((v) => !v)}
@@ -130,7 +145,21 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 						{showInfo && (
 							<div className="battle-info-popover">
-								<p className="battle-info-title">How damage works</p>
+								<div className="battle-info-header">
+									<p className="battle-info-title">How damage works</p>
+									<button
+										className="battle-info-close"
+										onClick={() => setShowInfo(false)}
+										aria-label="Close"
+									>
+										<MdClose size={16} />
+									</button>
+								</div>
+
+								<code className="battle-info-formula">
+									Damage = (Attack ÷ Defense) × Type Effectiveness × Luck
+								</code>
+
 								<ul className="battle-info-list">
 									<li>
 										<code>Attack ÷ Defense</code>: the attacker&rsquo;s
@@ -138,19 +167,20 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 										Attack (or a weaker target Defense) means more damage.
 									</li>
 									<li>
-										<code>× Type Effectiveness</code>: a super effective
-										hit does more damage, a resisted hit does less.
+										<code>Type Effectiveness</code>: a super effective hit
+										does more damage, a resisted hit does less.
 									</li>
 									<li>
-										<code>× Luck (85% to 100%)</code>: each hit gets a
-										small random swing, so a rematch won&rsquo;t always go
-										the same way.
+										<code>Luck</code>: a small random swing (85% to 100%),
+										so a rematch won&rsquo;t always go the same way.
 									</li>
 								</ul>
+
 								<p className="battle-info-example">
-									Example: Charizard (Attack 84) hits Blastoise (Defense
-									100) with a Fire move. Water resists Fire, so it only
-									lands for about 7 to 8 damage instead of double that.
+									Example: Charizard is Fire-type, Blastoise is Water-type.
+									Water resists Fire, so when Charizard attacks, its Type
+									Effectiveness is weak, and the hit only lands for about 7
+									to 8 damage instead of the usual amount.
 								</p>
 							</div>
 						)}
