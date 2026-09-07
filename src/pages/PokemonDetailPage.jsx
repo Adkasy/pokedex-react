@@ -94,7 +94,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 				<p className="detail-watermark">{pokemon.name}</p>
 				<div className="detail-dots" />
 				<div className="detail-header-ornament">
-					<PokeballIcon size={340} />
+					<PokeballIcon size={420} />
 				</div>
 
 				<div className="detail-header-top">

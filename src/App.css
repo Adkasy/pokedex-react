@@ -1137,8 +1137,8 @@
 
 .detail-header-ornament {
 	position: absolute;
-	bottom: 10px;
-	left: -35px;
+	bottom: -70px;
+	left: -90px;
 	rotate: 35deg;
 	color: rgba(255, 255, 255, 0.15);
 	pointer-events: none;
