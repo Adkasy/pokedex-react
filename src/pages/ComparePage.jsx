@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from "react-router"
-import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi"
+import { MdShuffle } from "react-icons/md"
 import { getTypeColor } from "../constants/typeColors"
 import { STAT_LABELS } from "../constants/statLabels"
 import TypeIcon, { CompareIcon } from "../components/TypeIcon"
@@ -150,10 +150,10 @@ const ComparePage = ({ pokemonList }) => {
 			<button
 				className="btn compare-surprise-btn"
 				onClick={handleSurprise}
-				title="Surprise me!"
+				title="Random matchup"
 			>
-				<GiPerspectiveDiceSixFacesRandom size={18} />
-				Surprise Me
+				<MdShuffle size={14} />
+				Random Matchup
 			</button>
 
 			{!pokemonA || !pokemonB ? (

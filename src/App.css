@@ -211,10 +211,17 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
+	gap: 5px;
 	width: fit-content;
 	margin: 0 auto 24px;
+	padding: 5px 12px;
+	font-size: 12px;
 	font-weight: 600;
+	opacity: 0.85;
+}
+
+.btn.compare-surprise-btn:hover {
+	opacity: 1;
 }
 
 .pokemon-picker {
