@@ -416,10 +416,14 @@
 	margin-top: 32px;
 }
 
-.battle-info-btn {
+.battle-info-wrap {
 	position: absolute;
-	top: -8px;
-	right: 0;
+	top: 8px;
+	right: 8px;
+	z-index: 5;
+}
+
+.battle-info-btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -441,25 +445,61 @@
 }
 
 .battle-info-popover {
-	position: relative;
-	max-width: 360px;
-	padding: 14px 16px;
+	position: absolute;
+	top: 0;
+	right: calc(100% + 10px);
+	width: 300px;
+	max-width: calc(100vw - 48px);
+	box-sizing: border-box;
+	padding: 16px;
 	border-radius: 14px;
 	border: 1px solid var(--border);
 	background: var(--code-bg);
 	box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.4);
 	animation: battle-pop-in 0.2s ease both;
+	text-align: left;
 }
 
-.battle-info-popover p {
-	margin: 0;
+.battle-info-title {
+	margin: 0 0 10px;
 	font-size: 13px;
+	font-weight: 700;
+	color: var(--text-h);
+}
+
+.battle-info-list {
+	margin: 0 0 12px;
+	padding-left: 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.battle-info-list li {
+	font-size: 12px;
 	line-height: 1.6;
 	color: var(--text-h);
 }
 
-.battle-info-popover strong {
+.battle-info-popover code {
+	display: inline-block;
+	padding: 1px 6px;
+	border-radius: 6px;
+	background: var(--accent-bg);
 	color: var(--accent);
+	font-family: var(--mono);
+	font-size: 11px;
+	font-weight: 700;
+}
+
+.battle-info-example {
+	margin: 0;
+	padding-top: 12px;
+	border-top: 1px solid var(--border);
+	font-size: 12px;
+	line-height: 1.6;
+	color: var(--text);
+	opacity: 0.85;
 }
 
 .btn.battle-simulate-btn {
@@ -653,7 +693,7 @@
 }
 
 .battle-chat-system {
-	text-align: center;
+	text-align: left;
 	font-size: 12px;
 	font-style: italic;
 	color: var(--text);
@@ -2015,5 +2055,11 @@
 
 	.compare-head {
 		padding: 14px 8px;
+	}
+
+	.battle-info-popover {
+		top: calc(100% + 8px);
+		right: 0;
+		width: 260px;
 	}
 }
