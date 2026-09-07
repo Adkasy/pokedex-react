@@ -216,7 +216,7 @@
 .pokemon-picker-input {
 	width: 100%;
 	box-sizing: border-box;
-	padding: 10px 16px;
+	padding: 10px 36px 10px 16px;
 	border-radius: 999px;
 	border: 1px solid var(--border);
 	background: var(--code-bg);
@@ -228,6 +228,16 @@
 .pokemon-picker-input::placeholder {
 	color: var(--text);
 	opacity: 0.6;
+}
+
+.pokemon-picker-chevron {
+	position: absolute;
+	top: 50%;
+	right: 12px;
+	transform: translateY(-50%);
+	color: var(--text);
+	opacity: 0.6;
+	pointer-events: none;
 }
 
 .pokemon-picker-input:focus {
@@ -279,7 +289,8 @@
 }
 
 .pokemon-picker-option:hover,
-.pokemon-picker-option.is-selected {
+.pokemon-picker-option.is-selected,
+.pokemon-picker-option.is-active {
 	background: var(--accent-bg);
 	color: var(--accent);
 }

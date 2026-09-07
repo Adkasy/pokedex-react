@@ -1,7 +1,6 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { MdKeyboardArrowDown } from "react-icons/md"
 import { capitalize } from "../utils/text"
-
-const MAX_RESULTS = 40
 
 const PokemonPicker = ({
 	pokemonList,
@@ -11,7 +10,9 @@ const PokemonPicker = ({
 }) => {
 	const [query, setQuery] = useState("")
 	const [isOpen, setIsOpen] = useState(false)
+	const [activeIndex, setActiveIndex] = useState(-1)
 	const blurTimeout = useRef(null)
+	const optionRefs = useRef([])
 
 	const selected = pokemonList.find((p) => p.name === value)
 	const displayValue = isOpen
@@ -20,33 +21,66 @@ const PokemonPicker = ({
 			? `#${String(selected.id).padStart(3, "0")} ${capitalize(selected.name)}`
 			: ""
 
-	const filtered = pokemonList
-		.filter((p) => {
-			const q = query.trim().toLowerCase()
-			if (!q) return true
-			return p.name.includes(q) || String(p.id).includes(q)
-		})
-		.slice(0, MAX_RESULTS)
+	const filtered = pokemonList.filter((p) => {
+		const q = query.trim().toLowerCase()
+		if (!q) return true
+		return p.name.includes(q) || String(p.id).includes(q)
+	})
 
-	const handleFocus = () => {
+	useEffect(() => {
+		optionRefs.current[activeIndex]?.scrollIntoView({ block: "nearest" })
+	}, [activeIndex])
+
+	const openMenu = () => {
 		clearTimeout(blurTimeout.current)
 		setQuery("")
 		setIsOpen(true)
+		setActiveIndex(-1)
+	}
+
+	const closeMenu = () => {
+		setIsOpen(false)
+		setQuery("")
+		setActiveIndex(-1)
 	}
 
 	const handleBlur = () => {
 		// delay dikit biar onClick di menu sempet kejalanin duluan
 		// sebelum menu-nya ke-unmount gara-gara blur
-		blurTimeout.current = setTimeout(() => {
-			setIsOpen(false)
-			setQuery("")
-		}, 150)
+		blurTimeout.current = setTimeout(closeMenu, 150)
 	}
 
 	const handleSelect = (name) => {
 		onChange(name)
-		setIsOpen(false)
-		setQuery("")
+		closeMenu()
+	}
+
+	const handleChange = (e) => {
+		setQuery(e.target.value)
+		setIsOpen(true)
+		setActiveIndex(-1)
+	}
+
+	const handleKeyDown = (e) => {
+		if (e.key === "ArrowDown") {
+			e.preventDefault()
+			if (!isOpen) {
+				openMenu()
+				return
+			}
+			setActiveIndex((prev) => Math.min(prev + 1, filtered.length - 1))
+		} else if (e.key === "ArrowUp") {
+			e.preventDefault()
+			setActiveIndex((prev) => Math.max(prev - 1, 0))
+		} else if (e.key === "Enter") {
+			e.preventDefault()
+			if (isOpen && filtered[activeIndex]) {
+				handleSelect(filtered[activeIndex].name)
+			}
+		} else if (e.key === "Escape") {
+			e.target.blur()
+			closeMenu()
+		}
 	}
 
 	return (
@@ -56,24 +90,31 @@ const PokemonPicker = ({
 				type="text"
 				value={displayValue}
 				placeholder={placeholder}
-				onChange={(e) => setQuery(e.target.value)}
-				onFocus={handleFocus}
+				onChange={handleChange}
+				onFocus={openMenu}
 				onBlur={handleBlur}
+				onKeyDown={handleKeyDown}
+				role="combobox"
+				aria-expanded={isOpen}
+				aria-autocomplete="list"
 			/>
+			<MdKeyboardArrowDown className="pokemon-picker-chevron" size={20} />
 
 			{isOpen && (
 				<ul className="pokemon-picker-menu">
 					{filtered.length === 0 ? (
 						<li className="pokemon-picker-empty">No match</li>
 					) : (
-						filtered.map((p) => (
+						filtered.map((p, i) => (
 							<li key={p.name}>
 								<button
+									ref={(el) => (optionRefs.current[i] = el)}
 									type="button"
 									className={`pokemon-picker-option${
 										p.name === value ? " is-selected" : ""
-									}`}
+									}${i === activeIndex ? " is-active" : ""}`}
 									onMouseDown={(e) => e.preventDefault()}
+									onMouseEnter={() => setActiveIndex(i)}
 									onClick={() => handleSelect(p.name)}
 								>
 									<img src={p.image} alt="" />
