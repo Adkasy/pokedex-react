@@ -104,7 +104,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 					type: "faint",
 					side: other,
 					round,
-					text: `${capitalize(defender.name)} fainted!`,
+					text: `${capitalize(defender.name)} is KO'd!`,
 					hpA: hp.a,
 					hpB: hp.b,
 				})
@@ -123,7 +123,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 		round: Math.min(round, MAX_ROUNDS),
 		text:
 			winner === "draw"
-				? `Neither one fainted after ${MAX_ROUNDS} rounds — it's a draw!`
+				? `Neither one is KO'd after ${MAX_ROUNDS} rounds — it's a draw!`
 				: `${capitalize(pokemon[winner].name)} wins!`,
 		hpA: hp.a,
 		hpB: hp.b,

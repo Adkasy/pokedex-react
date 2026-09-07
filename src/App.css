@@ -934,22 +934,6 @@
 	color: var(--text-h);
 }
 
-.battle-info-example {
-	margin: 0;
-	padding-top: 12px;
-	border-top: 1px solid var(--border);
-	font-size: 12px;
-	line-height: 1.6;
-	color: var(--text);
-	opacity: 0.85;
-}
-
-.battle-info-example-label {
-	color: var(--accent);
-	opacity: 1;
-	font-weight: 800;
-}
-
 /* pemisah visual antara penjelasan formula sama "aturan tambahan"
    (crit/round limit) yang sebenernya bukan bagian dari formula-nya
    sendiri, biar gak ketuker/dikira ikut ke-itung di rumus damage */
@@ -1196,7 +1180,7 @@
 }
 
 /* ===== Chat log — tiap serangan tampil kayak chat bubble, pesan
-   status ("X moves first!"/"X fainted!") nyempil di tengah kronologis ===== */
+   status ("X moves first!"/"X is KO'd!") nyempil di tengah kronologis ===== */
 .battle-log-scroll {
 	height: 420px;
 	overflow-y: auto;
@@ -1379,8 +1363,8 @@
 	align-items: center;
 	justify-content: center;
 	height: 30px;
-	gap: 8px;
-	padding: 0 18px;
+	gap: 16px;
+	padding: 0 22px;
 	border-radius: 999px;
 	border: 1px solid var(--border);
 	background: var(--bg);

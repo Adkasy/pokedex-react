@@ -339,16 +339,6 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 									</li>
 								</ul>
 
-								<p className="battle-info-example">
-									<strong className="battle-info-example-label">
-										Example:
-									</strong>{" "}
-									Charizard is Fire-type, Blastoise is Water-type. Water
-									resists Fire, so when Charizard attacks, its Type
-									Effectiveness is weak, and the hit only lands for about 7
-									to 8 damage instead of the usual amount.
-								</p>
-
 								<p className="battle-info-subheading">Other battle rules</p>
 
 								<ul className="battle-info-list">
@@ -359,7 +349,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 									</li>
 									<li>
 										<code className="f-chip f-chip-neutral">30 Rounds</code>: if
-										neither Pokémon has fainted by round 30, the battle ends
+										neither Pokémon is KO&rsquo;d by round 30, the battle ends
 										in a draw instead of dragging on forever.
 									</li>
 								</ul>
