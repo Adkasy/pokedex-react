@@ -71,6 +71,9 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	const [revealCount, setRevealCount] = useState(0)
 	const [showInfo, setShowInfo] = useState(false)
 	const [scoreboard, setScoreboard] = useState({ a: 0, b: 0, draw: 0 })
+	// key buat maksa Confetti remount tiap ribbon-nya diklik lagi —
+	// remount = piece random baru + animasi mulai dari awal lagi
+	const [confettiBurst, setConfettiBurst] = useState(0)
 	const logRef = useRef(null)
 	const arenaRef = useRef(null)
 	const infoWrapRef = useRef(null)
@@ -334,16 +337,20 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 						{winnerPokemon && (
 							<div className="battle-winner">
-								<Confetti />
+								<Confetti key={confettiBurst} />
 								<img
 									className="battle-winner-image"
 									src={winnerPokemon.image}
 									alt={winnerPokemon.name}
 								/>
-								<div className="battle-winner-ribbon">
+								<button
+									className="battle-winner-ribbon"
+									onClick={() => setConfettiBurst((c) => c + 1)}
+									title="Celebrate again!"
+								>
 									<GiTrophy size={16} />
 									{winnerPokemon.name} wins!
-								</div>
+								</button>
 							</div>
 						)}
 					</div>

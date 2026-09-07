@@ -560,9 +560,8 @@
 		"Segoe UI",
 		Roboto,
 		sans-serif;
-	font-size: 1.2em;
-	font-weight: 800;
-	opacity: 0.85;
+	font-size: 1.3em;
+	font-weight: 900;
 }
 
 .battle-info-list .f-chip {
@@ -978,12 +977,27 @@
 	gap: 10px;
 	padding: 8px 24px;
 	border-radius: 999px;
+	border: none;
 	background: #17a35e;
 	color: #fff;
 	font-size: 15px;
 	font-weight: 800;
 	text-transform: capitalize;
+	font-family: inherit;
+	cursor: pointer;
 	box-shadow: 0 10px 20px -8px rgba(23, 163, 94, 0.6);
+	transition:
+		transform 0.15s ease,
+		box-shadow 0.15s ease;
+}
+
+.battle-winner-ribbon:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 14px 24px -8px rgba(23, 163, 94, 0.7);
+}
+
+.battle-winner-ribbon:active {
+	transform: translateY(0);
 }
 
 .compare-stat-row {
