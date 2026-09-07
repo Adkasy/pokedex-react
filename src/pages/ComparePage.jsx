@@ -2,6 +2,7 @@ import { Link, useSearchParams } from "react-router"
 import { getTypeColor } from "../constants/typeColors"
 import { STAT_LABELS } from "../constants/statLabels"
 import TypeIcon, { CompareIcon } from "../components/TypeIcon"
+import PokemonPicker from "../components/PokemonPicker"
 
 const STAT_BAR_MAX = 200
 
@@ -10,8 +11,6 @@ const getStat = (pokemon, statName) =>
 
 const getTotalStats = (pokemon) =>
 	pokemon.stats.reduce((sum, s) => sum + s.base_stat, 0)
-
-const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 	const scale = max ?? Math.max(rawA, rawB, 1) * 1.1
@@ -48,21 +47,6 @@ const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 		</div>
 	)
 }
-
-const ComparePicker = ({ pokemonList, side, value, onChange }) => (
-	<select
-		className="compare-select"
-		value={value}
-		onChange={(e) => onChange(side, e.target.value)}
-	>
-		<option value="">Pick a pokemon…</option>
-		{pokemonList.map((p) => (
-			<option key={p.name} value={p.name}>
-				#{String(p.id).padStart(3, "0")} {capitalize(p.name)}
-			</option>
-		))}
-	</select>
-)
 
 const CompareHead = ({ pokemon }) => {
 	const color = getTypeColor(pokemon.types?.[0]?.type?.name)
@@ -125,11 +109,10 @@ const ComparePage = ({ pokemonList }) => {
 			<h1 className="page-title">Compare</h1>
 
 			<div className="compare-picker">
-				<ComparePicker
+				<PokemonPicker
 					pokemonList={pokemonList}
-					side="a"
 					value={nameA}
-					onChange={handleSelect}
+					onChange={(name) => handleSelect("a", name)}
 				/>
 				<button
 					className="compare-swap-btn"
@@ -140,11 +123,10 @@ const ComparePage = ({ pokemonList }) => {
 				>
 					<CompareIcon size={20} />
 				</button>
-				<ComparePicker
+				<PokemonPicker
 					pokemonList={pokemonList}
-					side="b"
 					value={nameB}
-					onChange={handleSelect}
+					onChange={(name) => handleSelect("b", name)}
 				/>
 			</div>
 
