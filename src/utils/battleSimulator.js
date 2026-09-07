@@ -119,7 +119,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 		side: winner === "draw" ? null : winner,
 		text:
 			winner === "draw"
-				? "Time's up — it's a draw!"
+				? `Neither one fainted after ${MAX_ROUNDS} rounds — it's a draw!`
 				: `${capitalize(pokemon[winner].name)} wins!`,
 		hpA: hp.a,
 		hpB: hp.b,

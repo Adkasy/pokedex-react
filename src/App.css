@@ -2741,6 +2741,8 @@
 }
 
 .ability-detail-hidden {
+	position: relative;
+	overflow: hidden;
 	padding: 1px 6px;
 	border-radius: 999px;
 	background: #f59e0b;
@@ -2750,6 +2752,33 @@
 	text-transform: uppercase;
 	letter-spacing: 0.3px;
 	cursor: help;
+}
+
+/* garis terang yang nyapu dari kiri ke kanan berulang — nge-highlight
+   badge amber-nya tanpa ganti warna dasarnya, biar kerasa "spesial" */
+.ability-detail-hidden::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		100deg,
+		transparent 30%,
+		rgba(255, 255, 255, 0.65) 50%,
+		transparent 70%
+	);
+	background-size: 220% 100%;
+	animation: ability-hidden-shimmer 2.6s ease-in-out infinite;
+}
+
+@keyframes ability-hidden-shimmer {
+	0% {
+		background-position: 140% 0;
+	}
+
+	60%,
+	100% {
+		background-position: -60% 0;
+	}
 }
 
 .ability-detail-effect {
@@ -2774,13 +2803,15 @@
 }
 
 .generation-chip {
-	display: inline-block;
-	padding: 1px 7px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2px 7px;
 	border-radius: 999px;
 	color: #fff;
 	font-size: 9px;
 	font-weight: 800;
-	line-height: 1.5;
+	line-height: 1;
 	white-space: nowrap;
 }
 

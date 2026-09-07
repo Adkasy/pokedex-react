@@ -324,6 +324,11 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 										: on top of all that, every attack also has a small 10%
 										chance to land a critical hit for 1.5 × extra damage.
 									</li>
+									<li>
+										<code className="f-chip f-chip-neutral">30 Rounds</code>: if
+										neither Pokémon has fainted by round 30, the battle ends
+										in a draw instead of dragging on forever.
+									</li>
 								</ul>
 
 								<p className="battle-info-example">
