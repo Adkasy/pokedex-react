@@ -4,6 +4,7 @@ import { MdInfoOutline, MdClose } from "react-icons/md"
 import { simulateBattle } from "../utils/battleSimulator"
 import { getTypeColor } from "../constants/typeColors"
 import { playVictorySound, playBattleStartSound } from "../utils/sound"
+import PokemonImage from "./PokemonImage"
 
 const REVEAL_DELAY_MS = 500
 const BATTLE_BEGIN_MS = 950
@@ -322,7 +323,12 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								battle.winner === "b" && isRevealed ? " is-fainted" : ""
 							}`}
 						>
-							<img src={pokemonA.image} alt={pokemonA.name} />
+							<PokemonImage
+								className="battle-fighter-image"
+								src={pokemonA.image}
+								alt={pokemonA.name}
+								iconSize={56}
+							/>
 						</div>
 
 						<span className="battle-stage-vs">VS</span>
@@ -332,7 +338,12 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								battle.winner === "a" && isRevealed ? " is-fainted" : ""
 							}`}
 						>
-							<img src={pokemonB.image} alt={pokemonB.name} />
+							<PokemonImage
+								className="battle-fighter-image"
+								src={pokemonB.image}
+								alt={pokemonB.name}
+								iconSize={56}
+							/>
 						</div>
 					</div>
 
@@ -354,10 +365,10 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 							{chatEntries.map((entry, i) =>
 								entry.type === "attack" ? (
 									<li key={i} className={`battle-chat-row side-${entry.side}`}>
-										<img
+										<PokemonImage
 											className="battle-chat-avatar"
 											src={entry.side === "a" ? pokemonA.image : pokemonB.image}
-											alt=""
+											iconSize={40}
 										/>
 										<div
 											className={`battle-chat-bubble${entry.isCrit ? " is-crit" : ""}`}
@@ -382,10 +393,11 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						{winnerPokemon && (
 							<div className="battle-winner">
 								<Confetti key={confettiBurst} />
-								<img
+								<PokemonImage
 									className="battle-winner-image"
 									src={winnerPokemon.image}
 									alt={winnerPokemon.name}
+									iconSize={100}
 								/>
 								<button
 									className="battle-winner-ribbon"

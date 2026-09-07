@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react"
 import "./App.css"
-import { Route, Routes, useSearchParams } from "react-router"
+import { Route, Routes, useLocation, useSearchParams } from "react-router"
 import PokemonDetailPage from "./pages/PokemonDetailPage"
 import PokemonGridPage from "./pages/PokemonGridPage"
 import FavoritesPage from "./pages/FavoritesPage"
@@ -18,6 +18,7 @@ const App = () => {
 	const error = usePokemonStore((state) => state.indexError)
 	const loadIndex = usePokemonStore((state) => state.loadIndex)
 	const [searchParams, setSearchParams] = useSearchParams()
+	const { pathname } = useLocation()
 
 	const keyword = searchParams.get("search") ?? ""
 
@@ -27,6 +28,16 @@ const App = () => {
 	useEffect(() => {
 		loadIndex()
 	}, [loadIndex])
+
+	// react-router gak reset scroll otomatis pas pindah halaman (beda
+	// route, misal grid -> detail) — tanpa ini, scroll position lama
+	// kebawa, jadi kadang landing di tengah halaman baru (kebetulan
+	// ketemu section apa aja yang ada di offset itu) alih-alih di atas.
+	// Cuma depend ke pathname (bukan search params), biar gak bentrok
+	// sama scroll-per-page pagination di grid.
+	useEffect(() => {
+		window.scrollTo(0, 0)
+	}, [pathname])
 
 	const handleSearch = useCallback(
 		(value) => {

@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useState } from "react"
 import { useParams, Link } from "react-router"
+import { MdChevronLeft, MdChevronRight } from "react-icons/md"
 import { getTypeColor } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { usePokemonStore } from "../store/usePokemonStore"
@@ -8,6 +9,7 @@ import TypeIcon, {
 	PokeballIcon,
 	HumanIcon,
 } from "../components/TypeIcon"
+import PokemonImage from "../components/PokemonImage"
 import { playFavoriteSound } from "../utils/sound"
 import { getPokemonSpecies, getEvolutionChain } from "../api/pokeapi"
 import { flattenEvolutionChain, cleanFlavorText } from "../utils/evolution"
@@ -91,6 +93,16 @@ const PokemonDetailPage = ({ index }) => {
 	const catchDifficulty = getCatchDifficulty(species?.capture_rate)
 	const pokemonHeightM = pokemon.height / 10
 
+	// prev/next Pokemon ngikutin urutan index (yang ngikutin urutan id
+	// dari PokeAPI) — bukan berdasarkan urutan generation/dex khusus
+	const currentIndexPos = index.findIndex((item) => item.name === name)
+	const prevPokemon =
+		currentIndexPos > 0 ? index[currentIndexPos - 1] : null
+	const nextPokemon =
+		currentIndexPos !== -1 && currentIndexPos < index.length - 1
+			? index[currentIndexPos + 1]
+			: null
+
 	const MAX_FIGURE_PX = 140
 	const MIN_FIGURE_PX = 20
 	const tallestM = Math.max(pokemonHeightM, AVERAGE_HUMAN_HEIGHT_M)
@@ -135,6 +147,28 @@ const PokemonDetailPage = ({ index }) => {
 					</button>
 				</div>
 
+				{prevPokemon && (
+					<Link
+						className="detail-nav detail-nav-prev"
+						to={`/pokemon/${prevPokemon.name}`}
+						aria-label={`Previous: ${prevPokemon.name}`}
+						title={prevPokemon.name}
+					>
+						<MdChevronLeft size={26} />
+					</Link>
+				)}
+
+				{nextPokemon && (
+					<Link
+						className="detail-nav detail-nav-next"
+						to={`/pokemon/${nextPokemon.name}`}
+						aria-label={`Next: ${nextPokemon.name}`}
+						title={nextPokemon.name}
+					>
+						<MdChevronRight size={26} />
+					</Link>
+				)}
+
 				<div className="detail-header-info">
 					<p className="detail-id">#{String(pokemon.id).padStart(3, "0")}</p>
 					<p className="detail-name">{pokemon.name}</p>
@@ -178,10 +212,11 @@ const PokemonDetailPage = ({ index }) => {
 					)}
 				</div>
 
-				<img
+				<PokemonImage
 					className="detail-image"
 					src={pokemon.sprites.other["official-artwork"].front_default}
 					alt={pokemon.name}
+					iconSize={100}
 				/>
 			</div>
 
@@ -300,7 +335,12 @@ const PokemonDetailPage = ({ index }) => {
 									className="size-comparison-figure"
 									style={{ height: pokemonFigurePx }}
 								>
-									<img src={pokemon.image} alt={pokemon.name} />
+									<PokemonImage
+										className="size-comparison-image"
+										src={pokemon.image}
+										alt={pokemon.name}
+										iconSize={Math.max(pokemonFigurePx * 0.6, 20)}
+									/>
 								</div>
 							</div>
 							<span className="size-comparison-name">{pokemon.name}</span>
@@ -362,7 +402,12 @@ const PokemonDetailPage = ({ index }) => {
 													}`}
 												>
 													{matched?.image ? (
-														<img src={matched.image} alt={member.name} />
+														<PokemonImage
+															className="evolution-node-image"
+															src={matched.image}
+															alt={member.name}
+															iconSize={22}
+														/>
 													) : (
 														<span className="evolution-node-fallback">
 															<PokeballIcon size={22} />

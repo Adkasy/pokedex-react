@@ -6,6 +6,7 @@ import { STAT_LABELS } from "../constants/statLabels"
 import TypeIcon, { CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
 import BattleArena from "../components/BattleArena"
+import PokemonImage from "../components/PokemonImage"
 import { usePokemonStore } from "../store/usePokemonStore"
 
 const STAT_BAR_MAX = 200
@@ -61,7 +62,12 @@ const CompareHead = ({ pokemon }) => {
 			className="compare-head"
 			style={{ backgroundColor: color }}
 		>
-			<img src={pokemon.image} alt={pokemon.name} />
+			<PokemonImage
+				className="compare-head-image"
+				src={pokemon.image}
+				alt={pokemon.name}
+				iconSize={64}
+			/>
 			<p className="compare-head-id">#{String(pokemon.id).padStart(3, "0")}</p>
 			<p className="compare-head-name">{pokemon.name}</p>
 			<div className="type-badge-row">

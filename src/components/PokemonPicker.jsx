@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { MdKeyboardArrowDown } from "react-icons/md"
 import { capitalize } from "../utils/text"
+import PokemonImage from "./PokemonImage"
 
 const PokemonPicker = ({
 	pokemonList,
@@ -122,7 +123,11 @@ const PokemonPicker = ({
 									onMouseEnter={() => setActiveIndex(i)}
 									onClick={() => handleSelect(p.name)}
 								>
-									<img src={p.image} alt="" />
+									<PokemonImage
+										className="pokemon-picker-option-image"
+										src={p.image}
+										iconSize={16}
+									/>
 									<span className="pokemon-picker-option-id">
 										#{String(p.id).padStart(3, "0")}
 									</span>

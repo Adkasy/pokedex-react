@@ -338,7 +338,7 @@
 	color: var(--accent);
 }
 
-.pokemon-picker-option img {
+.pokemon-picker-option-image {
 	width: 28px;
 	height: 28px;
 	object-fit: contain;
@@ -410,7 +410,7 @@
 	transform: translateY(-4px);
 }
 
-.compare-head img {
+.compare-head-image {
 	width: 140px;
 	height: 140px;
 	object-fit: contain;
@@ -452,7 +452,7 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 16px;
-	margin-top: 14px;
+	margin-top: 26px;
 }
 
 /* ===== "Battle Begin!" — flash fullscreen sesaat pas tombol Simulate
@@ -943,7 +943,7 @@
 	height: 110px;
 }
 
-.battle-fighter img {
+.battle-fighter-image {
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
@@ -955,7 +955,7 @@
 	animation: battle-lunge 0.4s ease;
 }
 
-.battle-fighter.is-acting img {
+.battle-fighter.is-acting .battle-fighter-image {
 	filter:
 		drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3))
 		drop-shadow(0 0 14px var(--accent));
@@ -973,7 +973,7 @@
 	opacity: 0.35;
 }
 
-.battle-fighter.is-fainted img {
+.battle-fighter.is-fainted .battle-fighter-image {
 	filter: grayscale(1);
 }
 
@@ -1592,6 +1592,17 @@
 	text-transform: capitalize;
 }
 
+/* fallback ikon pokeball buat Pokemon yang artwork resminya gak ada
+   di PokeAPI (null / broken link) — dipake bareng class ukuran/posisi
+   gambar aslinya (liat PokemonImage.jsx), jadi cukup nambahin centering
+   + warna di sini */
+.pokemon-image-fallback {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: rgba(255, 255, 255, 0.4);
+}
+
 .pokemon-card-image {
 	position: absolute;
 	z-index: 2;
@@ -2154,6 +2165,53 @@
 	font-size: 18px;
 }
 
+.detail-nav {
+	position: absolute;
+	top: 50%;
+	z-index: 2;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.22);
+	color: #fff;
+	text-decoration: none;
+	transform: translateY(-50%);
+	transition:
+		background 0.15s ease,
+		transform 0.15s ease;
+}
+
+.detail-nav:hover {
+	background: rgba(255, 255, 255, 0.35);
+	transform: translateY(-50%) scale(1.08);
+}
+
+.detail-nav-prev {
+	left: 12px;
+}
+
+.detail-nav-next {
+	right: 12px;
+}
+
+@media (max-width: 640px) {
+	.detail-nav {
+		width: 32px;
+		height: 32px;
+	}
+
+	.detail-nav-prev {
+		left: 6px;
+	}
+
+	.detail-nav-next {
+		right: 6px;
+	}
+}
+
 .detail-header-info {
 	position: relative;
 	z-index: 1;
@@ -2343,7 +2401,7 @@
 	opacity: 0.7;
 }
 
-.size-comparison-figure img {
+.size-comparison-figure .size-comparison-image {
 	height: 100%;
 	width: auto;
 	object-fit: contain;
@@ -2477,13 +2535,14 @@
 	cursor: default;
 }
 
-.evolution-node img {
+.evolution-node-image {
 	width: 44px;
 	height: 44px;
 	object-fit: contain;
 }
 
-.evolution-node-fallback {
+.evolution-node-fallback,
+.evolution-node-image.pokemon-image-fallback {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -2616,7 +2675,7 @@
 		font-size: 13px;
 	}
 
-	.compare-head img {
+	.compare-head-image {
 		width: 84px;
 		height: 84px;
 	}
