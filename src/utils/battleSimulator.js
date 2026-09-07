@@ -52,6 +52,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 
 	log.push({
 		type: "start",
+		side: null,
 		text: `${capitalize(pokemon[first].name)} moves first (higher Speed)!`,
 		hpA: hp.a,
 		hpB: hp.b,
@@ -73,6 +74,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 
 			log.push({
 				type: "attack",
+				side,
 				text: `${capitalize(attacker.name)} attacks! ${capitalize(
 					defender.name,
 				)} takes ${damage} damage.${effectivenessNote(typeMult)}`,
@@ -83,6 +85,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 			if (hp[other] <= 0) {
 				log.push({
 					type: "faint",
+					side: other,
 					text: `${capitalize(defender.name)} fainted!`,
 					hpA: hp.a,
 					hpB: hp.b,
@@ -98,10 +101,11 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 
 	log.push({
 		type: "result",
+		side: winner === "draw" ? null : winner,
 		text:
 			winner === "draw"
 				? "Time's up — it's a draw!"
-				: `${capitalize(pokemon[winner].name)} wins! 🏆`,
+				: `${capitalize(pokemon[winner].name)} wins!`,
 		hpA: hp.a,
 		hpB: hp.b,
 	})

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { GiCrossedSwords, GiTrophy } from "react-icons/gi"
 import { simulateBattle } from "../utils/battleSimulator"
 
 const REVEAL_DELAY_MS = 700
@@ -27,9 +28,10 @@ const BattleHpBar = ({ name, hp, maxHp }) => {
 }
 
 const BattleArena = ({ pokemonA, pokemonB }) => {
-	const [battle, setBattle] = useState(null) // { log, maxHpA, maxHpB }
+	const [battle, setBattle] = useState(null) // { log, maxHpA, maxHpB, winner }
 	const [revealCount, setRevealCount] = useState(0)
 	const logRef = useRef(null)
+	const arenaRef = useRef(null)
 
 	useEffect(() => {
 		if (!battle || revealCount >= battle.log.length) return
@@ -48,6 +50,12 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 		})
 	}, [revealCount])
 
+	useEffect(() => {
+		if (battle) {
+			arenaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+		}
+	}, [battle])
+
 	const isSimulating = battle && revealCount < battle.log.length
 
 	const handleSimulate = () => {
@@ -61,6 +69,21 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	const currentHpA = latest ? latest.hpA : (battle?.maxHpA ?? 0)
 	const currentHpB = latest ? latest.hpB : (battle?.maxHpB ?? 0)
 
+	const activeSide =
+		latest?.type === "attack" || latest?.type === "faint" ? latest.side : null
+	const isRevealed = battle && revealCount >= battle.log.length
+	const winnerPokemon =
+		isRevealed && battle.winner === "a"
+			? pokemonA
+			: isRevealed && battle.winner === "b"
+				? pokemonB
+				: null
+
+	const chatLog = visibleLog.filter((entry) => entry.type === "attack")
+	const systemLog = visibleLog.filter(
+		(entry) => entry.type === "start" || entry.type === "faint",
+	)
+
 	return (
 		<div className="battle-section">
 			<button
@@ -68,15 +91,36 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 				onClick={handleSimulate}
 				disabled={isSimulating}
 			>
+				<GiCrossedSwords size={18} />
 				{isSimulating
 					? "Simulating…"
 					: battle
-						? "⚔️ Simulate Again"
-						: "⚔️ Simulate Battle"}
+						? "Simulate Again"
+						: "Simulate Battle"}
 			</button>
 
 			{battle && (
-				<div className="battle-arena">
+				<div className="battle-arena" ref={arenaRef}>
+					<div className="battle-stage">
+						<div
+							className={`battle-fighter side-a${activeSide === "a" ? " is-acting" : ""}${
+								battle.winner === "b" && isRevealed ? " is-fainted" : ""
+							}`}
+						>
+							<img src={pokemonA.image} alt={pokemonA.name} />
+						</div>
+
+						<span className="battle-stage-vs">VS</span>
+
+						<div
+							className={`battle-fighter side-b${activeSide === "b" ? " is-acting" : ""}${
+								battle.winner === "a" && isRevealed ? " is-fainted" : ""
+							}`}
+						>
+							<img src={pokemonB.image} alt={pokemonB.name} />
+						</div>
+					</div>
+
 					<div className="battle-hp-row">
 						<BattleHpBar
 							name={pokemonA.name}
@@ -90,16 +134,42 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						/>
 					</div>
 
-					<ul className="battle-log" ref={logRef}>
-						{visibleLog.map((entry, i) => (
-							<li
-								key={i}
-								className={`battle-log-entry battle-log-${entry.type}`}
-							>
-								{entry.text}
+					{systemLog.length > 0 && (
+						<ul className="battle-system-log">
+							{systemLog.map((entry, i) => (
+								<li key={i} className="battle-system-entry">
+									{entry.text}
+								</li>
+							))}
+						</ul>
+					)}
+
+					<ul className="battle-chat" ref={logRef}>
+						{chatLog.map((entry, i) => (
+							<li key={i} className={`battle-chat-row side-${entry.side}`}>
+								<img
+									className="battle-chat-avatar"
+									src={entry.side === "a" ? pokemonA.image : pokemonB.image}
+									alt=""
+								/>
+								<div className="battle-chat-bubble">{entry.text}</div>
 							</li>
 						))}
 					</ul>
+
+					{winnerPokemon && (
+						<div className="battle-winner">
+							<img
+								className="battle-winner-image"
+								src={winnerPokemon.image}
+								alt={winnerPokemon.name}
+							/>
+							<div className="battle-winner-ribbon">
+								<GiTrophy size={16} />
+								{winnerPokemon.name} wins!
+							</div>
+						</div>
+					)}
 				</div>
 			)}
 		</div>
