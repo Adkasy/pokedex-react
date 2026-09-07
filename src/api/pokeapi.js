@@ -10,19 +10,23 @@ const getArtworkUrl = (id) => `${ARTWORK_BASE}/${id}.png`
 
 const getIdFromUrl = (url) => Number(url.split("/").filter(Boolean).pop())
 
+// Semua endpoint di bawah ngikutin pola yang sama: fetch, cek res.ok,
+// lempar error yang jelas kalau gagal, baru parse JSON-nya — dipusatin
+// di sini biar gak ditulis ulang di tiap fungsi.
+const fetchJson = async (url, errorMessage) => {
+	const res = await fetch(url)
+	if (!res.ok) throw new Error(errorMessage)
+	return res.json()
+}
+
 // Index RINGAN semua Pokemon (cuma nama + id + gambar) — 1 request doang
 // meski jumlahnya 1300+, jadi aman gak bakal berat/kena rate limit kayak
 // kalau kita fetch detail lengkap buat semuanya di awal. Detail lengkap
 // (stats, types, dll) baru di-fetch belakangan per-Pokemon pas beneran
 // dibutuhin (liat usePokemonStore).
 const getPokemonIndex = async () => {
-	const countRes = await fetch(`${BASE_URL}/pokemon?limit=1`)
-	if (!countRes.ok) throw new Error("Error data count")
-	const { count } = await countRes.json()
-
-	const res = await fetch(`${BASE_URL}/pokemon?limit=${count}`)
-	if (!res.ok) throw new Error("Error data index")
-	const { results } = await res.json()
+	const { count } = await fetchJson(`${BASE_URL}/pokemon?limit=1`, "Error data count")
+	const { results } = await fetchJson(`${BASE_URL}/pokemon?limit=${count}`, "Error data index")
 
 	return results.map(({ name, url }) => {
 		const id = getIdFromUrl(url)
@@ -34,44 +38,27 @@ const getPokemonIndex = async () => {
 // — dipake buat filter by type tanpa perlu fetch detail SEMUA Pokemon
 // cuma buat tau type-nya masing-masing.
 const getPokemonNamesByType = async (typeName) => {
-	const res = await fetch(`${BASE_URL}/type/${typeName}`)
-	if (!res.ok) throw new Error("Error data type")
-	const data = await res.json()
+	const data = await fetchJson(`${BASE_URL}/type/${typeName}`, "Error data type")
 	return data.pokemon.map((p) => p.pokemon.name)
 }
 
 const getDataDetailPokemon = async (detailURL) => {
-	const res = await fetch(detailURL)
-	if (!res.ok) throw new Error("Error data spesifik")
-	const dataDetail = await res.json()
-
-	const name = dataDetail.name
-	const image = dataDetail.sprites.other["official-artwork"].front_default
+	const dataDetail = await fetchJson(detailURL, "Error data spesifik")
 
 	return {
-		name,
-		image,
+		name: dataDetail.name,
+		image: dataDetail.sprites.other["official-artwork"].front_default,
 		...dataDetail,
 	}
 }
 
-const getPokemonSpecies = async (name) => {
-	const res = await fetch(`${BASE_URL}/pokemon-species/${name}`)
-	if (!res.ok) throw new Error("Error data species")
-	return res.json()
-}
+const getPokemonSpecies = (name) =>
+	fetchJson(`${BASE_URL}/pokemon-species/${name}`, "Error data species")
 
-const getEvolutionChain = async (url) => {
-	const res = await fetch(url)
-	if (!res.ok) throw new Error("Error data evolution chain")
-	return res.json()
-}
+const getEvolutionChain = (url) => fetchJson(url, "Error data evolution chain")
 
-const getAbilityDetail = async (name) => {
-	const res = await fetch(`${BASE_URL}/ability/${name}`)
-	if (!res.ok) throw new Error("Error data ability")
-	return res.json()
-}
+const getAbilityDetail = (name) =>
+	fetchJson(`${BASE_URL}/ability/${name}`, "Error data ability")
 
 export {
 	BASE_URL,
