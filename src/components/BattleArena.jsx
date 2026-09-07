@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { GiCrossedSwords, GiTrophy } from "react-icons/gi"
 import { MdInfoOutline, MdClose } from "react-icons/md"
 import { simulateBattle } from "../utils/battleSimulator"
-import { getTypeColor } from "../constants/typeColors"
+import { getPrimaryTypeColor } from "../constants/typeColors"
 import { playVictorySound, playBattleStartSound, playHitSound } from "../utils/sound"
 import PokemonImage from "./PokemonImage"
 
@@ -297,8 +297,8 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	const logRef = useRef(null)
 	const arenaRef = useRef(null)
 	const infoWrapRef = useRef(null)
-	const colorA = getTypeColor(pokemonA.types?.[0]?.type?.name)
-	const colorB = getTypeColor(pokemonB.types?.[0]?.type?.name)
+	const colorA = getPrimaryTypeColor(pokemonA.types)
+	const colorB = getPrimaryTypeColor(pokemonB.types)
 
 	// reveal log-nya 1 entry per tick (bukan langsung nampilin semua),
 	// biar battle-nya kerasa "real-time" — timer di-reset tiap revealCount

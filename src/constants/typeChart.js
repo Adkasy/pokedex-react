@@ -1,6 +1,6 @@
 // Type effectiveness chart standar (Gen 6+, 18 type termasuk Fairy).
-// Cuma nyimpen matchup yang BUKAN 1x (netral) — hemat, dan konsisten
-// sama cara kita kemarin nyimpen damage_relations dari PokeAPI.
+// Cuma nyimpen matchup yang BUKAN 1x (netral) — matchup yang gak
+// disebutin di sini dianggep netral (lihat getTypeMultiplier di bawah).
 // attacker -> { defender: multiplier }
 export const TYPE_CHART = {
 	normal: { rock: 0.5, ghost: 0, steel: 0.5 },

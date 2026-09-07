@@ -43,6 +43,12 @@ export const TYPE_ICONS = {
 export const getTypeColor = (typeName) => TYPE_COLORS[typeName] ?? "#777777"
 export const getTypeIcon = (typeName) => TYPE_ICONS[typeName] ?? ""
 
+// pokemon.types itu array [{ type: { name } }, ...] — type PERTAMA di
+// array itu yang dianggep "warna utama"-nya (dipake buat header, chip,
+// glow, dll di banyak tempat), jadi ditaro di sini biar gak perlu
+// nulis ulang `types?.[0]?.type?.name` tiap kali butuh warnanya
+export const getPrimaryTypeColor = (types) => getTypeColor(types?.[0]?.type?.name)
+
 export const hexToRgba = (hex, alpha = 1) => {
 	const clean = hex.replace("#", "")
 	const r = parseInt(clean.substring(0, 2), 16)

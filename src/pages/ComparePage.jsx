@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useSearchParams } from "react-router"
 import { MdShuffle } from "react-icons/md"
-import { getTypeColor } from "../constants/typeColors"
+import { getPrimaryTypeColor } from "../constants/typeColors"
 import { STAT_LABELS } from "../constants/statLabels"
 import { getStat, getTotalStats } from "../utils/pokemonStats"
 import TypeIcon, { CompareIcon } from "../components/TypeIcon"
@@ -83,8 +83,8 @@ const CompareHead = ({ pokemon, color, isStrongerTotal = false }) => (
 // keduanya udah ke-load, jadi di-component-in sendiri biar bisa itung
 // color/total sekali di sini (bukan berkali-kali kesebar di ComparePage)
 const CompareResult = ({ pokemonA, pokemonB }) => {
-	const colorA = getTypeColor(pokemonA.types?.[0]?.type?.name)
-	const colorB = getTypeColor(pokemonB.types?.[0]?.type?.name)
+	const colorA = getPrimaryTypeColor(pokemonA.types)
+	const colorB = getPrimaryTypeColor(pokemonB.types)
 	const totalA = getTotalStats(pokemonA)
 	const totalB = getTotalStats(pokemonB)
 

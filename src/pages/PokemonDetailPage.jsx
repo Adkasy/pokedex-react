@@ -6,7 +6,7 @@ import {
 	MdKeyboardArrowDown,
 	MdAutoAwesome,
 } from "react-icons/md"
-import { getTypeColor, hexToRgba } from "../constants/typeColors"
+import { getPrimaryTypeColor, hexToRgba } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { usePokemonStore } from "../store/usePokemonStore"
 import { useCryPlayerStore } from "../store/useCryPlayerStore"
@@ -673,7 +673,7 @@ const PokemonDetailPage = ({ index }) => {
 		)
 	}
 
-	const primaryColor = getTypeColor(pokemon.types?.[0]?.type?.name)
+	const primaryColor = getPrimaryTypeColor(pokemon.types)
 	const flavorTextEntry = species?.flavor_text_entries.find(
 		(f) => f.language.name === "en",
 	)
