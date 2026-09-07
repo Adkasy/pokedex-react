@@ -2284,8 +2284,9 @@
 	   tetep setipis di home, TANPA ganggu perilaku nyusut ke 2px di
 	   mobile (max-width gak mempengaruhi shrink, cuma ngebatesin growth).
 	   Sempet naik ke 4px biar gap-nya gak terlalu renggang, tapi kelamaan
-	   malah jadi kegedean — turun dikit lagi ke 3px */
-	max-width: 3px;
+	   malah jadi kegedean, turun ke 3px — terus dinaikin dikiiit lagi
+	   ke 3.2px buat jalan tengah paling pas */
+	max-width: 3.2px;
 	height: 100%;
 	background: currentColor;
 	border-radius: 1px;
