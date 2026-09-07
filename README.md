@@ -23,11 +23,11 @@ Screenshots — drop PNGs in docs/screenshots/ and uncomment:
 - **Filter by type** — multi-select type chips, backed by PokeAPI's `/type/{name}` endpoint rather than needing every Pokemon's detail up front
 - **Pagination** — numbered page buttons (with `…` for gaps) plus a "jump to page" input for large ranges
 - **URL-synced state** — search, type filter, page, and compare picks all live in the URL query string, so refreshing or sharing a link preserves the exact view
-- **Detail page** — stats, height/weight, abilities, Pokédex flavor text, catch difficulty, a to-scale size comparison against an average human, evolution chain (handles branching chains like Eevee's), and prev/next navigation (arrow buttons or ←/→ keyboard) through the whole dataset
+- **Detail page** — stats, height/weight, abilities (with fetched effect text, hidden-ability badge, and a color-coded "introduced in Generation X" chip), type weaknesses (computed from the same type chart the battle simulator uses), moves, gender ratio, Pokédex flavor text, catch difficulty, habitat/growth rate, legendary/mythical badges, a to-scale size comparison against an average human, evolution chain (handles branching chains like Eevee's), and prev/next navigation (arrow buttons or ←/→ keyboard) through the whole dataset
 - **Favorites** — toggle from any card or the detail page, persisted in `localStorage`, with their own `/favorites` page
 - **Pokemon cries** — play a Pokemon's actual cry from its card or its detail page (only one plays at a time app-wide)
-- **Compare mode** (`/compare`) — pick two Pokemon and see them head-to-head: stats as tug-of-war bars, a searchable combobox picker, a swap button, and a "random matchup" shuffle
-- **Battle simulator** — inside Compare, simulate a turn-based 1v1 battle between the two picks: speed decides who moves first, damage factors in the real type chart + a critical-hit chance, HP bars update live, a chat-style log narrates each hit, and a fullscreen "Battle Begin!" flash + synthesized sound effects (Web Audio API, no audio files) bookend the fight
+- **Compare mode** (`/compare`) — pick two Pokemon and see them head-to-head: stats as tug-of-war bars that animate in on load, a "Higher Total" badge on whichever has the higher stat total, a searchable combobox picker, a swap button, and a "random matchup" shuffle
+- **Battle simulator** — inside Compare, simulate a turn-based 1v1 battle between the two picks: speed decides who moves first, damage factors in the real type chart + a critical-hit chance, HP bars update live, a chat-style log narrates each hit (with a running round counter and a win-tally scoreboard across replays), and a "How damage works" popover breaks down the formula. Hits land with a type-colored attacker glow, a claw-slash + spark effect and screen-shake on the defender, and layered synthesized sound (Web Audio API, no audio files) for the swing/impact, the battle-start clash, and a victory fanfare — the winner gets a type-colored spotlight and confetti
 - **404 page** — any unknown route falls back to a proper not-found page
 - **Responsive layout** — down to mobile widths across grid, detail, compare, and battle
 - **Light/dark mode** — follows the OS theme automatically
@@ -40,7 +40,7 @@ Screenshots — drop PNGs in docs/screenshots/ and uncomment:
 - [Zustand](https://zustand.docs.pmnd.rs/) — the Pokemon data store (index + on-demand detail/type caches), favorites (persisted), and the cry-player store
 - [react-icons](https://react-icons.github.io/react-icons/) — mixed with a few hand-rolled inline SVGs for type icons
 - Plain CSS (custom properties for theming incl. light/dark, keyframe animations for the battle simulator and loading spinner)
-- Web Audio API — synthesized sound effects (favorite toggle, victory fanfare, battle-start sword clash) with no audio assets
+- Web Audio API — synthesized sound effects (favorite toggle, battle-start sword clash, hit impact, victory fanfare) built from a couple of small reusable oscillator/noise helpers, no audio assets
 - [PokeAPI](https://pokeapi.co/) — no API key required
 - [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/) — unit tests
 
@@ -81,11 +81,11 @@ src/
     PokemonPicker.jsx        # searchable Pokemon combobox, used on the Compare page
     LoadingSpinner.jsx       # bouncing pokeball loading indicator
     SkeletonCard.jsx         # loading placeholder card
-    BattleArena.jsx          # the battle simulator UI (stage, HP bars, chat log, damage-formula popover)
+    BattleArena.jsx          # the battle simulator UI — stage, hit VFX, HP bars, scoreboard, chat log, damage-formula popover
     TypeIcon.jsx             # inline SVG + react-icons icons (type icons, star, play, pokeball, etc.)
   pages/
     PokemonGridPage.jsx      # home — grid, filter, search, pagination
-    PokemonDetailPage.jsx    # single Pokemon detail view
+    PokemonDetailPage.jsx    # single Pokemon detail view, composed from one section component per block (stats, weaknesses, moves, abilities, evolution, ...)
     ComparePage.jsx          # head-to-head stat comparison + battle simulator
     FavoritesPage.jsx        # favorited Pokemon, same card grid as home
     NotFoundPage.jsx         # catch-all 404
@@ -97,12 +97,14 @@ src/
     battleSimulator.js       # turn-based battle resolution logic
     evolution.js             # flattens PokeAPI's evolution-chain tree (handles branches)
     pokedexFacts.js          # catch-difficulty buckets, size-comparison labels
+    pokemonStats.js          # getStat/getTotalStats, shared by the battle simulator and Compare page
     sound.js                 # synthesized sound effects (Web Audio API)
     text.js                  # small string helpers
   constants/
-    typeChart.js             # type-effectiveness matrix, used by the battle simulator
+    typeChart.js             # type-effectiveness matrix, used by the battle simulator + detail-page weaknesses
     typeColors.js            # color/icon mapping for Pokemon types
     statLabels.js            # display labels for base stats
+    generationColors.js      # color mapping for the "introduced in Generation X" ability chip
   hooks/useDebounce.jsx       # debounced value hook, used for search
   App.jsx                    # routing, top-level index load, scroll-reset on navigation
   App.css                    # component styling
