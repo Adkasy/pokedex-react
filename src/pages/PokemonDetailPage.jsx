@@ -432,36 +432,28 @@ const PokemonDetailPage = ({ index }) => {
 						{species.gender_rate === -1 ? (
 							<p className="gender-ratio-genderless">Genderless</p>
 						) : (
-							<div className="gender-ratio-chart">
-								<div
-									className="gender-ratio-column"
-									title={`Male: ${femaleMalePct.male.toFixed(1)}%`}
-								>
-									<div className="gender-ratio-column-track">
-										<div
-											className="gender-ratio-column-fill is-male"
-											style={{ height: `${femaleMalePct.male}%` }}
-										/>
-									</div>
-									<span className="gender-ratio-column-label is-male">
+							<>
+								<div className="gender-ratio-bar">
+									<div
+										className="gender-ratio-segment is-male"
+										style={{ flexGrow: femaleMalePct.male }}
+										title={`Male: ${femaleMalePct.male.toFixed(1)}%`}
+									/>
+									<div
+										className="gender-ratio-segment is-female"
+										style={{ flexGrow: femaleMalePct.female }}
+										title={`Female: ${femaleMalePct.female.toFixed(1)}%`}
+									/>
+								</div>
+								<div className="gender-ratio-labels">
+									<span className="gender-ratio-label is-male">
 										♂ {femaleMalePct.male.toFixed(1)}%
 									</span>
-								</div>
-								<div
-									className="gender-ratio-column"
-									title={`Female: ${femaleMalePct.female.toFixed(1)}%`}
-								>
-									<div className="gender-ratio-column-track">
-										<div
-											className="gender-ratio-column-fill is-female"
-											style={{ height: `${femaleMalePct.female}%` }}
-										/>
-									</div>
-									<span className="gender-ratio-column-label is-female">
+									<span className="gender-ratio-label is-female">
 										♀ {femaleMalePct.female.toFixed(1)}%
 									</span>
 								</div>
-							</div>
+							</>
 						)}
 					</section>
 				)}
@@ -674,10 +666,7 @@ const PokemonDetailPage = ({ index }) => {
 														Introduced in{" "}
 														<span
 															className="generation-chip"
-															style={{
-																backgroundColor: genColor.bg,
-																color: genColor.text,
-															}}
+															style={{ backgroundColor: genColor }}
 														>
 															{formatGeneration(detail.generation.name)}
 														</span>
