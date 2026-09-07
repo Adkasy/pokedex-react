@@ -4,8 +4,9 @@ import {
 	MdChevronLeft,
 	MdChevronRight,
 	MdKeyboardArrowDown,
+	MdAutoAwesome,
 } from "react-icons/md"
-import { getTypeColor } from "../constants/typeColors"
+import { getTypeColor, hexToRgba } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { usePokemonStore } from "../store/usePokemonStore"
 import { useCryPlayerStore } from "../store/useCryPlayerStore"
@@ -212,6 +213,12 @@ const PokemonDetailPage = ({ index }) => {
 		? moveNames
 		: moveNames.slice(0, MOVES_PREVIEW_COUNT)
 
+	// gender_rate itu "per delapan female" (0-8), -1 artinya genderless
+	const femaleMalePct = {
+		female: ((species?.gender_rate ?? 0) / 8) * 100,
+		male: 100 - ((species?.gender_rate ?? 0) / 8) * 100,
+	}
+
 	const MAX_FIGURE_PX = 140
 	const MIN_FIGURE_PX = 20
 	const tallestM = Math.max(pokemonHeightM, AVERAGE_HUMAN_HEIGHT_M)
@@ -407,16 +414,6 @@ const PokemonDetailPage = ({ index }) => {
 							</span>
 						</div>
 					)}
-					{species?.egg_groups?.length > 0 && (
-						<div className="detail-data-row">
-							<span className="detail-data-label">Egg Groups</span>
-							<span className="detail-data-value">
-								{species.egg_groups
-									.map((g) => g.name.replace(/-/g, " "))
-									.join(", ")}
-							</span>
-						</div>
-					)}
 				</section>
 
 				{species && (
@@ -428,26 +425,36 @@ const PokemonDetailPage = ({ index }) => {
 						{species.gender_rate === -1 ? (
 							<p className="gender-ratio-genderless">Genderless</p>
 						) : (
-							<>
-								<div className="gender-ratio-bar">
-									<div
-										className="gender-ratio-fill is-male"
-										style={{ width: `${100 - (species.gender_rate / 8) * 100}%` }}
-									/>
-									<div
-										className="gender-ratio-fill is-female"
-										style={{ width: `${(species.gender_rate / 8) * 100}%` }}
-									/>
-								</div>
-								<div className="gender-ratio-labels">
-									<span className="gender-ratio-label is-male">
-										♂ {(100 - (species.gender_rate / 8) * 100).toFixed(1)}%
-									</span>
-									<span className="gender-ratio-label is-female">
-										♀ {((species.gender_rate / 8) * 100).toFixed(1)}%
+							<div className="gender-ratio-chart">
+								<div
+									className="gender-ratio-column"
+									title={`Male: ${femaleMalePct.male.toFixed(1)}%`}
+								>
+									<div className="gender-ratio-column-track">
+										<div
+											className="gender-ratio-column-fill is-male"
+											style={{ height: `${femaleMalePct.male}%` }}
+										/>
+									</div>
+									<span className="gender-ratio-column-label is-male">
+										♂ {femaleMalePct.male.toFixed(1)}%
 									</span>
 								</div>
-							</>
+								<div
+									className="gender-ratio-column"
+									title={`Female: ${femaleMalePct.female.toFixed(1)}%`}
+								>
+									<div className="gender-ratio-column-track">
+										<div
+											className="gender-ratio-column-fill is-female"
+											style={{ height: `${femaleMalePct.female}%` }}
+										/>
+									</div>
+									<span className="gender-ratio-column-label is-female">
+										♀ {femaleMalePct.female.toFixed(1)}%
+									</span>
+								</div>
+							</div>
 						)}
 					</section>
 				)}
@@ -618,29 +625,47 @@ const PokemonDetailPage = ({ index }) => {
 								)
 
 								return (
-									<div key={a.ability.name} className="ability-detail-card">
-										<p className="ability-detail-name">
-											{a.ability.name}
-											{a.is_hidden && (
-												<span className="ability-detail-hidden">Hidden</span>
-											)}
-										</p>
+									<div
+										key={a.ability.name}
+										className={`ability-detail-card${a.is_hidden ? " is-hidden" : ""}`}
+										style={{ borderLeftColor: primaryColor }}
+									>
+										<div
+											className="ability-detail-icon"
+											style={{
+												background: a.is_hidden
+													? undefined
+													: hexToRgba(primaryColor, 0.15),
+												color: a.is_hidden ? undefined : primaryColor,
+											}}
+										>
+											<MdAutoAwesome size={17} />
+										</div>
 
-										{effect ? (
-											<>
-												<p className="ability-detail-effect">
-													{effect.short_effect}
-												</p>
-												<p className="ability-detail-gen">
-													Introduced in{" "}
-													{formatGeneration(detail.generation.name)}
-												</p>
-											</>
-										) : (
-											<p className="ability-detail-effect is-loading">
-												Loading…
+										<div className="ability-detail-body">
+											<p className="ability-detail-name">
+												{a.ability.name}
+												{a.is_hidden && (
+													<span className="ability-detail-hidden">Hidden</span>
+												)}
 											</p>
-										)}
+
+											{effect ? (
+												<>
+													<p className="ability-detail-effect">
+														{effect.short_effect}
+													</p>
+													<p className="ability-detail-gen">
+														Introduced in{" "}
+														{formatGeneration(detail.generation.name)}
+													</p>
+												</>
+											) : (
+												<p className="ability-detail-effect is-loading">
+													Loading…
+												</p>
+											)}
+										</div>
 									</div>
 								)
 							})}
