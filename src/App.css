@@ -430,6 +430,9 @@
 	justify-content: center;
 	width: 30px;
 	height: 30px;
+	padding: 0;
+	line-height: 0;
+	box-sizing: border-box;
 	border-radius: 999px;
 	border: 1px solid var(--border);
 	background: var(--code-bg);
@@ -554,14 +557,9 @@
 }
 
 .f-op-inline {
-	font-family:
-		-apple-system,
-		BlinkMacSystemFont,
-		"Segoe UI",
-		Roboto,
-		sans-serif;
+	font-family: var(--sans);
 	font-size: 1.3em;
-	font-weight: 900;
+	font-weight: 800;
 }
 
 .battle-info-list .f-chip {
@@ -885,6 +883,12 @@
 	animation-name: battle-confetti-fall;
 	animation-timing-function: ease-in;
 	animation-fill-mode: forwards;
+}
+
+.battle-confetti-piece.is-round {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
 }
 
 @keyframes battle-confetti-fall {

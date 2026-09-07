@@ -31,7 +31,7 @@ const BattleHpBar = ({ name, hp, maxHp }) => {
 }
 
 const CONFETTI_COLORS = ["#ff6b57", "#5b9dff", "#34d399", "#fbbf24", "#e879f9"]
-const CONFETTI_COUNT = 28
+const CONFETTI_COUNT = 70
 
 const Confetti = () => {
 	// lazy initializer — cuma jalan sekali pas mount (bukan tiap
@@ -41,9 +41,11 @@ const Confetti = () => {
 			id: i,
 			left: Math.random() * 100,
 			color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-			delay: Math.random() * 0.4,
-			duration: 1.6 + Math.random() * 0.8,
+			delay: Math.random() * 0.6,
+			duration: 1.4 + Math.random() * 1.1,
 			rotate: Math.random() * 360,
+			scale: 0.6 + Math.random() * 0.8,
+			round: i % 3 === 0,
 		})),
 	)
 
@@ -52,13 +54,13 @@ const Confetti = () => {
 			{pieces.map((p) => (
 				<span
 					key={p.id}
-					className="battle-confetti-piece"
+					className={`battle-confetti-piece${p.round ? " is-round" : ""}`}
 					style={{
 						left: `${p.left}%`,
 						backgroundColor: p.color,
 						animationDelay: `${p.delay}s`,
 						animationDuration: `${p.duration}s`,
-						transform: `rotate(${p.rotate}deg)`,
+						transform: `rotate(${p.rotate}deg) scale(${p.scale})`,
 					}}
 				/>
 			))}
