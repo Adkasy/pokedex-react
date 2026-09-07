@@ -49,11 +49,48 @@ const TYPE_ICON_COMPONENTS = {
 	fairy: GiFairyWings,
 }
 
+// Icon-icon di atas itu bentuknya gak simetris (droplet buat water,
+// bulu buat flying, dst) — bounding box-nya udah center (dicek pake
+// getBBox), TAPI "berat" visualnya numpuk di salah satu sisi (droplet
+// misalnya, meruncing di atas & ngegembung di bawah, jadi keliatan
+// nunduk walau box-nya center). Ini bikin icon-nya keliatan gak
+// sejajar sama teks di sebelahnya walau padahal geometrinya bener.
+//
+// Angka-angka ini bukan bounding-box biasa, tapi PUSAT MASSA visualnya
+// — dirender ke <canvas>, dijumlahin tiap pixel yang keisi (alpha>10)
+// dibagi total, dibandingin ke titik tengah geometrisnya. Positif =
+// pusat massanya di bawah tengah (icon keliatan "berat ke bawah"),
+// negatif = di atas. Dipake buat nge-geser icon-nya dikit ke arah
+// berlawanan (translateY) biar keliatan seimbang di mata, bukan cuma
+// bener di atas kertas.
+const OPTICAL_OFFSET_RATIOS = {
+	fire: 0.058,
+	water: 0.1,
+	electric: -0.068,
+	grass: -0.035,
+	fighting: 0.031,
+	poison: 0.018,
+	ground: 0.021,
+	flying: -0.107,
+	psychic: 0.008,
+	bug: 0.011,
+	rock: 0.041,
+	ghost: 0.003,
+	dragon: 0.046,
+	steel: -0.027,
+	fairy: 0.021,
+}
+
 const TypeIcon = ({ type, size = 12 }) => {
 	const Icon = TYPE_ICON_COMPONENTS[type]
 	if (!Icon) return null
 
-	return <Icon size={size} aria-hidden="true" />
+	const offsetRatio = OPTICAL_OFFSET_RATIOS[type] ?? 0
+	const style = offsetRatio
+		? { transform: `translateY(${-offsetRatio * size}px)` }
+		: undefined
+
+	return <Icon size={size} style={style} aria-hidden="true" />
 }
 
 // icon + nama type dalem 1 pill — dipake di mana-mana (card, compare,
