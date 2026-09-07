@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from "react"
 import { useParams, Link } from "react-router"
 import { getTypeColor } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
+import { usePokemonStore } from "../store/usePokemonStore"
 import TypeIcon, {
 	StarIcon,
 	PokeballIcon,
@@ -19,9 +20,15 @@ import { STAT_LABELS } from "../constants/statLabels"
 
 const STAT_BAR_MAX = 200
 
-const PokemonDetailPage = ({ pokemonList }) => {
+const PokemonDetailPage = ({ index }) => {
 	const { name } = useParams()
-	const pokemon = pokemonList.find((item) => item.name === name)
+	const detailsByName = usePokemonStore((state) => state.detailsByName)
+	const ensureDetails = usePokemonStore((state) => state.ensureDetails)
+	const pokemon = detailsByName[name]
+	// index-nya udah kepastian ke-load duluan sama App sebelum route ini
+	// dirender, jadi kalau namanya gak ada di situ, berarti emang gak
+	// ada Pokemon-nya (bukan lagi loading)
+	const existsInIndex = index.some((item) => item.name === name)
 	const addFavorite = useFavoriteStore((state) => state.addFavorite)
 	const removeFavorite = useFavoriteStore((state) => state.removeFavorite)
 	const isFavorite = useFavoriteStore((state) =>
@@ -29,6 +36,10 @@ const PokemonDetailPage = ({ pokemonList }) => {
 	)
 	const [species, setSpecies] = useState(null)
 	const [evolutionStages, setEvolutionStages] = useState([])
+
+	useEffect(() => {
+		ensureDetails([name])
+	}, [name, ensureDetails])
 
 	useEffect(() => {
 		if (!pokemon) return
@@ -59,7 +70,13 @@ const PokemonDetailPage = ({ pokemonList }) => {
 		}
 	}, [pokemon])
 
-	if (!pokemon) return <p className="status-message">Pokemon not found.</p>
+	if (!pokemon) {
+		return (
+			<p className="status-message">
+				{existsInIndex ? "Loading…" : "Pokemon not found."}
+			</p>
+		)
+	}
 
 	const primaryColor = getTypeColor(pokemon.types?.[0]?.type?.name)
 
@@ -68,7 +85,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 		(f) => f.language.name === "en",
 	)
 	const evolvesFromName = species?.evolves_from_species?.name
-	const evolvesFromMatch = pokemonList.find(
+	const evolvesFromMatch = index.find(
 		(item) => item.name === evolvesFromName,
 	)
 	const catchDifficulty = getCatchDifficulty(species?.capture_rate)
@@ -332,7 +349,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 									)}
 									<div className="evolution-stage">
 										{stage.map((member) => {
-											const matched = pokemonList.find(
+											const matched = index.find(
 												(item) => item.name === member.name,
 											)
 
