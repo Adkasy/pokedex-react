@@ -1,6 +1,7 @@
 import { CgPokemon } from "react-icons/cg"
 import { IoMdMan } from "react-icons/io"
 import { MdCompareArrows } from "react-icons/md"
+import { getTypeColor } from "../constants/typeColors"
 
 // Path-path ini diambil LANGSUNG dari file Figma "Pokédex" punya user
 // (halaman 💠 Components > Icon) — bukan gambar tangan/library generik
@@ -99,8 +100,13 @@ const TypeIcon = ({ type, size = 12 }) => {
 // butuh nudge dikit lewat CSS (.type-badge-label) — tanpa itu teksnya
 // keliatan ~0.5px lebih naik dari icon-nya (font metrics, bukan bug
 // CSS), meski line-height udah di-set 1.
+// warna badge-nya SOLID per-type (langsung dari palette Figma), bukan
+// overlay hitam transparan kayak sebelumnya — awalnya sengaja translucent
+// biar "nyatu" sama warna card di belakangnya, tapi user liat langsung
+// referensi Figma-nya & warna-warni solid gitu ternyata malah bagus,
+// jadi disamain aja ke situ
 export const TypeBadge = ({ type, size = 12 }) => (
-	<span className="type-badge">
+	<span className="type-badge" style={{ backgroundColor: getTypeColor(type) }}>
 		<TypeIcon type={type} size={size} />
 		<span className="type-badge-label">{type}</span>
 	</span>

@@ -2330,18 +2330,24 @@
 	padding: 3px 8px;
 }
 
-/* rx/padding-nya ngikutin badge component asli di Figma (bukan pill
-   bulet penuh kayak sebelumnya) — cuma dibulatin dikit di sudutnya,
-   padding kiri-kanannya juga lebih rapet ngikutin proporsi referensi
-   (badge 25px tinggi di Figma, sudut rx=3, padding kiri-kanan ~5-6px) */
+/* Styling-nya ngikutin badge component asli di Figma abis-abisan: rx
+   dikit doang (bukan pill bulet penuh), padding kiri-kanan rapet,
+   font tebal. Background-nya SOLID per-type (bukan overlay hitam
+   transparan lagi) — di-set inline di TypeBadge (TypeIcon.jsx) via
+   getTypeColor(type), jadi gak ada default color di sini. */
 .type-badge {
 	display: inline-flex;
 	align-items: center;
 	gap: 5px;
 	color: #fff;
-	background: rgba(0, 0, 0, 0.22);
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: 700;
+	/* shadow tipis biar chip-nya tetep keliatan "ke-angkat" dari
+	   background di belakangnya — penting khususnya di detail page,
+	   soalnya header-nya sendiri background-nya = warna type utama, jadi
+	   badge type PERTAMA bisa jadi warnanya SAMA PERSIS kaya header
+	   (nyaris nyatu/ilang) tanpa shadow ini buat mbedain */
+	box-shadow: 0 2px 5px -1px rgba(0, 0, 0, 0.35);
 	/* tanpa ini, line-height default browser (~1.4x font-size) bikin teksnya
 	   punya spasi ekstra di atas/bawah baseline-nya sendiri — align-items:
 	   center doang jadinya nyeimbangin box-nya, bukan bikin ikon & teks

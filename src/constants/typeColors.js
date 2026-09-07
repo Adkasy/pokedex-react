@@ -10,7 +10,7 @@ export const TYPE_COLORS = {
 	ground: "#DD7748",
 	flying: "#748FC9",
 	psychic: "#EA5D60",
-	bug: "#8CB230",
+	bug: "#8CB330",
 	rock: "#BAAB82",
 	ghost: "#556AAE",
 	dragon: "#0F6AC0",
