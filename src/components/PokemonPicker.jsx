@@ -13,6 +13,7 @@ const PokemonPicker = ({
 	const [activeIndex, setActiveIndex] = useState(-1)
 	const blurTimeout = useRef(null)
 	const optionRefs = useRef([])
+	const inputRef = useRef(null)
 
 	const selected = pokemonList.find((p) => p.name === value)
 	const displayValue = isOpen
@@ -53,6 +54,9 @@ const PokemonPicker = ({
 	const handleSelect = (name) => {
 		onChange(name)
 		closeMenu()
+		// abis milih, lepas fokus dari input — biar gak "nyangkut" nunggu
+		// user klik ke tempat lain dulu sebelum bisa buka picker lain
+		inputRef.current?.blur()
 	}
 
 	const handleChange = (e) => {
@@ -86,6 +90,7 @@ const PokemonPicker = ({
 	return (
 		<div className="pokemon-picker">
 			<input
+				ref={inputRef}
 				className="pokemon-picker-input"
 				type="text"
 				value={displayValue}

@@ -10,7 +10,7 @@ import NotFoundPage from "./pages/NotFoundPage"
 import TopBar from "./components/TopBar"
 import SkeletonCard from "./components/SkeletonCard"
 
-const SKELETON_COUNT = 8
+const SKELETON_COUNT = 9
 
 const App = () => {
 	const [pokemonList, setPokemonList] = useState([])

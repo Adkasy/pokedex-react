@@ -1,8 +1,10 @@
 import { Link, useSearchParams } from "react-router"
+import { MdShuffle } from "react-icons/md"
 import { getTypeColor } from "../constants/typeColors"
 import { STAT_LABELS } from "../constants/statLabels"
 import TypeIcon, { CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
+import BattleArena from "../components/BattleArena"
 
 const STAT_BAR_MAX = 200
 
@@ -89,6 +91,21 @@ const ComparePage = ({ pokemonList }) => {
 		})
 	}
 
+	const handleSurprise = () => {
+		if (pokemonList.length < 2) return
+
+		const i = Math.floor(Math.random() * pokemonList.length)
+		let j = Math.floor(Math.random() * pokemonList.length)
+		while (j === i) j = Math.floor(Math.random() * pokemonList.length)
+
+		setSearchParams((prev) => {
+			const next = new URLSearchParams(prev)
+			next.set("a", pokemonList[i].name)
+			next.set("b", pokemonList[j].name)
+			return next
+		})
+	}
+
 	const handleSwap = () => {
 		setSearchParams((prev) => {
 			const next = new URLSearchParams(prev)
@@ -130,6 +147,15 @@ const ComparePage = ({ pokemonList }) => {
 				/>
 			</div>
 
+			<button
+				className="btn compare-surprise-btn"
+				onClick={handleSurprise}
+				title="Random matchup"
+			>
+				<MdShuffle size={14} />
+				Random Matchup
+			</button>
+
 			{!pokemonA || !pokemonB ? (
 				<p className="status-message">Pick two pokemon to compare.</p>
 			) : (
@@ -169,6 +195,12 @@ const ComparePage = ({ pokemonList }) => {
 							isTotal
 						/>
 					</div>
+
+					<BattleArena
+						key={`${pokemonA.name}-${pokemonB.name}`}
+						pokemonA={pokemonA}
+						pokemonB={pokemonB}
+					/>
 				</div>
 			)}
 		</div>
