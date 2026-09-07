@@ -1,7 +1,6 @@
 import { CgPokemon } from "react-icons/cg"
 import { IoMdMan } from "react-icons/io"
 import { MdCompareArrows } from "react-icons/md"
-import { GiWaterDrop, GiMetalBar } from "react-icons/gi"
 
 // Path-path ini diambil LANGSUNG dari file Figma "Pokédex" punya user
 // (halaman 💠 Components > Icon) — bukan gambar tangan/library generik
@@ -66,42 +65,31 @@ const FIGMA_PATHS = {
 	fairy: [
 		"M5.01609 19.8238L9.02608 18.6611L12.4896 24.9938C12.4941 25.0021 12.5059 25.0021 12.5104 24.9938L15.9739 18.6611L19.9839 19.8238C19.9929 19.8264 20.0013 19.818 19.9986 19.8091L18.8356 15.8784L24.9938 12.5104C25.0021 12.5059 25.0021 12.4941 24.9939 12.4896L18.7849 9.09381L19.9986 4.99162C20.0013 4.98264 19.9929 4.97429 19.9839 4.97687L15.8798 6.1669L12.5104 0.00616173C12.5059 -0.00205376 12.4941 -0.00205399 12.4896 0.00616153L9.12018 6.1669L5.01609 4.97687C5.0071 4.97429 4.99875 4.98264 5.00144 4.99162L6.2151 9.09381L0.00616364 12.4896C-0.00205186 12.4941 -0.00205208 12.5059 0.00616344 12.5104L6.16432 15.8784L5.00144 19.8091C4.99875 19.818 5.0071 19.8264 5.01609 19.8238ZM8.12781 12.5432L10.9687 14.0969L12.5224 16.9377C12.5269 16.946 12.5387 16.946 12.5432 16.9377L14.0969 14.0969L16.9377 12.5432C16.9459 12.5387 16.9459 12.5269 16.9377 12.5224L14.0969 10.9687L12.5432 8.12786C12.5387 8.11961 12.5269 8.11961 12.5224 8.12786L10.9687 10.9687L8.12781 12.5224C8.11961 12.5269 8.11961 12.5387 8.12781 12.5432Z",
 	],
-}
-
-// Water & Steel belum sempet ke-download dari Figma-nya — session ini
-// kena rate limit API Figma (Starter plan) di tengah proses ambil 18
-// icon-nya. Sementara masih fallback ke react-icons/gi (translateY
-// buat balance optical center-nya, sama kayak yang laen sebelum ganti
-// ke Figma) — gampang di-swap begitu limit-nya reset/plan-nya di-upgrade.
-const FALLBACK_ICON_COMPONENTS = {
-	water: GiWaterDrop,
-	steel: GiMetalBar,
-}
-const FALLBACK_OPTICAL_OFFSETS = {
-	water: 0.1,
+	// Water & Steel gak sempet ke-download lewat API Figma (kena rate
+	// limit di tengah jalan), tapi user export manual dari file Figma-nya
+	// (frame "Icon" yang sama, digabung 1 SVG) — path aslinya numpuk di
+	// kanvas gabungan 450×380, jadi koordinatnya digeser (translate
+	// murni, gak ngerubah bentuk sama sekali) biar konsisten sejajar
+	// sama 16 lainnya yang udah di viewBox 0 0 25 25.
+	steel: [
+		"M0.003 12.515C0 12.51 0 12.503 0.003 12.497L6.29 1.756C6.293 1.751 6.299 1.747 6.306 1.747H18.765C18.772 1.747 18.778 1.751 18.781 1.756L24.999 12.497C25.002 12.503 25.002 12.51 24.999 12.515L18.781 23.244C18.778 23.249 18.772 23.253 18.765 23.253H6.306C6.299 23.253 6.293 23.249 6.29 23.244L0.003 12.515ZM18.293 12.5C18.293 15.698 15.701 18.29 12.503 18.29C9.305 18.29 6.713 15.698 6.713 12.5C6.713 9.302 9.305 6.71 12.503 6.71C15.701 6.71 18.293 9.302 18.293 12.5Z",
+	],
+	water: [
+		"M20.61 16.924C20.61 21.387 16.979 25.004 12.5 25.004C8.021 25.004 4.39 21.387 4.39 16.924C4.39 12.585 12.061 0.666 12.482 0.015C12.492 0 12.508 0 12.518 0.015C12.939 0.666 20.61 12.585 20.61 16.924ZM11.148 22.414C7.033 21.513 7.737 16.954 7.737 16.954C7.737 16.954 8.861 19.706 11.588 20.598C14.315 21.489 17.61 20.182 17.61 20.182C17.61 20.182 15.263 23.314 11.148 22.414Z",
+	],
 }
 
 const TypeIcon = ({ type, size = 12 }) => {
 	const paths = FIGMA_PATHS[type]
-	if (paths) {
-		return (
-			<svg width={size} height={size} viewBox="0 0 25 25" fill="none" aria-hidden="true">
-				{paths.map((d, i) => (
-					<path key={i} fillRule="evenodd" clipRule="evenodd" d={d} fill="currentColor" />
-				))}
-			</svg>
-		)
-	}
+	if (!paths) return null
 
-	const Icon = FALLBACK_ICON_COMPONENTS[type]
-	if (!Icon) return null
-
-	const offsetRatio = FALLBACK_OPTICAL_OFFSETS[type] ?? 0
-	const style = offsetRatio
-		? { transform: `translateY(${-offsetRatio * size}px)` }
-		: undefined
-
-	return <Icon size={size} style={style} aria-hidden="true" />
+	return (
+		<svg width={size} height={size} viewBox="0 0 25 25" fill="none" aria-hidden="true">
+			{paths.map((d, i) => (
+				<path key={i} fillRule="evenodd" clipRule="evenodd" d={d} fill="currentColor" />
+			))}
+		</svg>
+	)
 }
 
 // icon + nama type dalem 1 pill — dipake di mana-mana (card, compare,
