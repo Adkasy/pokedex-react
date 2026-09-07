@@ -87,20 +87,21 @@ const HitSparks = () => {
 }
 
 // 1 blade doang (balik lagi ke single shape, bukan 3 lapis kaya
-// sebelumnya) — runcing di pojok kiri-BAWAH, sapuannya lurus/mulus ke
-// atas, ujungnya kanan-ATAS pecah jadi 2 "cabang" kecil (mirip ujung
+// sebelumnya) — runcing di pojok kiri-BAWAH, sapuannya LEBIH melengkung
+// (2 sisi edge-nya sama2 bow ke kiri/atas, bukan diagonal lurus kaya
+// sebelumnya) & LEBIH tipis (gap antara sisi luar/dalemnya dikecilin),
+// ujungnya kanan-ATAS pecah jadi 2 "cabang" kecil (mirip ujung
 // bulu/cakar yang keliatan sompel dikit di referensi, bukan bundar
 // polos) — ditutup sama HitSparks biar ada kesan "percikan" pas kena
 const SlashFX = () => (
 	<svg className="battle-hit-slash" viewBox="0 0 100 100" aria-hidden="true">
 		<path
 			className="battle-hit-slash-claw"
-			d="M18,90
-				C40,68 58,50 74,28
-				C78,22 82,18 86,14
-				L80,20 L78,10 L74,26
-				C62,42 48,44 40,54
-				C32,64 24,76 18,90 Z"
+			d="M20,89
+				C16,58 28,28 62,14
+				C68,11 74,9 80,7
+				L75,14 L70,6 L66,16
+				C50,26 30,44 20,89 Z"
 		/>
 		<HitSparks />
 	</svg>
@@ -440,6 +441,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 							className={`battle-fighter side-a${activeSide === "a" ? " is-acting" : ""}${
 								hitSide === "a" ? " is-hit" : ""
 							}${battle.winner === "b" && isRevealed ? " is-fainted" : ""}`}
+							style={{ "--fighter-color": colorA }}
 						>
 							<PokemonImage
 								className="battle-fighter-image"
@@ -456,6 +458,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 							className={`battle-fighter side-b${activeSide === "b" ? " is-acting" : ""}${
 								hitSide === "b" ? " is-hit" : ""
 							}${battle.winner === "a" && isRevealed ? " is-fainted" : ""}`}
+							style={{ "--fighter-color": colorB }}
 						>
 							<PokemonImage
 								className="battle-fighter-image"

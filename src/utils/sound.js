@@ -61,34 +61,113 @@ export const playBattleStartSound = () => {
 	}
 }
 
-// Fanfare kemenangan — arpeggio 4 nada naik (C-E-G-C, major triad),
-// tiap nada nyusul dikit-dikit terus nada terakhir dibiarin nge-ring
-// lebih lama biar berasa "ini menang beneran", bukan cuma "pop" biasa.
+// Fanfare kemenangan — versi lebih megah/futuristik, 4 lapis yang
+// numpuk jadi 1: (1) riser noise band-pass yang cutoff-nya nyapu naik
+// cepet (kesan "membangun" sebelum meledak), (2) sub impact pas
+// riser-nya nyampe puncak (bobot/dampaknya), (3) chord synth sawtooth
+// detuned + lowpass sweep (bukan triangle polos lagi — ini yang bikin
+// kedengeran "synth futuristik", bukan kotak musik), (4) shimmer nada
+// tinggi nyebar di atasnya buat efek "sparkle". Modern synth-y, bukan
+// fanfare akustik biasa.
 export const playVictorySound = () => {
 	try {
 		const ctx = getAudioContext()
 		const now = ctx.currentTime
-		const notes = [523.25, 659.25, 783.99, 1046.5] // C5, E5, G5, C6
 
-		notes.forEach((freq, i) => {
-			const start = now + i * 0.11
-			const duration = i === notes.length - 1 ? 0.5 : 0.16
+		// (1) riser — noise band-pass, cutoff-nya naik cepet
+		const riserBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.34, ctx.sampleRate)
+		const riserData = riserBuffer.getChannelData(0)
+		for (let i = 0; i < riserData.length; i++) {
+			riserData[i] = Math.random() * 2 - 1
+		}
+		const riser = ctx.createBufferSource()
+		riser.buffer = riserBuffer
+		const riserFilter = ctx.createBiquadFilter()
+		riserFilter.type = "bandpass"
+		riserFilter.Q.value = 0.7
+		riserFilter.frequency.setValueAtTime(300, now)
+		riserFilter.frequency.exponentialRampToValueAtTime(4200, now + 0.32)
+		const riserGain = ctx.createGain()
+		riserGain.gain.setValueAtTime(0.001, now)
+		riserGain.gain.exponentialRampToValueAtTime(0.22, now + 0.28)
+		riserGain.gain.exponentialRampToValueAtTime(0.001, now + 0.36)
+		riser.connect(riserFilter)
+		riserFilter.connect(riserGain)
+		riserGain.connect(ctx.destination)
+		riser.start(now)
 
+		const hitStart = now + 0.3
+
+		// (2) sub impact — nge-drop pas riser-nya nyampe puncak
+		const sub = ctx.createOscillator()
+		const subGain = ctx.createGain()
+		sub.type = "sine"
+		sub.frequency.setValueAtTime(95, hitStart)
+		sub.frequency.exponentialRampToValueAtTime(40, hitStart + 0.4)
+		subGain.gain.setValueAtTime(0.4, hitStart)
+		subGain.gain.exponentialRampToValueAtTime(0.001, hitStart + 0.5)
+		sub.connect(subGain)
+		subGain.connect(ctx.destination)
+		sub.start(hitStart)
+		sub.stop(hitStart + 0.5)
+
+		// (3) chord synth — sawtooth 2x detuned tipis (biar "lebar") lewat
+		// lowpass yang cutoff-nya nyapu naik ("synth sweep" khas
+		// futuristik), chord-nya lebih gede (5 nada) daripada arpeggio
+		// simpel sebelumnya
+		const chordFreqs = [523.25, 659.25, 783.99, 987.77, 1046.5] // C5 E5 G5 B5 C6
+		chordFreqs.forEach((freq, i) => {
+			const start = hitStart + i * 0.035
+
+			const osc1 = ctx.createOscillator()
+			const osc2 = ctx.createOscillator()
+			osc1.type = "sawtooth"
+			osc2.type = "sawtooth"
+			osc1.frequency.setValueAtTime(freq, start)
+			osc2.frequency.setValueAtTime(freq * 1.006, start)
+
+			const filter = ctx.createBiquadFilter()
+			filter.type = "lowpass"
+			filter.Q.value = 0.8
+			filter.frequency.setValueAtTime(400, start)
+			filter.frequency.exponentialRampToValueAtTime(5200, start + 0.15)
+
+			const gain = ctx.createGain()
+			gain.gain.setValueAtTime(0, start)
+			gain.gain.linearRampToValueAtTime(0.1, start + 0.03)
+			gain.gain.exponentialRampToValueAtTime(0.001, start + 0.9)
+
+			osc1.connect(filter)
+			osc2.connect(filter)
+			filter.connect(gain)
+			gain.connect(ctx.destination)
+
+			osc1.start(start)
+			osc2.start(start)
+			osc1.stop(start + 0.9)
+			osc2.stop(start + 0.9)
+		})
+
+		// (4) shimmer — beberapa nada tinggi pendek, nyebar dikit2 di atas
+		// chord-nya buat efek "sparkle"
+		const shimmerFreqs = [2093, 2637, 3136, 2794]
+		shimmerFreqs.forEach((freq, i) => {
+			const start = hitStart + 0.1 + i * 0.09
 			const osc = ctx.createOscillator()
 			const gain = ctx.createGain()
 
-			osc.type = "triangle"
+			osc.type = "sine"
 			osc.frequency.setValueAtTime(freq, start)
 
 			gain.gain.setValueAtTime(0, start)
-			gain.gain.linearRampToValueAtTime(0.18, start + 0.02)
-			gain.gain.exponentialRampToValueAtTime(0.001, start + duration)
+			gain.gain.linearRampToValueAtTime(0.08, start + 0.01)
+			gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35)
 
 			osc.connect(gain)
 			gain.connect(ctx.destination)
 
 			osc.start(start)
-			osc.stop(start + duration)
+			osc.stop(start + 0.35)
 		})
 	} catch {
 		// silent
