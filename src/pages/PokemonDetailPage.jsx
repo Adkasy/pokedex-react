@@ -127,10 +127,6 @@ const PokemonDetailPage = ({ index }) => {
 				</div>
 
 				<div className="detail-header-top">
-					<Link className="detail-back" to="/" aria-label="Back to grid">
-						←
-					</Link>
-
 					<button
 						className={`card-favorite-btn${isFavorite ? " is-favorite" : ""}`}
 						onClick={() => {
@@ -216,7 +212,7 @@ const PokemonDetailPage = ({ index }) => {
 					className="detail-image"
 					src={pokemon.sprites.other["official-artwork"].front_default}
 					alt={pokemon.name}
-					iconSize={220}
+					iconSize={130}
 				/>
 			</div>
 
@@ -339,7 +335,7 @@ const PokemonDetailPage = ({ index }) => {
 										className="size-comparison-image"
 										src={pokemon.image}
 										alt={pokemon.name}
-										iconSize={Math.max(pokemonFigurePx * 0.9, 26)}
+										iconSize={Math.max(pokemonFigurePx * 0.65, 22)}
 									/>
 								</div>
 							</div>
@@ -406,7 +402,7 @@ const PokemonDetailPage = ({ index }) => {
 															className="evolution-node-image"
 															src={matched.image}
 															alt={member.name}
-															iconSize={36}
+															iconSize={26}
 														/>
 													) : (
 														<span className="evolution-node-fallback">

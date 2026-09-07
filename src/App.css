@@ -1594,22 +1594,13 @@
 
 /* fallback ikon pokeball buat Pokemon yang artwork resminya gak ada
    di PokeAPI (null / broken link) — dipake bareng class ukuran/posisi
-   gambar aslinya (liat PokemonImage.jsx). Gedein + dorong ke pojok
-   kanan-bawah + miringin + kepotong dikit (overflow hidden), biar
-   senada sama gaya ornamen pokeball raksasa yang udah ada di header
-   detail page — kerasa disengaja/jadi bagian gaya UI, bukan cuma
-   "ga ada gambar" polos ditengah.  */
+   gambar aslinya (liat PokemonImage.jsx), jadi cukup nambahin centering
+   + warna di sini */
 .pokemon-image-fallback {
 	display: flex;
-	align-items: flex-end;
-	justify-content: flex-end;
-	overflow: hidden;
-	color: rgba(255, 255, 255, 0.45);
-}
-
-.pokemon-image-fallback svg {
-	flex-shrink: 0;
-	transform: rotate(22deg) translate(16%, 20%);
+	align-items: center;
+	justify-content: center;
+	color: rgba(255, 255, 255, 0.4);
 }
 
 .pokemon-card-image {
@@ -2158,20 +2149,7 @@
 	width: 100%;
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-}
-
-.detail-back {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 36px;
-	height: 36px;
-	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.22);
-	color: #fff;
-	text-decoration: none;
-	font-size: 18px;
+	justify-content: flex-end;
 }
 
 .detail-nav {

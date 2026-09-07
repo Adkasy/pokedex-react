@@ -102,6 +102,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 					max={totalPages}
 					value={jumpValue}
 					onChange={(e) => setJumpValue(e.target.value)}
+					onFocus={() => setJumpValue("")}
 				/>
 				<span className="pagination-jump-total">/ {totalPages}</span>
 				<button className="btn pagination-jump-btn" type="submit">

@@ -327,7 +327,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								className="battle-fighter-image"
 								src={pokemonA.image}
 								alt={pokemonA.name}
-								iconSize={90}
+								iconSize={70}
 							/>
 						</div>
 
@@ -342,7 +342,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								className="battle-fighter-image"
 								src={pokemonB.image}
 								alt={pokemonB.name}
-								iconSize={90}
+								iconSize={70}
 							/>
 						</div>
 					</div>
@@ -368,7 +368,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 										<PokemonImage
 											className="battle-chat-avatar"
 											src={entry.side === "a" ? pokemonA.image : pokemonB.image}
-											iconSize={60}
+											iconSize={50}
 										/>
 										<div
 											className={`battle-chat-bubble${entry.isCrit ? " is-crit" : ""}`}
@@ -397,7 +397,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 									className="battle-winner-image"
 									src={winnerPokemon.image}
 									alt={winnerPokemon.name}
-									iconSize={150}
+									iconSize={130}
 								/>
 								<button
 									className="battle-winner-ribbon"
