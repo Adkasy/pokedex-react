@@ -86,28 +86,21 @@ const HitSparks = () => {
 	)
 }
 
-// blade "cakar" — runcing di pojok kiri-BAWAH, ngelebar jadi ujung
-// tumpul/bundar di kanan-ATAS (arahnya kebalik dari sebelumnya: dari
-// kiri-bawah nebas ke kanan-atas). 3 path sama bentuknya ditumpuk
-// geser dikit2 (2 aksen lebih tipis/transparan + 1 utama) biar kaya
-// bekas CAKARAN (3 goresan sejajar), bukan cuma 1 bidang polos —
-// itu yang bikin "bertekstur". Koordinatnya udah di-bake per path
-// (bukan pake CSS transform buat geno) soalnya animasi CSS transform
-// bakal nimpa attribute transform SVG-nya kalau digabung, terus
-// ditutup sama HitSparks biar ada kesan "percikan" pas kena
+// 1 blade doang (balik lagi ke single shape, bukan 3 lapis kaya
+// sebelumnya) — runcing di pojok kiri-BAWAH, sapuannya lurus/mulus ke
+// atas, ujungnya kanan-ATAS pecah jadi 2 "cabang" kecil (mirip ujung
+// bulu/cakar yang keliatan sompel dikit di referensi, bukan bundar
+// polos) — ditutup sama HitSparks biar ada kesan "percikan" pas kena
 const SlashFX = () => (
 	<svg className="battle-hit-slash" viewBox="0 0 100 100" aria-hidden="true">
 		<path
-			className="battle-hit-slash-accent"
-			d="M10,96 Q55,69 78.7,34.1 A9,9 0 0,1 65.3,21.9 Q33,48 10,96 Z"
-		/>
-		<path
 			className="battle-hit-slash-claw"
-			d="M20,88 Q65,61 88.7,26.1 A9,9 0 0,1 75.3,13.9 Q43,40 20,88 Z"
-		/>
-		<path
-			className="battle-hit-slash-accent is-second"
-			d="M30,80 Q75,53 98.7,18.1 A9,9 0 0,1 85.3,5.9 Q53,32 30,80 Z"
+			d="M18,90
+				C40,68 58,50 74,28
+				C78,22 82,18 86,14
+				L80,20 L78,10 L74,26
+				C62,42 48,44 40,54
+				C32,64 24,76 18,90 Z"
 		/>
 		<HitSparks />
 	</svg>

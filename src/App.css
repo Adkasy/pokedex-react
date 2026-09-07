@@ -1118,11 +1118,17 @@
 	animation-name: battle-lunge-b;
 }
 
-/* fighter yang KENA hit kedip putih sekilas — misah dari .is-acting
-   (nempel di penyerang), ini nempel di yang diserang biar dampak
-   pukulannya kerasa dari 2 sisi, bukan cuma dari yang mukul doang */
+/* fighter yang KENA hit dapet 3 reaksi bareng: kedip putih (di
+   .battle-fighter-image-nya), geter/jitter (di .battle-fighter-nya
+   sendiri — misah elemen jadi gak numpuk sama filter blink-nya), plus
+   efek tebasan+percikan (SlashFX, di JSX) — biar dampaknya berasa dari
+   segala sisi, bukan cuma kedip doang */
 .battle-fighter.is-hit .battle-fighter-image {
 	animation: battle-hit-blink 0.35s ease;
+}
+
+.battle-fighter.is-hit {
+	animation: battle-fighter-hit-shake 0.3s ease;
 }
 
 @keyframes battle-hit-blink {
@@ -1137,13 +1143,40 @@
 	}
 }
 
-/* efek "cakaran" — 3 blade sejajar (1 utama + 2 aksen tipis/transparan
-   digeser dikit) numpuk di atas flash putih-nya .battle-fighter-image,
-   arahnya runcing di kiri-BAWAH ngelebar jadi tumpul/bundar di
-   kanan-ATAS (nebas dari bawah ke atas). transform-box:fill-box bikin
-   transform-origin ngikutin bounding box masing2 path sendiri, jadi
-   1 nilai origin ("titik tajemnya" ada di pojok kiri-bawah bbox tiap
-   shape) valid buat ketiga-tiganya meskipun posisinya digeser beda2 */
+@keyframes battle-fighter-hit-shake {
+
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+
+	15% {
+		transform: translateX(-4px);
+	}
+
+	30% {
+		transform: translateX(3px);
+	}
+
+	45% {
+		transform: translateX(-3px);
+	}
+
+	60% {
+		transform: translateX(2px);
+	}
+
+	75% {
+		transform: translateX(-1px);
+	}
+}
+
+/* efek tebasan — balik jadi 1 blade doang (versi 3-lapis kemarin
+   kelihatan jelek), runcing di pojok kiri-BAWAH nyapu ke kanan-ATAS,
+   ujungnya pecah jadi 2 cabang kecil biar gak polos-polos amat.
+   transform-box:fill-box + origin di pojok tajemnya bikin animasi
+   nge-scale "keluar" dari titik itu — cepet (0.22s) biar berasa
+   "menjalar" dari kiri-bawah ke kanan-atas, bukan pop lambat */
 .battle-hit-slash {
 	position: absolute;
 	inset: -20%;
@@ -1152,42 +1185,27 @@
 	pointer-events: none;
 }
 
-.battle-hit-slash-claw,
-.battle-hit-slash-accent {
-	transform-box: fill-box;
-	transform-origin: 0% 100%;
-	animation: battle-hit-claw-draw 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
 .battle-hit-slash-claw {
 	fill: #fff;
 	filter:
 		drop-shadow(0 0 6px rgba(150, 220, 255, 0.85))
 		drop-shadow(0 0 12px rgba(255, 255, 255, 0.5));
-}
-
-.battle-hit-slash-accent {
-	fill: rgba(255, 255, 255, 0.5);
-	filter: drop-shadow(0 0 4px rgba(150, 220, 255, 0.6));
-	animation-delay: 0.02s;
-}
-
-.battle-hit-slash-accent.is-second {
-	fill: rgba(255, 255, 255, 0.35);
-	animation-delay: 0.05s;
+	transform-box: fill-box;
+	transform-origin: 0% 100%;
+	animation: battle-hit-claw-draw 0.22s cubic-bezier(0.15, 0.85, 0.25, 1) forwards;
 }
 
 @keyframes battle-hit-claw-draw {
 	0% {
-		transform: scale(0.2);
+		transform: scale(0.15);
 		opacity: 0;
 	}
 
-	14% {
+	20% {
 		opacity: 1;
 	}
 
-	60% {
+	65% {
 		transform: scale(1);
 		opacity: 1;
 	}
@@ -1208,7 +1226,7 @@
 	filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9));
 	transform-origin: 82% 20%;
 	opacity: 0;
-	animation: battle-hit-spark-fly 0.3s ease-out forwards;
+	animation: battle-hit-spark-fly 0.24s ease-out forwards;
 }
 
 @keyframes battle-hit-spark-fly {
