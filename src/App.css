@@ -2229,7 +2229,7 @@
 }
 
 .detail-header-top .card-play-btn.is-playing {
-	width: 33%;
+	width: 50%;
 	background: rgba(0, 0, 0, 0.3);
 }
 
@@ -2260,7 +2260,13 @@
 .waveform {
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	/* dulu "center" — begitu bar-nya dikasih max-width (biar tetep tipis),
+	   sisa ruang yang gak kepake bar-bar itu numpuk di kiri-kanan cluster
+	   (soalnya gak ada lagi flex item yang bisa "nyerap" growth-nya),
+	   jadinya bar-nya keliatan cuma numpuk di tengah doang, gak
+	   ujung-ke-ujung kaya di home. "space-between" nyebarin sisa ruang
+	   itu JADI GAP ANTAR bar, bukan padding di kiri-kanan */
+	justify-content: space-between;
 	gap: 2px;
 	width: 100%;
 }
