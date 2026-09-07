@@ -3,6 +3,8 @@ import { capitalize } from "./text"
 
 const MAX_ROUNDS = 30
 const DAMAGE_CONSTANT = 6
+const CRIT_CHANCE = 0.06
+const CRIT_MULTIPLIER = 1.5
 
 const getStat = (pokemon, statName) =>
 	pokemon.stats.find((s) => s.stat.name === statName)?.base_stat ?? 0
@@ -15,15 +17,21 @@ const rollDamage = (attacker, defender) => {
 
 	const typeMult = getTypeMultiplier(attackType, defenderTypes)
 	const randomFactor = 0.75 + Math.random() * 0.25
+	const isCrit = Math.random() < CRIT_CHANCE
+	const critMult = isCrit ? CRIT_MULTIPLIER : 1
 
 	const damage = Math.max(
 		1,
 		Math.round(
-			(attackStat / defenseStat) * DAMAGE_CONSTANT * typeMult * randomFactor,
+			(attackStat / defenseStat) *
+				DAMAGE_CONSTANT *
+				typeMult *
+				randomFactor *
+				critMult,
 		),
 	)
 
-	return { damage, typeMult }
+	return { damage, typeMult, isCrit }
 }
 
 const effectivenessNote = (typeMult) => {
@@ -67,16 +75,18 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 
 			const attacker = pokemon[side]
 			const defender = pokemon[other]
-			const { damage, typeMult } = rollDamage(attacker, defender)
+			const { damage, typeMult, isCrit } = rollDamage(attacker, defender)
 
 			hp[other] = Math.max(0, hp[other] - damage)
 
 			log.push({
 				type: "attack",
 				side,
+				isCrit,
+				isSuperEffective: typeMult > 1,
 				text: `${capitalize(attacker.name)} attacks! ${capitalize(
 					defender.name,
-				)} takes ${damage} damage.${effectivenessNote(typeMult)}`,
+				)} takes ${damage} damage.${isCrit ? " Critical hit!" : ""}${effectivenessNote(typeMult)}`,
 				hpA: hp.a,
 				hpB: hp.b,
 			})

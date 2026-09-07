@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from "react-router"
+import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi"
 import { getTypeColor } from "../constants/typeColors"
 import { STAT_LABELS } from "../constants/statLabels"
 import TypeIcon, { CompareIcon } from "../components/TypeIcon"
@@ -90,6 +91,21 @@ const ComparePage = ({ pokemonList }) => {
 		})
 	}
 
+	const handleSurprise = () => {
+		if (pokemonList.length < 2) return
+
+		const i = Math.floor(Math.random() * pokemonList.length)
+		let j = Math.floor(Math.random() * pokemonList.length)
+		while (j === i) j = Math.floor(Math.random() * pokemonList.length)
+
+		setSearchParams((prev) => {
+			const next = new URLSearchParams(prev)
+			next.set("a", pokemonList[i].name)
+			next.set("b", pokemonList[j].name)
+			return next
+		})
+	}
+
 	const handleSwap = () => {
 		setSearchParams((prev) => {
 			const next = new URLSearchParams(prev)
@@ -130,6 +146,15 @@ const ComparePage = ({ pokemonList }) => {
 					onChange={(name) => handleSelect("b", name)}
 				/>
 			</div>
+
+			<button
+				className="btn compare-surprise-btn"
+				onClick={handleSurprise}
+				title="Surprise me!"
+			>
+				<GiPerspectiveDiceSixFacesRandom size={18} />
+				Surprise Me
+			</button>
 
 			{!pokemonA || !pokemonB ? (
 				<p className="status-message">Pick two pokemon to compare.</p>

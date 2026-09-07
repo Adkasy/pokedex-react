@@ -154,6 +154,9 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 	const activeSide =
 		latest?.type === "attack" || latest?.type === "faint" ? latest.side : null
+	// kena buat 1 tick reveal doang (700ms) — pas berikutnya latest udah
+	// pindah ke entry lain jadi shake/flash-nya otomatis berhenti sendiri
+	const isSuperHit = latest?.type === "attack" && latest.isSuperEffective
 	const isRevealed = battle && revealCount >= battle.log.length
 	const winnerPokemon =
 		isRevealed && battle.winner === "a"
@@ -201,7 +204,12 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 			)}
 
 			{battle && (
-				<div className="battle-arena" ref={arenaRef}>
+				<div
+					className={`battle-arena${isSuperHit ? " is-shaking" : ""}`}
+					ref={arenaRef}
+				>
+					{isSuperHit && <div key={revealCount} className="battle-hit-flash" />}
+
 					<div className="battle-info-wrap" ref={infoWrapRef}>
 						<button
 							className="battle-info-btn"
@@ -321,11 +329,14 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 											alt=""
 										/>
 										<div
-											className="battle-chat-bubble"
+											className={`battle-chat-bubble${entry.isCrit ? " is-crit" : ""}`}
 											style={{
 												backgroundColor: entry.side === "a" ? colorA : colorB,
 											}}
 										>
+											{entry.isCrit && (
+												<span className="battle-crit-badge">💥 CRIT</span>
+											)}
 											{entry.text}
 										</div>
 									</li>

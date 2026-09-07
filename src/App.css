@@ -204,7 +204,17 @@
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	margin: 16px 0 24px;
+	margin: 16px 0 16px;
+}
+
+.btn.compare-surprise-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: fit-content;
+	margin: 0 auto 24px;
+	font-weight: 600;
 }
 
 .pokemon-picker {
@@ -627,6 +637,54 @@
 	box-shadow: 0 20px 40px -16px rgba(0, 0, 0, 0.4);
 }
 
+.battle-arena.is-shaking {
+	animation: battle-shake 0.4s ease;
+}
+
+@keyframes battle-shake {
+
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+
+	20% {
+		transform: translateX(-6px);
+	}
+
+	40% {
+		transform: translateX(5px);
+	}
+
+	60% {
+		transform: translateX(-4px);
+	}
+
+	80% {
+		transform: translateX(3px);
+	}
+}
+
+.battle-hit-flash {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	border-radius: 20px;
+	background: rgba(239, 68, 68, 0.22);
+	pointer-events: none;
+	animation: battle-hit-flash-fade 0.4s ease forwards;
+}
+
+@keyframes battle-hit-flash-fade {
+	from {
+		opacity: 1;
+	}
+
+	to {
+		opacity: 0;
+	}
+}
+
 /* ===== Battle stage — sprite kedua pokemon ===== */
 .battle-stage {
 	display: flex;
@@ -760,6 +818,19 @@
 
 .battle-hp-fill.is-low {
 	background: #ff9800;
+	animation: battle-hp-danger-pulse 1s ease-in-out infinite;
+}
+
+@keyframes battle-hp-danger-pulse {
+
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.6);
+	}
+
+	50% {
+		box-shadow: 0 0 8px 1px rgba(255, 152, 0, 0.9);
+	}
 }
 
 .battle-hp-fill.is-fainted {
@@ -845,6 +916,19 @@
 
 .battle-chat-row.side-a .battle-chat-bubble {
 	border-bottom-left-radius: 4px;
+}
+
+.battle-chat-bubble.is-crit {
+	box-shadow: 0 0 0 2px #fbbf24;
+}
+
+.battle-crit-badge {
+	display: block;
+	margin-bottom: 3px;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.4px;
+	color: #fef3c7;
 }
 
 .battle-chat-row.side-b .battle-chat-bubble {
