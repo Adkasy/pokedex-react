@@ -450,7 +450,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								className="battle-fighter-image"
 								src={pokemonA.image}
 								alt={pokemonA.name}
-								iconSize={85}
+								iconSize={102}
 							/>
 							{hitSide === "a" && <SlashFX key={revealCount} />}
 						</div>
@@ -467,7 +467,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								className="battle-fighter-image"
 								src={pokemonB.image}
 								alt={pokemonB.name}
-								iconSize={85}
+								iconSize={102}
 							/>
 							{hitSide === "b" && <SlashFX key={revealCount} />}
 						</div>
