@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { GiCrossedSwords, GiTrophy } from "react-icons/gi"
 import { simulateBattle } from "../utils/battleSimulator"
+import { getTypeColor } from "../constants/typeColors"
 
 const REVEAL_DELAY_MS = 700
 
@@ -14,7 +15,7 @@ const BattleHpBar = ({ name, hp, maxHp }) => {
 			<div className="battle-hp-label">
 				<span className="battle-hp-name">{name}</span>
 				<span className="battle-hp-value">
-					{Math.max(0, Math.round(hp))} / {maxHp}
+					HP {Math.max(0, Math.round(hp))} / {maxHp}
 				</span>
 			</div>
 			<div className="battle-hp-track">
@@ -32,6 +33,9 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	const [revealCount, setRevealCount] = useState(0)
 	const logRef = useRef(null)
 	const arenaRef = useRef(null)
+	const winnerRef = useRef(null)
+	const colorA = getTypeColor(pokemonA.types?.[0]?.type?.name)
+	const colorB = getTypeColor(pokemonB.types?.[0]?.type?.name)
 
 	useEffect(() => {
 		if (!battle || revealCount >= battle.log.length) return
@@ -81,6 +85,14 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 			: isRevealed && battle.winner === "b"
 				? pokemonB
 				: null
+
+	useEffect(() => {
+		// begitu banner winner muncul, ikutin scroll ke situ juga — biar
+		// user gak harus scroll manual pas battle-nya udah kelar
+		if (winnerPokemon) {
+			winnerRef.current?.scrollIntoView({ behavior: "auto", block: "end" })
+		}
+	}, [winnerPokemon])
 
 	// "result" gak ditampilin di chat — udah ada banner winner-nya sendiri
 	const chatEntries = visibleLog.filter((entry) => entry.type !== "result")
@@ -144,7 +156,14 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 										src={entry.side === "a" ? pokemonA.image : pokemonB.image}
 										alt=""
 									/>
-									<div className="battle-chat-bubble">{entry.text}</div>
+									<div
+										className="battle-chat-bubble"
+										style={{
+											backgroundColor: entry.side === "a" ? colorA : colorB,
+										}}
+									>
+										{entry.text}
+									</div>
 								</li>
 							) : (
 								<li key={i} className="battle-chat-system">
@@ -155,7 +174,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 					</ul>
 
 					{winnerPokemon && (
-						<div className="battle-winner">
+						<div className="battle-winner" ref={winnerRef}>
 							<img
 								className="battle-winner-image"
 								src={winnerPokemon.image}
