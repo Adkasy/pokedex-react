@@ -193,6 +193,10 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 			: isRevealed && battle.winner === "b"
 				? pokemonB
 				: null
+	// warna spotlight di belakang sprite pemenang ngikutin type-nya sendiri
+	// (bukan ijo flat) — biar tiap kemenangan kerasa beda & tetep nyambung
+	// sama palet warna type yang udah dipake di seluruh arena
+	const winnerColor = battle?.winner === "a" ? colorA : battle?.winner === "b" ? colorB : null
 
 	useEffect(() => {
 		if (winnerPokemon) playVictorySound()
@@ -433,12 +437,14 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						{winnerPokemon && (
 							<div className="battle-winner">
 								<Confetti key={confettiBurst} />
-								<PokemonImage
-									className="battle-winner-image"
-									src={winnerPokemon.image}
-									alt={winnerPokemon.name}
-									iconSize={160}
-								/>
+								<div className="battle-winner-spotlight" style={{ "--winner-color": winnerColor }}>
+									<PokemonImage
+										className="battle-winner-image"
+										src={winnerPokemon.image}
+										alt={winnerPokemon.name}
+										iconSize={160}
+									/>
+								</div>
 								<button
 									className="battle-winner-ribbon"
 									onClick={() => setConfettiBurst((c) => c + 1)}
