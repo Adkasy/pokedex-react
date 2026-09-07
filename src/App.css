@@ -1200,11 +1200,11 @@
 	overflow: visible;
 	pointer-events: none;
 	/* geser ke kiri biar bener2 numpuk di sprite-nya (defaultnya kegeser
-	   kanan) + miring dikit searah jarum jam biar gak kaku. Pake px
-	   (bukan %) soalnya translateX(%) di elemen SVG gak keresolve kaya
-	   di elemen HTML biasa — hasilnya malah 0 gerak sama sekali kalau
-	   pake % */
-	transform: translateX(-28px) rotate(8deg);
+	   kanan) + naik dikit + miring dikit searah jarum jam biar gak kaku.
+	   Pake px (bukan %) soalnya translateX(%) di elemen SVG gak
+	   keresolve kaya di elemen HTML biasa — hasilnya malah 0 gerak sama
+	   sekali kalau pake % */
+	transform: translate(-20px, -8px) rotate(8deg);
 }
 
 .battle-hit-slash-claw {
