@@ -67,7 +67,7 @@ const PokemonCard = ({
 					{types?.length > 0 && (
 						<div className="type-badge-row">
 							{types.map(({ type }) => (
-								<TypeBadge key={type.name} type={type.name} size={10} />
+								<TypeBadge key={type.name} type={type.name} />
 							))}
 						</div>
 					)}

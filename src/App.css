@@ -1994,8 +1994,6 @@
 
 .pokemon-card-body .type-badge {
 	font-size: 10px;
-	padding: 3px 8px;
-	gap: 5px;
 }
 
 .pokemon-card-id {
@@ -2322,50 +2320,49 @@
 	justify-content: center;
 }
 
-/* lebih kecil & ramping (padding atas-bawahnya dikurangin) daripada
-   .type-badge biasa — di sini chip-nya cuma pelengkap di bawah nama,
-   gak perlu se-menonjol chip di tempat lain */
+/* lebih kecil & ramping daripada .type-badge biasa — di sini chip-nya
+   cuma pelengkap di bawah nama, gak perlu se-menonjol chip di tempat
+   lain. Padding & gap-nya ikut ngecil otomatis (unit `em`, lihat
+   .type-badge di bawah), gak perlu di-override manual lagi di sini. */
 .compare-head .type-badge {
 	font-size: 10px;
-	padding: 3px 8px;
 }
 
-/* Styling-nya ngikutin badge component asli di Figma abis-abisan: rx
-   dikit doang (bukan pill bulet penuh), padding kiri-kanan rapet,
-   font-nya SETIPIS aslinya (jangan tebel-tebel amat). Background-nya
-   SOLID per-type (bukan overlay hitam transparan lagi) — di-set inline
-   di TypeBadge (TypeIcon.jsx) via getTypeColor(type), jadi gak ada
-   default color di sini. */
+/* Porting LANGSUNG dari component "Badge" di file Figma-nya user —
+   padding, gap, dan ukuran icon-nya (lihat `.type-badge svg` di bawah)
+   diukur presisi dari koordinat SVG aslinya (bukan diperkirain), terus
+   dikonversi ke `em` biar semua proporsi itu ikut ngecil/ngegedein
+   bareng pas font-size chip-nya beda-beda (home vs compare vs detail),
+   gak cuma pas di 1 ukuran doang kaya sebelumnya. */
 .type-badge {
 	display: inline-flex;
 	align-items: center;
-	gap: 5px;
+	gap: 0.58em;
 	color: #fff;
 	font-size: 12px;
 	font-weight: 500;
-	/* shadow tipis buat jaga-jaga tempat yang card/header-nya kebetulan
-	   type yang sama (misal card & badge-nya sama-sama "Water") — kecil
-	   kemungkinannya sekarang (card udah pake palette soft yang beda
-	   sama badge yang vivid), tapi shadow-nya gak ganggu jadi dibiarin */
-	box-shadow: 0 2px 5px -1px rgba(0, 0, 0, 0.35);
 	/* tanpa ini, line-height default browser (~1.4x font-size) bikin teksnya
 	   punya spasi ekstra di atas/bawah baseline-nya sendiri — align-items:
 	   center doang jadinya nyeimbangin box-nya, bukan bikin ikon & teks
 	   beneran sejajar secara visual (teksnya keliatan "naik" dikit) */
 	line-height: 1;
 	text-transform: capitalize;
-	padding: 4px 10px;
+	padding: 0.35em 0.48em 0.35em 0.5em;
 	border-radius: 6px;
 	white-space: nowrap;
 }
 
-/* line-height:1 doang belum bikin teksnya PERSIS sejajar sama icon-nya
-   — sisa ~0.5px lagi itu dari metrik font-nya sendiri (area kosong
-   di atas huruf beda sama di bawahnya), diukur langsung di browser.
-   Nudge manual dikit ke bawah biar kelar bener-bener match */
+/* icon-nya di Figma ≈1.4x lebih tinggi dari teksnya (bukan 1:1 kaya
+   sebelumnya) — pake `em` biar rasio itu ngikutin font-size chip-nya
+   sendiri, jadi tetep konsisten di ukuran badge berapa pun */
+.type-badge svg {
+	width: 1.4em;
+	height: 1.4em;
+	flex-shrink: 0;
+}
+
 .type-badge-label {
 	display: inline-block;
-	transform: translateY(0.5px);
 }
 
 /* ===== Buttons ===== */

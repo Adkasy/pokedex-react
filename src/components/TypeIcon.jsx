@@ -80,12 +80,24 @@ const FIGMA_PATHS = {
 	],
 }
 
-const TypeIcon = ({ type, size = 12 }) => {
+const TypeIcon = ({ type, size }) => {
 	const paths = FIGMA_PATHS[type]
 	if (!paths) return null
 
+	// `size` di sini opsional — kalau di-isi (dipake TypeFilter, size
+	// tetap dalam px), pakai itu. Kalau kosong (dipake TypeBadge),
+	// ukurannya diserahin ke CSS (`.type-badge svg` pakai unit `em`,
+	// ngikutin font-size chip-nya sendiri) biar rasio icon:teks-nya
+	// selalu konsisten di ukuran chip berapa pun, bukan angka px yang
+	// di-hardcode manual per pemanggilan.
 	return (
-		<svg width={size} height={size} viewBox="0 0 25 25" fill="none" aria-hidden="true">
+		<svg
+			width={size}
+			height={size}
+			viewBox="0 0 25 25"
+			fill="none"
+			aria-hidden="true"
+		>
 			{paths.map((d, i) => (
 				<path key={i} fillRule="evenodd" clipRule="evenodd" d={d} fill="currentColor" />
 			))}
@@ -93,21 +105,18 @@ const TypeIcon = ({ type, size = 12 }) => {
 	)
 }
 
-// icon + nama type dalem 1 pill — dipake di mana-mana (card, compare,
-// detail), jadi disatuin di sini daripada nulis ulang <span
-// className="type-badge"><TypeIcon />{name}</span> di tiap file. Nama
-// type-nya dibungkus <span> sendiri (bukan text node polos) soalnya
-// butuh nudge dikit lewat CSS (.type-badge-label) — tanpa itu teksnya
-// keliatan ~0.5px lebih naik dari icon-nya (font metrics, bukan bug
-// CSS), meski line-height udah di-set 1.
-// warna badge-nya SOLID per-type (langsung dari palette Figma), bukan
-// overlay hitam transparan kayak sebelumnya — awalnya sengaja translucent
-// biar "nyatu" sama warna card di belakangnya, tapi user liat langsung
-// referensi Figma-nya & warna-warni solid gitu ternyata malah bagus,
-// jadi disamain aja ke situ
-export const TypeBadge = ({ type, size = 12 }) => (
+// icon + nama type dalem 1 pill — porting LANGSUNG dari component
+// "Badge" di file Figma-nya user (ukuran icon, padding, gap, semuanya
+// diukur presisi dari koordinat SVG aslinya, bukan diperkirain lagi).
+// Icon-nya SENGAJA gak dikasih `size` (px) di sini — biar ukurannya
+// diatur CSS (`.type-badge svg`) pake `em`, ngikutin font-size chip-nya
+// sendiri. Di Figma, tinggi icon ≈ 1.4× tinggi teksnya — kalau
+// dihardcode px per pemanggilan (kaya sebelumnya), rasio itu gampang
+// meleset tiap kali chip-nya dipake di ukuran font beda; pake `em` di
+// CSS bikin rasio itu OTOMATIS konsisten di ukuran apa pun.
+export const TypeBadge = ({ type }) => (
 	<span className="type-badge" style={{ backgroundColor: getTypeColor(type) }}>
-		<TypeIcon type={type} size={size} />
+		<TypeIcon type={type} />
 		<span className="type-badge-label">{type}</span>
 	</span>
 )

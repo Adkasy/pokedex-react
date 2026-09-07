@@ -331,7 +331,7 @@ const PokemonDetailPage = ({ index }) => {
 
 					<div className="type-badge-row detail-type-row">
 						{pokemon.types.map(({ type }) => (
-							<TypeBadge key={type.name} type={type.name} size={12} />
+							<TypeBadge key={type.name} type={type.name} />
 						))}
 					</div>
 
@@ -571,7 +571,7 @@ const PokemonDetailPage = ({ index }) => {
 
 						<div className="type-badge-row detail-weaknesses-row">
 							{weaknesses.map((typeName) => (
-								<TypeBadge key={typeName} type={typeName} size={12} />
+								<TypeBadge key={typeName} type={typeName} />
 							))}
 						</div>
 					</section>

@@ -97,7 +97,7 @@ const CompareHead = ({ pokemon, isStrongerTotal = false }) => {
 			<p className="compare-head-name">{pokemon.name}</p>
 			<div className="type-badge-row">
 				{pokemon.types.map(({ type }) => (
-					<TypeBadge key={type.name} type={type.name} size={10} />
+					<TypeBadge key={type.name} type={type.name} />
 				))}
 			</div>
 		</Link>
