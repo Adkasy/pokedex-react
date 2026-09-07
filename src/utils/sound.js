@@ -35,6 +35,41 @@ export const playBattleStartSound = () => {
 		kick.start(now)
 		kick.stop(now + 0.4)
 
+		// sword clash "tring!" — 2 nada tinggi dikit detuned (logam beradu)
+		// + transient noise band-pass pendek biar berasa ada "kilat" logamnya,
+		// numpuk barengan kick di t=0 jadi satu impact yang solid
+		;[2600, 2950].forEach((freq) => {
+			const clash = ctx.createOscillator()
+			const clashGain = ctx.createGain()
+			clash.type = "triangle"
+			clash.frequency.setValueAtTime(freq, now)
+			clashGain.gain.setValueAtTime(0.14, now)
+			clashGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4)
+			clash.connect(clashGain)
+			clashGain.connect(ctx.destination)
+			clash.start(now)
+			clash.stop(now + 0.4)
+		})
+
+		const clashNoiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.12, ctx.sampleRate)
+		const clashNoiseData = clashNoiseBuffer.getChannelData(0)
+		for (let i = 0; i < clashNoiseData.length; i++) {
+			clashNoiseData[i] = (Math.random() * 2 - 1) * (1 - i / clashNoiseData.length)
+		}
+		const clashNoise = ctx.createBufferSource()
+		clashNoise.buffer = clashNoiseBuffer
+		const clashFilter = ctx.createBiquadFilter()
+		clashFilter.type = "bandpass"
+		clashFilter.frequency.value = 3200
+		clashFilter.Q.value = 1.2
+		const clashNoiseGain = ctx.createGain()
+		clashNoiseGain.gain.setValueAtTime(0.3, now)
+		clashNoiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12)
+		clashNoise.connect(clashFilter)
+		clashFilter.connect(clashNoiseGain)
+		clashNoiseGain.connect(ctx.destination)
+		clashNoise.start(now)
+
 		// noise burst pendek (di-highpass biar "clang", bukan "hiss")
 		const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.25, ctx.sampleRate)
 		const noiseData = noiseBuffer.getChannelData(0)
@@ -77,20 +112,21 @@ export const playBattleStartSound = () => {
 			gong.frequency.setValueAtTime(freq, now)
 			gongGain.gain.setValueAtTime(0, now)
 			gongGain.gain.linearRampToValueAtTime(0.09, now + 0.03)
-			gongGain.gain.exponentialRampToValueAtTime(0.001, now + 1.1)
+			gongGain.gain.exponentialRampToValueAtTime(0.001, now + 0.95)
 			gong.connect(gongGain)
 			gongGain.connect(ctx.destination)
 			gong.start(now)
-			gong.stop(now + 1.1)
+			gong.stop(now + 0.95)
 		})
 	} catch {
 		// silent
 	}
 }
 
-// Fanfare kemenangan — arpeggio 4 nada naik (C-E-G-C, major triad),
-// tiap nada nyusul dikit-dikit terus nada terakhir dibiarin nge-ring
-// lebih lama biar berasa "ini menang beneran", bukan cuma "pop" biasa.
+// Fanfare kemenangan — arpeggio 4 nada naik (C-E-G-C, major triad) tiap
+// nada dikasih lapisan bass 1 oktaf di bawah biar lebih "berbobot", terus
+// abis itu ada flourish sparkle (nada tinggi cepet naik) biar berasa lebih
+// spektakuler, bukan cuma arpeggio polos.
 export const playVictorySound = () => {
 	try {
 		const ctx = getAudioContext()
@@ -99,7 +135,7 @@ export const playVictorySound = () => {
 
 		notes.forEach((freq, i) => {
 			const start = now + i * 0.11
-			const duration = i === notes.length - 1 ? 0.5 : 0.16
+			const duration = i === notes.length - 1 ? 0.6 : 0.16
 
 			const osc = ctx.createOscillator()
 			const gain = ctx.createGain()
@@ -116,6 +152,48 @@ export const playVictorySound = () => {
 
 			osc.start(start)
 			osc.stop(start + duration)
+
+			// bass 1 oktaf di bawah nada utama, nambah "bobot" tiap not
+			const bass = ctx.createOscillator()
+			const bassGain = ctx.createGain()
+
+			bass.type = "sine"
+			bass.frequency.setValueAtTime(freq / 2, start)
+
+			bassGain.gain.setValueAtTime(0, start)
+			bassGain.gain.linearRampToValueAtTime(0.12, start + 0.02)
+			bassGain.gain.exponentialRampToValueAtTime(0.001, start + duration)
+
+			bass.connect(bassGain)
+			bassGain.connect(ctx.destination)
+
+			bass.start(start)
+			bass.stop(start + duration)
+		})
+
+		// flourish sparkle abis arpeggio utama kelar — nada pentatonic
+		// cepet naik biar berasa "shimmer", kayak confetti versi suara
+		const sparkleStart = now + notes.length * 0.11 + 0.06
+		const sparkleNotes = [1046.5, 1174.66, 1318.51, 1567.98, 2093] // C6 D6 E6 G6 C7
+
+		sparkleNotes.forEach((freq, i) => {
+			const start = sparkleStart + i * 0.06
+
+			const osc = ctx.createOscillator()
+			const gain = ctx.createGain()
+
+			osc.type = "sine"
+			osc.frequency.setValueAtTime(freq, start)
+
+			gain.gain.setValueAtTime(0, start)
+			gain.gain.linearRampToValueAtTime(0.1, start + 0.015)
+			gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35)
+
+			osc.connect(gain)
+			gain.connect(ctx.destination)
+
+			osc.start(start)
+			osc.stop(start + 0.35)
 		})
 	} catch {
 		// silent

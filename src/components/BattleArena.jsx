@@ -6,7 +6,7 @@ import { getTypeColor } from "../constants/typeColors"
 import { playVictorySound, playBattleStartSound } from "../utils/sound"
 
 const REVEAL_DELAY_MS = 700
-const BATTLE_BEGIN_MS = 1900
+const BATTLE_BEGIN_MS = 1350
 
 const BattleBeginOverlay = () => (
 	<div className="battle-begin-overlay" aria-hidden="true">
