@@ -13,6 +13,42 @@ const getAudioContext = () => {
 	return sharedAudioContext
 }
 
+// Stab pembuka battle — sweep naik cepat (kaya "riser") ditumpuk sama
+// hit rendah yang nge-punch, biar berasa dramatis pas "Battle Begin!"
+// muncul, bukan cuma bunyi "beep" biasa.
+export const playBattleStartSound = () => {
+	try {
+		const ctx = getAudioContext()
+		const now = ctx.currentTime
+
+		const riser = ctx.createOscillator()
+		const riserGain = ctx.createGain()
+		riser.type = "sawtooth"
+		riser.frequency.setValueAtTime(120, now)
+		riser.frequency.exponentialRampToValueAtTime(520, now + 0.18)
+		riserGain.gain.setValueAtTime(0.001, now)
+		riserGain.gain.exponentialRampToValueAtTime(0.22, now + 0.05)
+		riserGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4)
+		riser.connect(riserGain)
+		riserGain.connect(ctx.destination)
+		riser.start(now)
+		riser.stop(now + 0.4)
+
+		const punch = ctx.createOscillator()
+		const punchGain = ctx.createGain()
+		punch.type = "square"
+		punch.frequency.setValueAtTime(90, now)
+		punchGain.gain.setValueAtTime(0.18, now)
+		punchGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25)
+		punch.connect(punchGain)
+		punchGain.connect(ctx.destination)
+		punch.start(now)
+		punch.stop(now + 0.25)
+	} catch {
+		// silent
+	}
+}
+
 // Fanfare kemenangan — arpeggio 4 nada naik (C-E-G-C, major triad),
 // tiap nada nyusul dikit-dikit terus nada terakhir dibiarin nge-ring
 // lebih lama biar berasa "ini menang beneran", bukan cuma "pop" biasa.

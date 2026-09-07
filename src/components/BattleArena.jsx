@@ -3,9 +3,19 @@ import { GiCrossedSwords, GiTrophy } from "react-icons/gi"
 import { MdInfoOutline, MdClose } from "react-icons/md"
 import { simulateBattle } from "../utils/battleSimulator"
 import { getTypeColor } from "../constants/typeColors"
-import { playVictorySound } from "../utils/sound"
+import { playVictorySound, playBattleStartSound } from "../utils/sound"
 
 const REVEAL_DELAY_MS = 700
+const BATTLE_BEGIN_MS = 900
+
+const BattleBeginOverlay = () => (
+	<div className="battle-begin-overlay" aria-hidden="true">
+		<div className="battle-begin-text">
+			<GiCrossedSwords size={40} />
+			Battle Begin!
+		</div>
+	</div>
+)
 
 const BattleHpBar = ({ name, hp, maxHp }) => {
 	const pct = maxHp > 0 ? Math.max(0, Math.min(100, (hp / maxHp) * 100)) : 0
@@ -76,6 +86,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	// key buat maksa Confetti remount tiap ribbon-nya diklik lagi —
 	// remount = piece random baru + animasi mulai dari awal lagi
 	const [confettiBurst, setConfettiBurst] = useState(0)
+	const [showBattleBegin, setShowBattleBegin] = useState(false)
 	const logRef = useRef(null)
 	const arenaRef = useRef(null)
 	const infoWrapRef = useRef(null)
@@ -145,7 +156,15 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 		const result = simulateBattle(pokemonA, pokemonB)
 		setBattle(result)
 		setRevealCount(0)
+		setShowBattleBegin(true)
+		playBattleStartSound()
 	}
+
+	useEffect(() => {
+		if (!showBattleBegin) return
+		const timer = setTimeout(() => setShowBattleBegin(false), BATTLE_BEGIN_MS)
+		return () => clearTimeout(timer)
+	}, [showBattleBegin])
 
 	const visibleLog = battle ? battle.log.slice(0, revealCount) : []
 	const latest = visibleLog[visibleLog.length - 1]
@@ -174,6 +193,8 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 	return (
 		<div className="battle-section">
+			{showBattleBegin && <BattleBeginOverlay />}
+
 			<button
 				className="btn btn-primary battle-simulate-btn"
 				onClick={handleSimulate}
