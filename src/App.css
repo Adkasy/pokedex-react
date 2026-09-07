@@ -982,7 +982,10 @@
 	scroll-margin-top: 90px;
 	border: 1px solid var(--border);
 	border-radius: 20px;
-	padding: 24px 24px 20px;
+	/* padding-top dilebarin — round chip/scoreboard/tombol info-nya
+	   absolutely positioned (gak makan tempat di normal flow), jadi
+	   .battle-stage di bawahnya butuh jarak manual biar gak numpuk */
+	padding: 52px 24px 20px;
 	background: var(--code-bg);
 	box-shadow: 0 20px 40px -16px rgba(0, 0, 0, 0.4);
 }
@@ -1361,16 +1364,26 @@
 }
 
 /* ===== Scoreboard ===== */
+/* posisinya di tengah-tengah .battle-arena, sejajar sama round chip
+   (kiri) & tombol info (kanan) — ukurannya disamain sama round chip
+   (padding/font-size sama) biar 3 elemen di baris atas ini konsisten */
 .battle-scoreboard {
+	position: absolute;
+	top: 8px;
+	left: 50%;
+	z-index: 5;
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	padding: 7px 16px;
+	padding: 5px 16px;
 	border-radius: 999px;
 	border: 1px solid var(--border);
-	background: var(--code-bg);
+	background: var(--bg);
+	color: var(--text-h);
 	font-size: 12px;
 	font-weight: 700;
+	line-height: 1;
+	transform: translateX(-50%);
 }
 
 .battle-scoreboard-name {
@@ -1381,7 +1394,7 @@
 
 .battle-scoreboard-score {
 	color: var(--accent);
-	font-size: 15px;
+	font-size: 13px;
 }
 
 .battle-scoreboard-sep {

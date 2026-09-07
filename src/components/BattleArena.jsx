@@ -240,22 +240,6 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						: "Simulate Battle"}
 			</button>
 
-			{(scoreboard.a > 0 || scoreboard.b > 0 || scoreboard.draw > 0) && (
-				<div className="battle-scoreboard">
-					<span className="battle-scoreboard-name">{pokemonA.name}</span>
-					<span className="battle-scoreboard-score">{scoreboard.a}</span>
-					<span className="battle-scoreboard-sep">:</span>
-					<span className="battle-scoreboard-score">{scoreboard.b}</span>
-					<span className="battle-scoreboard-name">{pokemonB.name}</span>
-					{scoreboard.draw > 0 && (
-						<span className="battle-scoreboard-draw">
-							({scoreboard.draw} draw
-							{scoreboard.draw > 1 ? "s" : ""})
-						</span>
-					)}
-				</div>
-			)}
-
 			{battle && (
 				<div
 					className={`battle-arena${isSuperHit ? " is-shaking" : ""}`}
@@ -267,6 +251,22 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						Round {currentRound}
 						<span className="battle-round-chip-max">/{battle.maxRounds}</span>
 					</span>
+
+					{(scoreboard.a > 0 || scoreboard.b > 0 || scoreboard.draw > 0) && (
+						<div className="battle-scoreboard">
+							<span className="battle-scoreboard-name">{pokemonA.name}</span>
+							<span className="battle-scoreboard-score">{scoreboard.a}</span>
+							<span className="battle-scoreboard-sep">:</span>
+							<span className="battle-scoreboard-score">{scoreboard.b}</span>
+							<span className="battle-scoreboard-name">{pokemonB.name}</span>
+							{scoreboard.draw > 0 && (
+								<span className="battle-scoreboard-draw">
+									({scoreboard.draw} draw
+									{scoreboard.draw > 1 ? "s" : ""})
+								</span>
+							)}
+						</div>
+					)}
 
 					<div className="battle-info-wrap" ref={infoWrapRef}>
 						<button
