@@ -3,7 +3,7 @@ import { capitalize } from "./text"
 
 const MAX_ROUNDS = 30
 const DAMAGE_CONSTANT = 6
-const CRIT_CHANCE = 0.06
+const CRIT_CHANCE = 0.1
 const CRIT_MULTIPLIER = 1.5
 
 const getStat = (pokemon, statName) =>
