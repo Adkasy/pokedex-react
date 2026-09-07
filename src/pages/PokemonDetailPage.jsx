@@ -166,7 +166,7 @@ const PokemonDetailPage = ({ index }) => {
 								<PlayIcon size={13} />
 							</span>
 							<span className="card-play-btn-wave">
-								<WaveformIcon playing={isPlayingCry} size={16} />
+								<WaveformIcon playing={isPlayingCry} size={16} bars={20} />
 							</span>
 						</button>
 					)}

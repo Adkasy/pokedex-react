@@ -1912,6 +1912,11 @@
 
 .waveform span {
 	flex: 1;
+	/* tanpa ini, container yang sempit (misal tombol play di detail
+	   page pas mobile) bisa maksa tiap bar nyusut sampe ~0px lebar
+	   (flex-basis 0% + flex-shrink) — jadi keliatannya blank/ilang
+	   sama sekali, bukan cuma rapet */
+	min-width: 2px;
 	height: 100%;
 	background: currentColor;
 	border-radius: 1px;
