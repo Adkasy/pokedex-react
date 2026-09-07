@@ -1,12 +1,15 @@
 import { Fragment, useEffect, useState } from "react"
 import { useParams, Link } from "react-router"
+import { MdChevronLeft, MdChevronRight } from "react-icons/md"
 import { getTypeColor } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
+import { usePokemonStore } from "../store/usePokemonStore"
 import TypeIcon, {
 	StarIcon,
 	PokeballIcon,
 	HumanIcon,
 } from "../components/TypeIcon"
+import PokemonImage from "../components/PokemonImage"
 import { playFavoriteSound } from "../utils/sound"
 import { getPokemonSpecies, getEvolutionChain } from "../api/pokeapi"
 import { flattenEvolutionChain, cleanFlavorText } from "../utils/evolution"
@@ -19,9 +22,15 @@ import { STAT_LABELS } from "../constants/statLabels"
 
 const STAT_BAR_MAX = 200
 
-const PokemonDetailPage = ({ pokemonList }) => {
+const PokemonDetailPage = ({ index }) => {
 	const { name } = useParams()
-	const pokemon = pokemonList.find((item) => item.name === name)
+	const detailsByName = usePokemonStore((state) => state.detailsByName)
+	const ensureDetails = usePokemonStore((state) => state.ensureDetails)
+	const pokemon = detailsByName[name]
+	// index-nya udah kepastian ke-load duluan sama App sebelum route ini
+	// dirender, jadi kalau namanya gak ada di situ, berarti emang gak
+	// ada Pokemon-nya (bukan lagi loading)
+	const existsInIndex = index.some((item) => item.name === name)
 	const addFavorite = useFavoriteStore((state) => state.addFavorite)
 	const removeFavorite = useFavoriteStore((state) => state.removeFavorite)
 	const isFavorite = useFavoriteStore((state) =>
@@ -29,6 +38,10 @@ const PokemonDetailPage = ({ pokemonList }) => {
 	)
 	const [species, setSpecies] = useState(null)
 	const [evolutionStages, setEvolutionStages] = useState([])
+
+	useEffect(() => {
+		ensureDetails([name])
+	}, [name, ensureDetails])
 
 	useEffect(() => {
 		if (!pokemon) return
@@ -59,7 +72,13 @@ const PokemonDetailPage = ({ pokemonList }) => {
 		}
 	}, [pokemon])
 
-	if (!pokemon) return <p className="status-message">Pokemon not found.</p>
+	if (!pokemon) {
+		return (
+			<p className="status-message">
+				{existsInIndex ? "Loading…" : "Pokemon not found."}
+			</p>
+		)
+	}
 
 	const primaryColor = getTypeColor(pokemon.types?.[0]?.type?.name)
 
@@ -68,11 +87,21 @@ const PokemonDetailPage = ({ pokemonList }) => {
 		(f) => f.language.name === "en",
 	)
 	const evolvesFromName = species?.evolves_from_species?.name
-	const evolvesFromMatch = pokemonList.find(
+	const evolvesFromMatch = index.find(
 		(item) => item.name === evolvesFromName,
 	)
 	const catchDifficulty = getCatchDifficulty(species?.capture_rate)
 	const pokemonHeightM = pokemon.height / 10
+
+	// prev/next Pokemon ngikutin urutan index (yang ngikutin urutan id
+	// dari PokeAPI) — bukan berdasarkan urutan generation/dex khusus
+	const currentIndexPos = index.findIndex((item) => item.name === name)
+	const prevPokemon =
+		currentIndexPos > 0 ? index[currentIndexPos - 1] : null
+	const nextPokemon =
+		currentIndexPos !== -1 && currentIndexPos < index.length - 1
+			? index[currentIndexPos + 1]
+			: null
 
 	const MAX_FIGURE_PX = 140
 	const MIN_FIGURE_PX = 20
@@ -98,10 +127,6 @@ const PokemonDetailPage = ({ pokemonList }) => {
 				</div>
 
 				<div className="detail-header-top">
-					<Link className="detail-back" to="/" aria-label="Back to grid">
-						←
-					</Link>
-
 					<button
 						className={`card-favorite-btn${isFavorite ? " is-favorite" : ""}`}
 						onClick={() => {
@@ -117,6 +142,28 @@ const PokemonDetailPage = ({ pokemonList }) => {
 						<StarIcon filled={isFavorite} size={18} />
 					</button>
 				</div>
+
+				{prevPokemon && (
+					<Link
+						className="detail-nav detail-nav-prev"
+						to={`/pokemon/${prevPokemon.name}`}
+						aria-label={`Previous: ${prevPokemon.name}`}
+						title={prevPokemon.name}
+					>
+						<MdChevronLeft size={26} />
+					</Link>
+				)}
+
+				{nextPokemon && (
+					<Link
+						className="detail-nav detail-nav-next"
+						to={`/pokemon/${nextPokemon.name}`}
+						aria-label={`Next: ${nextPokemon.name}`}
+						title={nextPokemon.name}
+					>
+						<MdChevronRight size={26} />
+					</Link>
+				)}
 
 				<div className="detail-header-info">
 					<p className="detail-id">#{String(pokemon.id).padStart(3, "0")}</p>
@@ -161,10 +208,11 @@ const PokemonDetailPage = ({ pokemonList }) => {
 					)}
 				</div>
 
-				<img
+				<PokemonImage
 					className="detail-image"
 					src={pokemon.sprites.other["official-artwork"].front_default}
 					alt={pokemon.name}
+					iconSize={160}
 				/>
 			</div>
 
@@ -283,7 +331,12 @@ const PokemonDetailPage = ({ pokemonList }) => {
 									className="size-comparison-figure"
 									style={{ height: pokemonFigurePx }}
 								>
-									<img src={pokemon.image} alt={pokemon.name} />
+									<PokemonImage
+										className="size-comparison-image"
+										src={pokemon.image}
+										alt={pokemon.name}
+										iconSize={Math.max(pokemonFigurePx * 0.8, 28)}
+									/>
 								</div>
 							</div>
 							<span className="size-comparison-name">{pokemon.name}</span>
@@ -332,7 +385,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 									)}
 									<div className="evolution-stage">
 										{stage.map((member) => {
-											const matched = pokemonList.find(
+											const matched = index.find(
 												(item) => item.name === member.name,
 											)
 
@@ -345,7 +398,12 @@ const PokemonDetailPage = ({ pokemonList }) => {
 													}`}
 												>
 													{matched?.image ? (
-														<img src={matched.image} alt={member.name} />
+														<PokemonImage
+															className="evolution-node-image"
+															src={matched.image}
+															alt={member.name}
+															iconSize={32}
+														/>
 													) : (
 														<span className="evolution-node-fallback">
 															<PokeballIcon size={22} />

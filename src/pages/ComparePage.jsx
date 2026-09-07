@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Link, useSearchParams } from "react-router"
 import { MdShuffle } from "react-icons/md"
 import { getTypeColor } from "../constants/typeColors"
@@ -5,6 +6,8 @@ import { STAT_LABELS } from "../constants/statLabels"
 import TypeIcon, { CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
 import BattleArena from "../components/BattleArena"
+import PokemonImage from "../components/PokemonImage"
+import { usePokemonStore } from "../store/usePokemonStore"
 
 const STAT_BAR_MAX = 200
 
@@ -59,7 +62,12 @@ const CompareHead = ({ pokemon }) => {
 			className="compare-head"
 			style={{ backgroundColor: color }}
 		>
-			<img src={pokemon.image} alt={pokemon.name} />
+			<PokemonImage
+				className="compare-head-image"
+				src={pokemon.image}
+				alt={pokemon.name}
+				iconSize={100}
+			/>
 			<p className="compare-head-id">#{String(pokemon.id).padStart(3, "0")}</p>
 			<p className="compare-head-name">{pokemon.name}</p>
 			<div className="type-badge-row">
@@ -74,13 +82,24 @@ const CompareHead = ({ pokemon }) => {
 	)
 }
 
-const ComparePage = ({ pokemonList }) => {
+const ComparePage = ({ index }) => {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const nameA = searchParams.get("a") ?? ""
 	const nameB = searchParams.get("b") ?? ""
 
-	const pokemonA = pokemonList.find((p) => p.name === nameA)
-	const pokemonB = pokemonList.find((p) => p.name === nameB)
+	const detailsByName = usePokemonStore((state) => state.detailsByName)
+	const ensureDetails = usePokemonStore((state) => state.ensureDetails)
+
+	// picker & random matchup cuma butuh index ringan (nama/id/gambar);
+	// detail lengkap (stats, types, dll) buat 2 yang lagi dipilih baru
+	// di-fetch di sini
+	useEffect(() => {
+		const names = [nameA, nameB].filter(Boolean)
+		if (names.length > 0) ensureDetails(names)
+	}, [nameA, nameB, ensureDetails])
+
+	const pokemonA = detailsByName[nameA]
+	const pokemonB = detailsByName[nameB]
 
 	const handleSelect = (side, value) => {
 		setSearchParams((prev) => {
@@ -92,16 +111,16 @@ const ComparePage = ({ pokemonList }) => {
 	}
 
 	const handleSurprise = () => {
-		if (pokemonList.length < 2) return
+		if (index.length < 2) return
 
-		const i = Math.floor(Math.random() * pokemonList.length)
-		let j = Math.floor(Math.random() * pokemonList.length)
-		while (j === i) j = Math.floor(Math.random() * pokemonList.length)
+		const i = Math.floor(Math.random() * index.length)
+		let j = Math.floor(Math.random() * index.length)
+		while (j === i) j = Math.floor(Math.random() * index.length)
 
 		setSearchParams((prev) => {
 			const next = new URLSearchParams(prev)
-			next.set("a", pokemonList[i].name)
-			next.set("b", pokemonList[j].name)
+			next.set("a", index[i].name)
+			next.set("b", index[j].name)
 			return next
 		})
 	}
@@ -127,7 +146,7 @@ const ComparePage = ({ pokemonList }) => {
 
 			<div className="compare-picker">
 				<PokemonPicker
-					pokemonList={pokemonList}
+					pokemonList={index}
 					value={nameA}
 					onChange={(name) => handleSelect("a", name)}
 				/>
@@ -141,7 +160,7 @@ const ComparePage = ({ pokemonList }) => {
 					<CompareIcon size={20} />
 				</button>
 				<PokemonPicker
-					pokemonList={pokemonList}
+					pokemonList={index}
 					value={nameB}
 					onChange={(name) => handleSelect("b", name)}
 				/>
@@ -152,12 +171,14 @@ const ComparePage = ({ pokemonList }) => {
 				onClick={handleSurprise}
 				title="Random matchup"
 			>
-				<MdShuffle size={14} />
+				<MdShuffle className="compare-surprise-icon" size={14} />
 				Random Matchup
 			</button>
 
-			{!pokemonA || !pokemonB ? (
+			{!nameA || !nameB ? (
 				<p className="status-message">Pick two pokemon to compare.</p>
+			) : !pokemonA || !pokemonB ? (
+				<p className="status-message">Loading…</p>
 			) : (
 				<div className="compare-result">
 					<div className="compare-heads">

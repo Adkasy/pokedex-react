@@ -5,6 +5,7 @@ import TypeIcon, { PlayIcon, StarIcon, WaveformIcon } from "./TypeIcon"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { useCryPlayerStore } from "../store/useCryPlayerStore"
 import { playFavoriteSound } from "../utils/sound"
+import PokemonImage from "./PokemonImage"
 
 const PokemonCard = ({
 	id,
@@ -89,7 +90,12 @@ const PokemonCard = ({
 					</button>
 				)}
 
-				<img className="pokemon-card-image" src={image} alt={name} />
+				<PokemonImage
+					className="pokemon-card-image"
+					src={image}
+					alt={name}
+					iconSize={100}
+				/>
 			</li>
 		</Link>
 	)

@@ -1,4 +1,6 @@
-const DELTA = 1
+import { useState } from "react"
+
+const DELTA = 2
 
 const getPageNumbers = (current, total) => {
 	const pages = []
@@ -24,9 +26,29 @@ const getPageNumbers = (current, total) => {
 }
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+	const [jumpValue, setJumpValue] = useState(String(currentPage))
+	// nyimpen currentPage yang "udah dilihat" render sebelumnya — dipake
+	// buat nge-detect perubahan dari luar (klik nomor lain, tombol
+	// Previous/Next, dll) TANPA effect, sesuai pattern "adjusting state
+	// on a prop change" dari React docs
+	const [prevPage, setPrevPage] = useState(currentPage)
+
+	if (currentPage !== prevPage) {
+		setPrevPage(currentPage)
+		setJumpValue(String(currentPage))
+	}
+
 	if (totalPages <= 1) return null
 
 	const pages = getPageNumbers(currentPage, totalPages)
+
+	const handleJumpSubmit = (e) => {
+		e.preventDefault()
+
+		const page = Math.min(Math.max(Number(jumpValue) || 1, 1), totalPages)
+		onPageChange(page)
+		setJumpValue(String(page))
+	}
 
 	return (
 		<div className="pagination">
@@ -66,6 +88,27 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 			>
 				Next
 			</button>
+
+			<form className="pagination-jump" onSubmit={handleJumpSubmit}>
+				<label className="pagination-jump-label" htmlFor="pagination-jump-input">
+					Go to
+				</label>
+				<input
+					id="pagination-jump-input"
+					className="pagination-jump-input"
+					type="number"
+					inputMode="numeric"
+					min={1}
+					max={totalPages}
+					value={jumpValue}
+					onChange={(e) => setJumpValue(e.target.value)}
+					onFocus={() => setJumpValue("")}
+				/>
+				<span className="pagination-jump-total">/ {totalPages}</span>
+				<button className="btn pagination-jump-btn" type="submit">
+					Go
+				</button>
+			</form>
 		</div>
 	)
 }

@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect } from "react"
 import "./App.css"
-import { getDataPokemon } from "./api/pokeapi"
-import { Route, Routes, useSearchParams } from "react-router"
+import { Route, Routes, useLocation, useSearchParams } from "react-router"
 import PokemonDetailPage from "./pages/PokemonDetailPage"
 import PokemonGridPage from "./pages/PokemonGridPage"
 import FavoritesPage from "./pages/FavoritesPage"
@@ -9,33 +8,36 @@ import ComparePage from "./pages/ComparePage"
 import NotFoundPage from "./pages/NotFoundPage"
 import TopBar from "./components/TopBar"
 import SkeletonCard from "./components/SkeletonCard"
+import { usePokemonStore } from "./store/usePokemonStore"
 
 const SKELETON_COUNT = 9
 
 const App = () => {
-	const [pokemonList, setPokemonList] = useState([])
-	const [isLoading, setIsLoading] = useState(true)
-	const [error, setError] = useState(null)
+	const index = usePokemonStore((state) => state.index)
+	const isLoading = usePokemonStore((state) => state.isIndexLoading)
+	const error = usePokemonStore((state) => state.indexError)
+	const loadIndex = usePokemonStore((state) => state.loadIndex)
 	const [searchParams, setSearchParams] = useSearchParams()
+	const { pathname } = useLocation()
 
 	const keyword = searchParams.get("search") ?? ""
 
+	// cuma ngambil index RINGAN (nama + id + gambar) semua Pokemon di
+	// sini — detail lengkapnya di-fetch belakangan per halaman, liat
+	// usePokemonStore
 	useEffect(() => {
-		const fetchPokemon = async () => {
-			try {
-				setIsLoading(true)
+		loadIndex()
+	}, [loadIndex])
 
-				const data = await getDataPokemon()
-				setPokemonList(data)
-			} catch (fetchError) {
-				setError(fetchError)
-			} finally {
-				setIsLoading(false)
-			}
-		}
-
-		fetchPokemon()
-	}, [])
+	// react-router gak reset scroll otomatis pas pindah halaman (beda
+	// route, misal grid -> detail) — tanpa ini, scroll position lama
+	// kebawa, jadi kadang landing di tengah halaman baru (kebetulan
+	// ketemu section apa aja yang ada di offset itu) alih-alih di atas.
+	// Cuma depend ke pathname (bukan search params), biar gak bentrok
+	// sama scroll-per-page pagination di grid.
+	useEffect(() => {
+		window.scrollTo(0, 0)
+	}, [pathname])
 
 	const handleSearch = useCallback(
 		(value) => {
@@ -75,18 +77,16 @@ const App = () => {
 				) : (
 					<Routes>
 						<Route
-							element={
-								<PokemonGridPage pokemonList={pokemonList} keyword={keyword} />
-							}
+							element={<PokemonGridPage index={index} keyword={keyword} />}
 							path="/"
 						/>
 						<Route
-							element={<PokemonDetailPage pokemonList={pokemonList} />}
+							element={<PokemonDetailPage index={index} />}
 							path="/pokemon/:name"
 						/>
 						<Route element={<FavoritesPage />} path="/favorites" />
 						<Route
-							element={<ComparePage pokemonList={pokemonList} />}
+							element={<ComparePage index={index} />}
 							path="/compare"
 						/>
 						<Route element={<NotFoundPage />} path="*" />

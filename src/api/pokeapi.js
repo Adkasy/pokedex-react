@@ -1,15 +1,43 @@
 const BASE_URL = "https://pokeapi.co/api/v2"
 
-const getDataPokemon = async (limit = 200, offset = 0) => {
-	const res = await fetch(`${BASE_URL}/pokemon?limit=${limit}&offset=${offset}`)
-	if (!res.ok) throw new Error("Error data all")
-	const allPokemonData = await res.json()
+// URL artwork ngikutin pola id yang bisa ditebak (sprite repo resminya
+// PokeAPI) — jadi kita bisa dapetin gambar Pokemon tanpa perlu fetch
+// detail lengkapnya dulu, cukup modal id doang.
+const ARTWORK_BASE =
+	"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork"
 
-	const detailPromises = allPokemonData.results.map((pokemon) =>
-		getDataDetailPokemon(pokemon.url),
-	)
+const getArtworkUrl = (id) => `${ARTWORK_BASE}/${id}.png`
 
-	return Promise.all(detailPromises)
+const getIdFromUrl = (url) => Number(url.split("/").filter(Boolean).pop())
+
+// Index RINGAN semua Pokemon (cuma nama + id + gambar) — 1 request doang
+// meski jumlahnya 1300+, jadi aman gak bakal berat/kena rate limit kayak
+// kalau kita fetch detail lengkap buat semuanya di awal. Detail lengkap
+// (stats, types, dll) baru di-fetch belakangan per-Pokemon pas beneran
+// dibutuhin (liat usePokemonStore).
+const getPokemonIndex = async () => {
+	const countRes = await fetch(`${BASE_URL}/pokemon?limit=1`)
+	if (!countRes.ok) throw new Error("Error data count")
+	const { count } = await countRes.json()
+
+	const res = await fetch(`${BASE_URL}/pokemon?limit=${count}`)
+	if (!res.ok) throw new Error("Error data index")
+	const { results } = await res.json()
+
+	return results.map(({ name, url }) => {
+		const id = getIdFromUrl(url)
+		return { id, name, image: getArtworkUrl(id) }
+	})
+}
+
+// Daftar nama Pokemon yang punya type tertentu, dari endpoint /type/{name}
+// — dipake buat filter by type tanpa perlu fetch detail SEMUA Pokemon
+// cuma buat tau type-nya masing-masing.
+const getPokemonNamesByType = async (typeName) => {
+	const res = await fetch(`${BASE_URL}/type/${typeName}`)
+	if (!res.ok) throw new Error("Error data type")
+	const data = await res.json()
+	return data.pokemon.map((p) => p.pokemon.name)
 }
 
 const getDataDetailPokemon = async (detailURL) => {
@@ -40,7 +68,10 @@ const getEvolutionChain = async (url) => {
 }
 
 export {
-	getDataPokemon,
+	BASE_URL,
+	getArtworkUrl,
+	getPokemonIndex,
+	getPokemonNamesByType,
 	getDataDetailPokemon,
 	getPokemonSpecies,
 	getEvolutionChain,

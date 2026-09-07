@@ -3,17 +3,32 @@ import PokemonList from "../components/PokemonList"
 import Pagination from "../components/Pagination"
 import { TypeFilter } from "../components/TypeFilter"
 import { useFavoriteStore } from "../store/useFavoriteStore"
+import { usePokemonStore } from "../store/usePokemonStore"
 import { useSearchParams } from "react-router"
 
 const PAGE_SIZE = 21
 
-const PokemonGridPage = ({ pokemonList, keyword }) => {
+const PokemonGridPage = ({ index, keyword }) => {
 	const addFavoritePokemon = useFavoriteStore((state) => state.addFavorite)
+	const detailsByName = usePokemonStore((state) => state.detailsByName)
+	const typeMembers = usePokemonStore((state) => state.typeMembers)
+	const ensureDetails = usePokemonStore((state) => state.ensureDetails)
+	const ensureTypeMembers = usePokemonStore((state) => state.ensureTypeMembers)
+
 	const [searchParams, setSearchParams] = useSearchParams({})
 	const selectedTypes = searchParams.getAll("type")
 	const currentPage = Number(searchParams.get("page")) || 1
+	const selectedTypesKey = selectedTypes.join(",")
 
-	const filteredPokemon = pokemonList.filter((pokemon) => {
+	// filter by type butuh tau anggota tiap type yang dipilih — itu
+	// di-fetch on-demand di sini (bukan detail SEMUA Pokemon)
+	useEffect(() => {
+		if (selectedTypesKey) ensureTypeMembers(selectedTypesKey.split(","))
+	}, [selectedTypesKey, ensureTypeMembers])
+
+	const isTypeLoading = selectedTypes.some((t) => !typeMembers[t])
+
+	const filteredIndex = index.filter((pokemon) => {
 		const matchSearch = pokemon.name
 			.toLowerCase()
 			.trim()
@@ -21,21 +36,33 @@ const PokemonGridPage = ({ pokemonList, keyword }) => {
 
 		const matchType =
 			selectedTypes.length === 0 ||
-			pokemon.types.some((t) => selectedTypes.includes(t.type.name))
+			selectedTypes.some((t) => typeMembers[t]?.has(pokemon.name))
 
 		return matchSearch && matchType
 	})
 
-	const totalPages = Math.ceil(filteredPokemon.length / PAGE_SIZE)
+	const totalPages = Math.ceil(filteredIndex.length / PAGE_SIZE)
 
-	const paginatedPokemon = filteredPokemon.slice(
+	const paginatedIndex = filteredIndex.slice(
 		(currentPage - 1) * PAGE_SIZE,
 		currentPage * PAGE_SIZE,
 	)
 
+	const pageNamesKey = paginatedIndex.map((p) => p.name).join(",")
+
+	// detail lengkap (stats, types, cries, dll) cuma di-fetch buat
+	// Pokemon yang lagi ditampilin di halaman ini — bukan semuanya
+	useEffect(() => {
+		if (pageNamesKey) ensureDetails(pageNamesKey.split(","))
+	}, [pageNamesKey, ensureDetails])
+
+	const paginatedPokemon = paginatedIndex.map(
+		(p) => detailsByName[p.name] ?? { name: p.name, pending: true },
+	)
+
 	const handleAddFavorite = (id) => {
-		const pokemon = pokemonList.find((item) => item.id === id)
-		addFavoritePokemon(pokemon)
+		const pokemon = Object.values(detailsByName).find((item) => item.id === id)
+		if (pokemon) addFavoritePokemon(pokemon)
 	}
 
 	const toggleType = (typeName) => {
@@ -94,8 +121,10 @@ const PokemonGridPage = ({ pokemonList, keyword }) => {
 				onReset={handleResetTypes}
 			/>
 
-			{filteredPokemon.length === 0 ? (
-				<p className="status-message">Pokemon not found</p>
+			{filteredIndex.length === 0 ? (
+				<p className="status-message">
+					{isTypeLoading ? "Loading…" : "Pokemon not found"}
+				</p>
 			) : (
 				<>
 					<PokemonList
