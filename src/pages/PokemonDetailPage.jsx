@@ -10,6 +10,7 @@ import TypeIcon, {
 	HumanIcon,
 } from "../components/TypeIcon"
 import PokemonImage from "../components/PokemonImage"
+import LoadingSpinner from "../components/LoadingSpinner"
 import { playFavoriteSound } from "../utils/sound"
 import { getPokemonSpecies, getEvolutionChain } from "../api/pokeapi"
 import { flattenEvolutionChain, cleanFlavorText } from "../utils/evolution"
@@ -73,10 +74,10 @@ const PokemonDetailPage = ({ index }) => {
 	}, [pokemon])
 
 	if (!pokemon) {
-		return (
-			<p className="status-message">
-				{existsInIndex ? "Loading…" : "Pokemon not found."}
-			</p>
+		return existsInIndex ? (
+			<LoadingSpinner />
+		) : (
+			<p className="status-message">Pokemon not found.</p>
 		)
 	}
 

@@ -7,6 +7,7 @@ import TypeIcon, { CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
 import BattleArena from "../components/BattleArena"
 import PokemonImage from "../components/PokemonImage"
+import LoadingSpinner from "../components/LoadingSpinner"
 import { usePokemonStore } from "../store/usePokemonStore"
 
 const STAT_BAR_MAX = 200
@@ -178,7 +179,7 @@ const ComparePage = ({ index }) => {
 			{!nameA || !nameB ? (
 				<p className="status-message">Pick two pokemon to compare.</p>
 			) : !pokemonA || !pokemonB ? (
-				<p className="status-message">Loading…</p>
+				<LoadingSpinner />
 			) : (
 				<div className="compare-result">
 					<div className="compare-heads">

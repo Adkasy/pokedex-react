@@ -164,6 +164,79 @@
 	color: #d92d20;
 }
 
+/* ===== Loading spinner — pokeball mantul + bayangan, ganti teks
+   "Loading…" polos ===== */
+.loading-spinner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	padding: 48px 16px;
+}
+
+.loading-spinner-ball {
+	display: inline-flex;
+	color: var(--accent);
+	animation: loading-bounce 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes loading-bounce {
+	0% {
+		transform: translateY(0) rotate(0deg) scale(1, 1);
+	}
+
+	10% {
+		transform: translateY(0) rotate(10deg) scale(1.15, 0.85);
+	}
+
+	35% {
+		transform: translateY(-28px) rotate(170deg) scale(0.95, 1.05);
+	}
+
+	55% {
+		transform: translateY(-28px) rotate(190deg) scale(0.95, 1.05);
+	}
+
+	80% {
+		transform: translateY(0) rotate(350deg) scale(1.15, 0.85);
+	}
+
+	100% {
+		transform: translateY(0) rotate(360deg) scale(1, 1);
+	}
+}
+
+.loading-spinner-shadow {
+	width: 28px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--text);
+	opacity: 0.25;
+	animation: loading-shadow 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes loading-shadow {
+
+	0%,
+	100% {
+		transform: scale(1);
+		opacity: 0.3;
+	}
+
+	35%,
+	55% {
+		transform: scale(0.55);
+		opacity: 0.12;
+	}
+}
+
+.loading-spinner-label {
+	margin: 0;
+	font-size: 14px;
+	color: var(--text);
+	opacity: 0.7;
+}
+
 /* ===== 404 page ===== */
 .not-found-page {
 	display: flex;

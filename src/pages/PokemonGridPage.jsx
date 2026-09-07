@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import PokemonList from "../components/PokemonList"
 import Pagination from "../components/Pagination"
 import { TypeFilter } from "../components/TypeFilter"
+import LoadingSpinner from "../components/LoadingSpinner"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { usePokemonStore } from "../store/usePokemonStore"
 import { useSearchParams } from "react-router"
@@ -122,9 +123,11 @@ const PokemonGridPage = ({ index, keyword }) => {
 			/>
 
 			{filteredIndex.length === 0 ? (
-				<p className="status-message">
-					{isTypeLoading ? "Loading…" : "Pokemon not found"}
-				</p>
+				isTypeLoading ? (
+					<LoadingSpinner />
+				) : (
+					<p className="status-message">Pokemon not found</p>
+				)
 			) : (
 				<>
 					<PokemonList
