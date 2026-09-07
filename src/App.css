@@ -2556,6 +2556,159 @@
 	border-radius: 999px;
 }
 
+/* ===== Gender ratio ===== */
+.gender-ratio-bar {
+	display: flex;
+	height: 10px;
+	border-radius: 999px;
+	overflow: hidden;
+	background: var(--border);
+}
+
+.gender-ratio-fill {
+	height: 100%;
+}
+
+.gender-ratio-fill.is-male {
+	background: #4a90da;
+}
+
+.gender-ratio-fill.is-female {
+	background: #ed6ec7;
+}
+
+.gender-ratio-labels {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 8px;
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.gender-ratio-label.is-male {
+	color: #4a90da;
+}
+
+.gender-ratio-label.is-female {
+	color: #ed6ec7;
+}
+
+.gender-ratio-genderless {
+	margin: 0;
+	color: var(--text);
+	opacity: 0.7;
+	font-size: 13px;
+}
+
+/* ===== Moves ===== */
+.move-badge-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.move-badge {
+	display: inline-block;
+	padding: 4px 12px;
+	border-radius: 999px;
+	background: var(--code-bg);
+	border: 1px solid var(--border);
+	color: var(--text-h);
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: capitalize;
+	white-space: nowrap;
+}
+
+.detail-toggle-btn {
+	appearance: none;
+	-webkit-appearance: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	margin-top: 12px;
+	padding: 6px 14px;
+	border-radius: 999px;
+	border: 1px solid var(--accent-border);
+	background: var(--accent-bg);
+	color: var(--accent);
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		transform 0.15s ease;
+}
+
+.detail-toggle-btn:hover {
+	background: var(--accent);
+	color: #fff;
+	transform: translateY(-1px);
+}
+
+.detail-toggle-icon {
+	transition: transform 0.2s ease;
+}
+
+.detail-toggle-icon.is-expanded {
+	transform: rotate(180deg);
+}
+
+/* ===== Ability details ===== */
+.ability-detail-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.ability-detail-card {
+	padding: 12px 16px;
+	border-radius: 12px;
+	background: var(--code-bg);
+	border: 1px solid var(--border);
+}
+
+.ability-detail-name {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 6px;
+	color: var(--text-h);
+	font-weight: 700;
+	font-size: 14px;
+	text-transform: capitalize;
+}
+
+.ability-detail-hidden {
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: var(--accent-bg);
+	color: var(--accent);
+	font-size: 10px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.3px;
+}
+
+.ability-detail-effect {
+	margin: 0;
+	color: var(--text);
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+.ability-detail-effect.is-loading {
+	opacity: 0.6;
+}
+
+.ability-detail-gen {
+	margin: 6px 0 0;
+	color: var(--text);
+	opacity: 0.6;
+	font-size: 11px;
+	text-transform: capitalize;
+}
+
 /* ===== Pokedex flavor text ===== */
 .detail-flavor-text {
 	margin: 0;

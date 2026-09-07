@@ -1,6 +1,10 @@
 import { Fragment, useEffect, useState } from "react"
 import { useParams, Link, useNavigate } from "react-router"
-import { MdChevronLeft, MdChevronRight } from "react-icons/md"
+import {
+	MdChevronLeft,
+	MdChevronRight,
+	MdKeyboardArrowDown,
+} from "react-icons/md"
 import { getTypeColor } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { usePokemonStore } from "../store/usePokemonStore"
@@ -15,7 +19,11 @@ import TypeIcon, {
 import PokemonImage from "../components/PokemonImage"
 import LoadingSpinner from "../components/LoadingSpinner"
 import { playFavoriteSound } from "../utils/sound"
-import { getPokemonSpecies, getEvolutionChain } from "../api/pokeapi"
+import {
+	getPokemonSpecies,
+	getEvolutionChain,
+	getAbilityDetail,
+} from "../api/pokeapi"
 import { flattenEvolutionChain, cleanFlavorText } from "../utils/evolution"
 import {
 	getCatchDifficulty,
@@ -23,8 +31,11 @@ import {
 	AVERAGE_HUMAN_HEIGHT_M,
 } from "../utils/pokedexFacts"
 import { STAT_LABELS } from "../constants/statLabels"
+import { TYPE_COLORS } from "../constants/typeColors"
+import { getTypeMultiplier } from "../constants/typeChart"
 
 const STAT_BAR_MAX = 200
+const MOVES_PREVIEW_COUNT = 24
 
 const PokemonDetailPage = ({ index }) => {
 	const { name } = useParams()
@@ -47,6 +58,18 @@ const PokemonDetailPage = ({ index }) => {
 	const playCry = useCryPlayerStore((state) => state.playCry)
 	const [species, setSpecies] = useState(null)
 	const [evolutionStages, setEvolutionStages] = useState([])
+	const [abilityDetails, setAbilityDetails] = useState({})
+	const [showAllMoves, setShowAllMoves] = useState(false)
+	// nyimpen `name` yang "udah dilihat" render sebelumnya — dipake buat
+	// reset showAllMoves ke collapsed tiap ganti Pokemon TANPA effect
+	// (component-nya gak remount pas cuma parameter :name yang berubah),
+	// sesuai pattern "adjusting state on a prop change" dari React docs
+	const [prevName, setPrevName] = useState(name)
+
+	if (name !== prevName) {
+		setPrevName(name)
+		setShowAllMoves(false)
+	}
 
 	// prev/next Pokemon ngikutin urutan index (yang ngikutin urutan id
 	// dari PokeAPI) — bukan berdasarkan urutan generation/dex khusus.
@@ -110,6 +133,50 @@ const PokemonDetailPage = ({ index }) => {
 		}
 	}, [pokemon])
 
+	// deskripsi efek tiap ability — di-fetch on-demand per ability yang
+	// belum ada, digabung ke cache lama (bukan ditimpa) jadi ability yang
+	// sama dipake Pokemon lain gak perlu di-fetch ulang
+	useEffect(() => {
+		if (!pokemon) return
+
+		let cancelled = false
+
+		const fetchAbilities = async () => {
+			const missing = pokemon.abilities.filter(
+				(a) => !abilityDetails[a.ability.name],
+			)
+			if (missing.length === 0) return
+
+			try {
+				const results = await Promise.all(
+					missing.map((a) => getAbilityDetail(a.ability.name)),
+				)
+
+				if (cancelled) return
+
+				setAbilityDetails((prev) => {
+					const next = { ...prev }
+					results.forEach((detail) => {
+						next[detail.name] = detail
+					})
+					return next
+				})
+			} catch {
+				// ability detail juga nice-to-have — biarin section-nya
+				// nunjukin nama abilitynya doang tanpa deskripsi
+			}
+		}
+
+		fetchAbilities()
+
+		return () => {
+			cancelled = true
+		}
+		// `abilityDetails` sengaja gak dimasukin ke deps — efek ini sendiri
+		// yang nge-update state itu, dimasukin bakal infinite-loop
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [pokemon])
+
 	if (!pokemon) {
 		return existsInIndex ? (
 			<LoadingSpinner />
@@ -130,6 +197,19 @@ const PokemonDetailPage = ({ index }) => {
 	)
 	const catchDifficulty = getCatchDifficulty(species?.capture_rate)
 	const pokemonHeightM = pokemon.height / 10
+
+	// type yang efektif >1x ke gabungan type Pokemon ini — dihitung dari
+	// type chart yang sama kayak yang dipake battle simulator, jadi gak
+	// perlu fetch tambahan buat ini
+	const defenderTypes = pokemon.types.map((t) => t.type.name)
+	const weaknesses = Object.keys(TYPE_COLORS).filter(
+		(attackType) => getTypeMultiplier(attackType, defenderTypes) > 1,
+	)
+
+	const moveNames = [...new Set(pokemon.moves.map((m) => m.move.name))].sort()
+	const visibleMoves = showAllMoves
+		? moveNames
+		: moveNames.slice(0, MOVES_PREVIEW_COUNT)
 
 	const MAX_FIGURE_PX = 140
 	const MIN_FIGURE_PX = 20
@@ -310,7 +390,66 @@ const PokemonDetailPage = ({ index }) => {
 							<span className="detail-data-value">{catchDifficulty}</span>
 						</div>
 					)}
+					{species?.habitat && (
+						<div className="detail-data-row">
+							<span className="detail-data-label">Habitat</span>
+							<span className="detail-data-value">
+								{species.habitat.name.replace(/-/g, " ")}
+							</span>
+						</div>
+					)}
+					{species?.growth_rate && (
+						<div className="detail-data-row">
+							<span className="detail-data-label">Growth Rate</span>
+							<span className="detail-data-value">
+								{species.growth_rate.name.replace(/-/g, " ")}
+							</span>
+						</div>
+					)}
+					{species?.egg_groups?.length > 0 && (
+						<div className="detail-data-row">
+							<span className="detail-data-label">Egg Groups</span>
+							<span className="detail-data-value">
+								{species.egg_groups
+									.map((g) => g.name.replace(/-/g, " "))
+									.join(", ")}
+							</span>
+						</div>
+					)}
 				</section>
+
+				{species && (
+					<section className="detail-section">
+						<h2 className="detail-section-title" style={{ color: primaryColor }}>
+							Gender Ratio
+						</h2>
+
+						{species.gender_rate === -1 ? (
+							<p className="gender-ratio-genderless">Genderless</p>
+						) : (
+							<>
+								<div className="gender-ratio-bar">
+									<div
+										className="gender-ratio-fill is-male"
+										style={{ width: `${100 - (species.gender_rate / 8) * 100}%` }}
+									/>
+									<div
+										className="gender-ratio-fill is-female"
+										style={{ width: `${(species.gender_rate / 8) * 100}%` }}
+									/>
+								</div>
+								<div className="gender-ratio-labels">
+									<span className="gender-ratio-label is-male">
+										♂ {(100 - (species.gender_rate / 8) * 100).toFixed(1)}%
+									</span>
+									<span className="gender-ratio-label is-female">
+										♀ {((species.gender_rate / 8) * 100).toFixed(1)}%
+									</span>
+								</div>
+							</>
+						)}
+					</section>
+				)}
 
 				<section className="detail-section">
 					<h2 className="detail-section-title" style={{ color: primaryColor }}>
@@ -414,6 +553,98 @@ const PokemonDetailPage = ({ index }) => {
 						</div>
 					))}
 				</section>
+
+				{weaknesses.length > 0 && (
+					<section className="detail-section">
+						<h2 className="detail-section-title" style={{ color: primaryColor }}>
+							Weaknesses
+						</h2>
+
+						<div className="type-badge-row">
+							{weaknesses.map((typeName) => (
+								<span key={typeName} className="type-badge">
+									<TypeIcon type={typeName} size={12} />
+									{typeName}
+								</span>
+							))}
+						</div>
+					</section>
+				)}
+
+				{moveNames.length > 0 && (
+					<section className="detail-section">
+						<h2 className="detail-section-title" style={{ color: primaryColor }}>
+							Moves
+						</h2>
+
+						<div className="move-badge-row">
+							{visibleMoves.map((moveName) => (
+								<span key={moveName} className="move-badge">
+									{moveName}
+								</span>
+							))}
+						</div>
+
+						{moveNames.length > MOVES_PREVIEW_COUNT && (
+							<button
+								type="button"
+								className="detail-toggle-btn"
+								onClick={() => setShowAllMoves((v) => !v)}
+							>
+								{showAllMoves ? "Show less" : `Show all (${moveNames.length})`}
+								<MdKeyboardArrowDown
+									className={`detail-toggle-icon${
+										showAllMoves ? " is-expanded" : ""
+									}`}
+									size={18}
+								/>
+							</button>
+						)}
+					</section>
+				)}
+
+				{pokemon.abilities.length > 0 && (
+					<section className="detail-section">
+						<h2 className="detail-section-title" style={{ color: primaryColor }}>
+							Ability Details
+						</h2>
+
+						<div className="ability-detail-list">
+							{pokemon.abilities.map((a) => {
+								const detail = abilityDetails[a.ability.name]
+								const effect = detail?.effect_entries.find(
+									(e) => e.language.name === "en",
+								)
+
+								return (
+									<div key={a.ability.name} className="ability-detail-card">
+										<p className="ability-detail-name">
+											{a.ability.name}
+											{a.is_hidden && (
+												<span className="ability-detail-hidden">Hidden</span>
+											)}
+										</p>
+
+										{effect ? (
+											<>
+												<p className="ability-detail-effect">
+													{effect.short_effect}
+												</p>
+												<p className="ability-detail-gen">
+													Generation: {detail.generation.name}
+												</p>
+											</>
+										) : (
+											<p className="ability-detail-effect is-loading">
+												Loading…
+											</p>
+										)}
+									</div>
+								)
+							})}
+						</div>
+					</section>
+				)}
 
 				{evolutionStages.length > 1 && (
 					<section className="detail-section">

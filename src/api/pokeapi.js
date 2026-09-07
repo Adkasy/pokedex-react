@@ -67,6 +67,12 @@ const getEvolutionChain = async (url) => {
 	return res.json()
 }
 
+const getAbilityDetail = async (name) => {
+	const res = await fetch(`${BASE_URL}/ability/${name}`)
+	if (!res.ok) throw new Error("Error data ability")
+	return res.json()
+}
+
 export {
 	BASE_URL,
 	getArtworkUrl,
@@ -75,4 +81,5 @@ export {
 	getDataDetailPokemon,
 	getPokemonSpecies,
 	getEvolutionChain,
+	getAbilityDetail,
 }
