@@ -516,46 +516,24 @@
 	text-transform: capitalize;
 }
 
-/* "VS" jadi chip HUD kecil — bentuk oktagon (sudut kepotong, kesan
-   "tech panel", bukan lingkaran/kotak biasa), border tipis gradient
-   ngikutin warna type ke-2 sisi (dibikin dari 2 layer: layer luar
-   full gradient, layer dalem dark fill — jaraknya via padding 2px,
-   itu yang jadi "border"-nya), glow tipis di luar biar nyambung sama
-   chip2 lain (round chip/scoreboard) yang juga ada glow soft. Gak
-   dimiringin lagi & teksnya mono biar kesannya minimalis/futuristik,
-   bukan comic stamp */
+/* "VS" tanpa box/border sama sekali — cuma teks mono gede yang
+   di-"cat" gradient ngikutin warna type ke-2 sisi (background-clip:
+   text), plus glow tipis di belakangnya. Lebih minimalis daripada
+   naruh chip/badge apapun di sekitarnya */
 .compare-vs {
-	--vs-clip: polygon(
-		24% 0%, 76% 0%, 100% 24%, 100% 76%,
-		76% 100%, 24% 100%, 0% 76%, 0% 24%
-	);
 	flex-shrink: 0;
 	align-self: center;
 	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 44px;
-	height: 44px;
-	padding: 2px;
-	clip-path: var(--vs-clip);
-	background: linear-gradient(135deg, var(--vs-color-a, var(--accent)), var(--vs-color-b, var(--accent)));
-	box-shadow: 0 0 18px -6px var(--vs-color-a, var(--accent));
-}
-
-.compare-vs-inner {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	height: 100%;
-	clip-path: var(--vs-clip);
-	background: var(--code-bg);
-	color: var(--text-h);
 	font-family: var(--mono);
-	font-size: 12px;
+	font-size: 22px;
 	font-weight: 800;
-	letter-spacing: 0.1em;
+	letter-spacing: 0.06em;
 	line-height: 1;
+	background: linear-gradient(135deg, var(--vs-color-a, var(--accent)), var(--vs-color-b, var(--accent)));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.18));
 }
 
 .compare-stats {
@@ -1159,12 +1137,10 @@
 	}
 }
 
-/* efek tebasan pedang melengkung yang numpuk di atas flash putih-nya
-   .battle-fighter-image — bukan garis lurus nyilang lagi, tapi 1 path
-   lengkung yang "digambar" progresif (stroke-dashoffset 1 -> 0) biar
-   keliatan kaya nebas/nyapu ngalir, bukan langsung nongol utuh.
-   glow-nya path sama tapi lebih tebal + blur di belakang path
-   tipis/tajam-nya biar keliatan ada "cahaya" ngikutin ujung tebasan */
+/* efek "cakar/tebasan" — bidang solid (bukan garis tipis lagi) yang
+   numpuk di atas flash putih-nya .battle-fighter-image, referensinya
+   bekas cakaran runcing di 2 ujung, ngelebar di tengah, sama 1 notch
+   kecil di sisi dalem biar gak terlalu mulus */
 .battle-hit-slash {
 	position: absolute;
 	inset: -20%;
@@ -1173,40 +1149,32 @@
 	pointer-events: none;
 }
 
-.battle-hit-slash-glow,
-.battle-hit-slash-edge {
-	fill: none;
-	stroke-linecap: round;
-	stroke-dasharray: 1;
-	stroke-dashoffset: 1;
-	animation: battle-hit-slash-draw 0.42s ease-out forwards;
+.battle-hit-slash-claw {
+	fill: #fff;
+	filter:
+		drop-shadow(0 0 6px rgba(150, 220, 255, 0.85))
+		drop-shadow(0 0 12px rgba(255, 255, 255, 0.5));
+	transform-origin: 14% 10%;
+	animation: battle-hit-claw-draw 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-.battle-hit-slash-glow {
-	stroke: rgba(255, 255, 255, 0.55);
-	stroke-width: 10;
-	filter: blur(4px);
-}
-
-.battle-hit-slash-edge {
-	stroke: #fff;
-	stroke-width: 2.5;
-	filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
-}
-
-@keyframes battle-hit-slash-draw {
+@keyframes battle-hit-claw-draw {
 	0% {
-		stroke-dashoffset: 1;
+		transform: scale(0.2);
+		opacity: 0;
+	}
+
+	14% {
 		opacity: 1;
 	}
 
-	55% {
-		stroke-dashoffset: 0;
+	60% {
+		transform: scale(1);
 		opacity: 1;
 	}
 
 	100% {
-		stroke-dashoffset: 0;
+		transform: scale(1.05);
 		opacity: 0;
 	}
 }

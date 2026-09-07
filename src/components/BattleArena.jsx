@@ -3,7 +3,7 @@ import { GiCrossedSwords, GiTrophy } from "react-icons/gi"
 import { MdInfoOutline, MdClose } from "react-icons/md"
 import { simulateBattle } from "../utils/battleSimulator"
 import { getTypeColor } from "../constants/typeColors"
-import { playVictorySound, playBattleStartSound } from "../utils/sound"
+import { playVictorySound, playBattleStartSound, playHitSound } from "../utils/sound"
 import PokemonImage from "./PokemonImage"
 
 const REVEAL_DELAY_MS = 500
@@ -46,15 +46,20 @@ const BattleHpBar = ({ name, hp, maxHp }) => {
 	)
 }
 
-// path melengkung kaya tebasan pedang (bukan garis lurus/nyilang) —
-// pathLength="1" bikin panjang path dinormalisasi jadi 0-1 apapun
-// bentuk lengkungnya, jadi stroke-dasharray/dashoffset di CSS bisa
-// "gambar" path-nya dikit demi dikit (kesan tebasannya njalar/nyapu,
-// bukan langsung muncul utuh)
+// shape "cakar" — bukan garis tipis lagi, tapi bidang solid runcing
+// yang ngelebar di tengah terus ngecil lagi ke 2 ujungnya (kaya bekas
+// cakaran/tebasan pedang beneran), ada 1 notch/gerigi kecil di sisi
+// dalemnya biar gak terlalu mulus & polos. Animasinya nge-scale dari
+// titik ujung tajemnya (transform-origin di titik itu) biar kesannya
+// nyapu keluar dari 1 titik, bukan cuma fade in
 const SlashFX = () => (
 	<svg className="battle-hit-slash" viewBox="0 0 100 100" aria-hidden="true">
-		<path className="battle-hit-slash-glow" d="M18,85 Q55,60 85,15" pathLength="1" />
-		<path className="battle-hit-slash-edge" d="M18,85 Q55,60 85,15" pathLength="1" />
+		<path
+			className="battle-hit-slash-claw"
+			d="M14,10 C42,16 70,42 86,80 C80,90 70,92 62,88
+				C56,74 60,66 52,58 L58,64 L46,50
+				C38,38 26,24 14,10 Z"
+		/>
 	</svg>
 )
 
@@ -218,6 +223,15 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	useEffect(() => {
 		if (winnerPokemon) playVictorySound()
 	}, [winnerPokemon])
+
+	// bunyi "krak" tiap ada attack entry baru ke-reveal — `latest` cuma
+	// ganti reference pas revealCount beneran maju ke entry berikutnya
+	// (visibleLog di-slice ulang tiap render, tapi entry-entry di
+	// dalemnya reference yang sama dari battle.log), jadi efek ini gak
+	// nembak berkali-kali gara-gara re-render biasa
+	useEffect(() => {
+		if (latest?.type === "attack") playHitSound(latest.isCrit)
+	}, [latest])
 
 	// "result" gak ditampilin di chat — udah ada banner winner-nya sendiri
 	const chatEntries = visibleLog.filter((entry) => entry.type !== "result")
