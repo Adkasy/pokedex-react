@@ -213,7 +213,7 @@
 	justify-content: center;
 	gap: 5px;
 	width: fit-content;
-	margin: 0 auto 24px;
+	margin: 0 auto 16px;
 	padding: 5px 12px;
 	font-size: 12px;
 	font-weight: 600;
@@ -434,8 +434,11 @@
 	margin-top: 14px;
 }
 
-/* ===== "Battle Begin!" — flash fullscreen sesaat pas tombol
-   Simulate diklik, biar berasa ada "kickoff" sebelum log battle jalan ===== */
+/* ===== "Battle Begin!" — flash fullscreen sesaat pas tombol Simulate
+   diklik, biar berasa ada "kickoff" sebelum log battle jalan. Dibuat
+   dari beberapa layer numpuk (flash kamera, rays muter, ring ngembang,
+   slash diagonal, teks) biar berasa kayak impact frame di anime/game
+   fighting, bukan cuma teks doang muncul-ilang. ===== */
 .battle-begin-overlay {
 	position: fixed;
 	inset: 0;
@@ -443,13 +446,10 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	overflow: hidden;
 	pointer-events: none;
-	background: radial-gradient(
-		circle,
-		rgba(255, 107, 87, 0.35),
-		rgba(0, 0, 0, 0.6) 70%
-	);
-	animation: battle-begin-bg 0.9s ease forwards;
+	background: #050505;
+	animation: battle-begin-bg 1.9s ease forwards;
 }
 
 @keyframes battle-begin-bg {
@@ -457,12 +457,12 @@
 		opacity: 0;
 	}
 
-	12% {
-		opacity: 1;
+	8% {
+		opacity: 0.88;
 	}
 
-	75% {
-		opacity: 1;
+	80% {
+		opacity: 0.88;
 	}
 
 	100% {
@@ -470,23 +470,149 @@
 	}
 }
 
+.battle-begin-flash {
+	position: absolute;
+	inset: 0;
+	background: #fff;
+	animation: battle-begin-flash-pulse 0.55s ease-out forwards;
+}
+
+@keyframes battle-begin-flash-pulse {
+	0% {
+		opacity: 0.95;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+.battle-begin-rays {
+	position: absolute;
+	width: 220vmax;
+	height: 220vmax;
+	background: repeating-conic-gradient(
+		from 0deg,
+		rgba(255, 107, 87, 0.28) 0deg 6deg,
+		transparent 6deg 15deg
+	);
+	animation:
+		battle-begin-rays-spin 1.9s linear forwards,
+		battle-begin-rays-fade 1.9s ease forwards;
+}
+
+@keyframes battle-begin-rays-spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(25deg);
+	}
+}
+
+@keyframes battle-begin-rays-fade {
+	0% {
+		opacity: 0;
+	}
+
+	18% {
+		opacity: 1;
+	}
+
+	78% {
+		opacity: 0.7;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+.battle-begin-ring {
+	position: absolute;
+	width: 30px;
+	height: 30px;
+	border: 5px solid var(--accent);
+	border-radius: 50%;
+	animation: battle-begin-ring-expand 1.4s cubic-bezier(0.1, 0.6, 0.3, 1) forwards;
+}
+
+@keyframes battle-begin-ring-expand {
+	0% {
+		width: 30px;
+		height: 30px;
+		opacity: 0.95;
+	}
+
+	60% {
+		opacity: 0.4;
+	}
+
+	100% {
+		width: 1600px;
+		height: 1600px;
+		opacity: 0;
+	}
+}
+
+.battle-begin-slash {
+	position: absolute;
+	width: 160%;
+	height: 90px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		var(--accent) 35%,
+		#fff 50%,
+		var(--accent) 65%,
+		transparent
+	);
+	transform: rotate(-7deg) scaleX(0);
+	opacity: 0;
+	animation: battle-begin-slash-in 1.1s cubic-bezier(0.16, 0.9, 0.25, 1) forwards;
+}
+
+@keyframes battle-begin-slash-in {
+	0% {
+		transform: rotate(-7deg) scaleX(0);
+		opacity: 0;
+	}
+
+	22% {
+		transform: rotate(-7deg) scaleX(1);
+		opacity: 0.9;
+	}
+
+	55% {
+		opacity: 0.5;
+	}
+
+	100% {
+		transform: rotate(-7deg) scaleX(1);
+		opacity: 0;
+	}
+}
+
 .battle-begin-text {
+	position: relative;
 	display: flex;
 	align-items: center;
-	gap: 16px;
+	gap: 20px;
 	font-family: var(--heading);
-	font-size: 56px;
+	font-size: 76px;
 	font-weight: 800;
-	letter-spacing: 1px;
+	letter-spacing: 2px;
 	color: #fff;
 	text-transform: uppercase;
 	text-shadow:
-		0 0 30px var(--accent),
-		0 4px 14px rgba(0, 0, 0, 0.6);
-	animation: battle-begin-in 0.9s cubic-bezier(0.2, 0.85, 0.3, 1.3) forwards;
+		0 0 40px var(--accent),
+		0 0 80px rgba(255, 107, 87, 0.6),
+		0 6px 16px rgba(0, 0, 0, 0.7);
+	animation: battle-begin-in 1.9s cubic-bezier(0.15, 0.8, 0.25, 1.15) forwards;
 
 	@media (max-width: 640px) {
-		font-size: 30px;
+		font-size: 36px;
 		gap: 10px;
 	}
 }
@@ -494,30 +620,30 @@
 @keyframes battle-begin-in {
 	0% {
 		opacity: 0;
-		transform: scale(2.4);
+		transform: scale(3.2);
 	}
 
-	18% {
+	20% {
 		opacity: 1;
-		transform: scale(0.92);
+		transform: scale(0.9);
 	}
 
 	30% {
-		transform: scale(1.04);
+		transform: scale(1.06);
 	}
 
-	42% {
+	40% {
 		transform: scale(1);
 	}
 
-	78% {
+	85% {
 		opacity: 1;
 		transform: scale(1);
 	}
 
 	100% {
 		opacity: 0;
-		transform: scale(1.08);
+		transform: scale(1.1);
 	}
 }
 

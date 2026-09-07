@@ -6,13 +6,18 @@ import { getTypeColor } from "../constants/typeColors"
 import { playVictorySound, playBattleStartSound } from "../utils/sound"
 
 const REVEAL_DELAY_MS = 700
-const BATTLE_BEGIN_MS = 900
+const BATTLE_BEGIN_MS = 1900
 
 const BattleBeginOverlay = () => (
 	<div className="battle-begin-overlay" aria-hidden="true">
+		<div className="battle-begin-flash" />
+		<div className="battle-begin-rays" />
+		<div className="battle-begin-ring" />
+		<div className="battle-begin-slash" />
 		<div className="battle-begin-text">
-			<GiCrossedSwords size={40} />
+			<GiCrossedSwords size={52} />
 			Battle Begin!
+			<GiCrossedSwords size={52} />
 		</div>
 	</div>
 )
