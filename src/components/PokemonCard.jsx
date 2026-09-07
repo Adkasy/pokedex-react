@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router"
-import { getTypeColor, hexToRgba } from "../constants/typeColors"
+import { getPrimaryTypeColor, hexToRgba } from "../constants/typeColors"
 import TypeIcon, { PlayIcon, StarIcon, WaveformIcon } from "./TypeIcon"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { useCryPlayerStore } from "../store/useCryPlayerStore"
@@ -17,7 +17,7 @@ const PokemonCard = ({
 	onAddFavorite,
 }) => {
 	const [frozenIndex] = useState(index)
-	const primaryColor = getTypeColor(types?.[0]?.type?.name)
+	const primaryColor = getPrimaryTypeColor(types)
 	const isFavorite = useFavoriteStore((state) =>
 		state.favorites.some((f) => f.id === id),
 	)

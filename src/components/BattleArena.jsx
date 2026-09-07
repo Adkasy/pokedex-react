@@ -2,12 +2,15 @@ import { useEffect, useRef, useState } from "react"
 import { GiCrossedSwords, GiTrophy } from "react-icons/gi"
 import { MdInfoOutline, MdClose } from "react-icons/md"
 import { simulateBattle } from "../utils/battleSimulator"
-import { getTypeColor } from "../constants/typeColors"
+import { getPrimaryTypeColor } from "../constants/typeColors"
 import { playVictorySound, playBattleStartSound, playHitSound } from "../utils/sound"
 import PokemonImage from "./PokemonImage"
 
 const REVEAL_DELAY_MS = 500
 const BATTLE_BEGIN_MS = 950
+const SPARK_COUNT = 7
+const CONFETTI_COLORS = ["#ff6b57", "#5b9dff", "#34d399", "#fbbf24", "#e879f9"]
+const CONFETTI_COUNT = 70
 
 const BattleBeginOverlay = () => (
 	<div className="battle-begin-overlay" aria-hidden="true">
@@ -46,15 +49,12 @@ const BattleHpBar = ({ name, hp, maxHp }) => {
 	)
 }
 
-const SPARK_COUNT = 7
-
-// percikan kecil yang mumbul dari titik ujung tumpul si cakaran (tempat
-// "kontak"-nya) — beberapa garis pendek yang sebar ke segala arah terus
-// ilang cepet, ngasih kesan ada serpihan kena tebas, bukan cuma 1
-// bidang solid doang tanpa detail
+// percikan yang mumbul dari ujung tebasan pas kena hit — beberapa garis
+// pendek yang sebar ke segala arah terus ilang cepet
 const HitSparks = () => {
-	// lazy initializer — 1x doang pas mount, jadi generate arah random
-	// di sini valid (SlashFX di-remount tiap hit lewat key={revealCount})
+	// lazy initializer — cuma jalan sekali pas mount, jadi generate arah
+	// random di sini valid (SlashFX di bawah di-remount tiap hit lewat
+	// key={revealCount}, jadi percikannya otomatis dapet arah baru tiap kali)
 	const [sparks] = useState(() =>
 		Array.from({ length: SPARK_COUNT }).map((_, i) => ({
 			id: i,
@@ -86,14 +86,10 @@ const HitSparks = () => {
 	)
 }
 
-// blade-nya sendiri gambarnya masih di orientasi lama (runcing
-// kiri-bawah, cabang kanan-atas) — TAPI seluruhnya dibungkus <g
-// transform="rotate(180 50 50)"> jadi keliatannya kebalik: runcing
-// kanan-ATAS, cabang/blunt-nya kiri-BAWAH. Muter grup-nya (bukan
-// nulis ulang koordinat) biar path & posisi spark-nya otomatis ikut
-// konsisten tanpa itung ulang manual. Lengkungnya juga ditambah
-// dikit (control point sisi luar/dalem digeser lebih jauh dari garis
-// lurusnya) dibanding versi sebelumnya
+// efek tebasan yang muncul sesaat di fighter yang kena hit — blade-nya
+// digambar runcing di kiri-bawah/tumpul di kanan-atas, terus dibungkus
+// <g transform="rotate(180 ...)"> biar arahnya kebalik jadi runcing di
+// kanan-atas (muter grup-nya, bukan itung ulang tiap koordinat manual)
 const SlashFX = () => (
 	<svg className="battle-hit-slash" viewBox="0 0 100 100" aria-hidden="true">
 		<g transform="rotate(180 50 50)">
@@ -109,9 +105,6 @@ const SlashFX = () => (
 		</g>
 	</svg>
 )
-
-const CONFETTI_COLORS = ["#ff6b57", "#5b9dff", "#34d399", "#fbbf24", "#e879f9"]
-const CONFETTI_COUNT = 70
 
 const Confetti = () => {
 	// lazy initializer — cuma jalan sekali pas mount (bukan tiap
@@ -148,8 +141,152 @@ const Confetti = () => {
 	)
 }
 
+// popover "How damage works" — isinya statis (gak butuh state dari battle
+// yang lagi jalan), jadi di-component-in sendiri biar return BattleArena
+// utama lebih pendek/gampang dibaca
+const BattleInfoPopover = ({ onClose }) => (
+	<div className="battle-info-popover">
+		<div className="battle-info-header">
+			<p className="battle-info-title">How damage works</p>
+			<button className="battle-info-close" onClick={onClose} aria-label="Close">
+				<MdClose size={16} />
+			</button>
+		</div>
+
+		<div className="battle-info-formula">
+			<code className="f-chip f-chip-neutral">Damage</code>
+			<span className="f-op">=</span>
+			<code className="f-chip f-chip-atk">
+				Attack <span className="f-op-inline">÷</span> Defense
+			</code>
+			<span className="f-op">×</span>
+			<code className="f-chip f-chip-type">Type Effectiveness</code>
+			<span className="f-op">×</span>
+			<code className="f-chip f-chip-luck">Luck</code>
+		</div>
+
+		<ul className="battle-info-list">
+			<li>
+				<code className="f-chip f-chip-atk">
+					Attack <span className="f-op-inline">÷</span> Defense
+				</code>
+				: the attacker&rsquo;s Attack against the target&rsquo;s Defense. Higher
+				Attack (or a weaker target Defense) means more damage.
+			</li>
+			<li>
+				<code className="f-chip f-chip-type">Type Effectiveness</code>: follows
+				the same type chart as the games. e.g. Water beats Fire, Fire beats
+				Grass, Grass beats Water. A super effective hit does more damage, a
+				resisted hit does less.
+			</li>
+			<li>
+				<code className="f-chip f-chip-luck">Luck</code>: a small random swing
+				(75% to 100%), so a rematch won&rsquo;t always go the same way.
+			</li>
+		</ul>
+
+		<p className="battle-info-subheading">Other battle rules</p>
+
+		<ul className="battle-info-list">
+			<li>
+				<code className="f-chip f-chip-crit">Critical Hit</code>: on top of
+				all that, every attack also has a small 10% chance to land a
+				critical hit for 1.5 × extra damage.
+			</li>
+			<li>
+				<code className="f-chip f-chip-neutral">30 Rounds</code>: if neither
+				Pokémon is KO&rsquo;d by round 30, the battle ends in a draw instead
+				of dragging on forever.
+			</li>
+		</ul>
+	</div>
+)
+
+// 1 fighter (sprite + efek pas nyerang/kena hit/KO) — dipake 2x (side A
+// & B) jadi di-component-in daripada nulis JSX yang sama dua kali
+const BattleFighter = ({ side, pokemon, color, isActing, isHit, isFainted, revealCount }) => (
+	<div
+		className={`battle-fighter side-${side}${isActing ? " is-acting" : ""}${
+			isHit ? " is-hit" : ""
+		}${isFainted ? " is-fainted" : ""}`}
+		style={{ "--fighter-color": color }}
+	>
+		<PokemonImage
+			className="battle-fighter-image"
+			src={pokemon.image}
+			alt={pokemon.name}
+			iconSize={102}
+		/>
+		{isHit && <SlashFX key={revealCount} />}
+	</div>
+)
+
+// nekenin "N damage" jadi chip kecil di dalem teks log, bukan cuma
+// nyempil polos di tengah kalimat — pure function (cuma butuh `entry`),
+// jadi ditaro di luar component biar gampang dipake ulang/di-test
+const renderAttackText = (entry) => {
+	const marker = `${entry.damage} damage`
+	const idx = entry.text.indexOf(marker)
+	if (idx === -1) return entry.text
+
+	return (
+		<>
+			{entry.text.slice(0, idx)}
+			<span className={`battle-damage-chip${entry.isSuperEffective ? " is-super" : ""}`}>
+				{entry.damage} damage
+			</span>
+			{entry.text.slice(idx + marker.length)}
+		</>
+	)
+}
+
+// 1 baris log battle — bubble percakapan buat entry "attack", teks
+// tengah polos buat entry system lain ("X moves first!", "X is KO'd!")
+const BattleChatEntry = ({ entry, isLatest, pokemon, color }) => {
+	if (entry.type !== "attack") {
+		return (
+			<li className={`battle-chat-system${isLatest ? " is-latest" : ""}`}>
+				{entry.text}
+			</li>
+		)
+	}
+
+	return (
+		<li className={`battle-chat-row side-${entry.side}${isLatest ? " is-latest" : ""}`}>
+			<PokemonImage className="battle-chat-avatar" src={pokemon.image} iconSize={62} />
+			<div
+				className={`battle-chat-bubble${entry.isCrit ? " is-crit" : ""}`}
+				style={{ backgroundColor: color }}
+			>
+				{entry.isCrit && <span className="battle-crit-badge">💥 Critical Hit</span>}
+				{renderAttackText(entry)}
+			</div>
+		</li>
+	)
+}
+
+// banner kemenangan — confetti + sprite dengan spotlight warna type-nya
+// + tombol "X wins!" yang bisa diklik ulang buat nembak confetti lagi
+const BattleWinnerBanner = ({ pokemon, color, confettiBurst, onCelebrateAgain }) => (
+	<div className="battle-winner">
+		<Confetti key={confettiBurst} />
+		<div className="battle-winner-spotlight" style={{ "--winner-color": color }}>
+			<PokemonImage
+				className="battle-winner-image"
+				src={pokemon.image}
+				alt={pokemon.name}
+				iconSize={160}
+			/>
+		</div>
+		<button className="battle-winner-ribbon" onClick={onCelebrateAgain} title="Celebrate again!">
+			<GiTrophy size={16} />
+			{pokemon.name} wins!
+		</button>
+	</div>
+)
+
 const BattleArena = ({ pokemonA, pokemonB }) => {
-	const [battle, setBattle] = useState(null) // { log, maxHpA, maxHpB, winner }
+	const [battle, setBattle] = useState(null) // { log, maxHpA, maxHpB, winner, maxRounds }
 	const [revealCount, setRevealCount] = useState(0)
 	const [showInfo, setShowInfo] = useState(false)
 	const [scoreboard, setScoreboard] = useState({ a: 0, b: 0, draw: 0 })
@@ -160,9 +297,12 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	const logRef = useRef(null)
 	const arenaRef = useRef(null)
 	const infoWrapRef = useRef(null)
-	const colorA = getTypeColor(pokemonA.types?.[0]?.type?.name)
-	const colorB = getTypeColor(pokemonB.types?.[0]?.type?.name)
+	const colorA = getPrimaryTypeColor(pokemonA.types)
+	const colorB = getPrimaryTypeColor(pokemonB.types)
 
+	// reveal log-nya 1 entry per tick (bukan langsung nampilin semua),
+	// biar battle-nya kerasa "real-time" — timer di-reset tiap revealCount
+	// berubah, jadi ini otomatis jalan berulang sampe log-nya abis
 	useEffect(() => {
 		if (!battle || revealCount >= battle.log.length) return
 
@@ -170,17 +310,15 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 			// begitu entry "faint" (salah satu Pokemon KO) kereveal, match-nya
 			// dianggep kelar seketika — lompat langsung ke akhir log (skip
 			// nunggu 1 tick lagi buat entry "result", yang toh gak
-			// ditampilin di chat-nya juga) biar gak ada jeda dimana si
-			// pemenang masih sempet ke-highlight/animasi lagi abis lawannya
-			// udah jatuh
+			// ditampilin di chat) biar gak ada jeda dimana si pemenang masih
+			// sempet ke-highlight lagi abis lawannya udah jatuh
 			const justRevealed = battle.log[revealCount]
 			const nextCount =
 				justRevealed?.type === "faint" ? battle.log.length : revealCount + 1
 			setRevealCount(nextCount)
 
-			// battle baru aja kelar kereveal semua — sekalian catet
-			// skornya di sini (di dalem callback, bukan langsung di body
-			// effect) sekali doang buat battle ini
+			// battle baru aja kereveal semua — sekalian catet skornya di sini
+			// (di dalem callback, bukan langsung di body effect) sekali doang
 			if (nextCount >= battle.log.length) {
 				setScoreboard((prev) => ({
 					...prev,
@@ -196,20 +334,15 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	// winner-nya nongol (dia bagian dari kontainer scroll yang sama),
 	// jadi gak perlu effect terpisah lagi buat itu
 	useEffect(() => {
-		logRef.current?.scrollTo({
-			top: logRef.current.scrollHeight,
-			behavior: "auto",
-		})
+		logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "auto" })
 	}, [revealCount])
 
 	useEffect(() => {
-		// useEffect udah jalan SETELAH React commit DOM-nya, jadi
-		// arenaRef.current di sini udah pasti ke-render & posisinya
-		// akurat — gak perlu nunggu requestAnimationFrame segala (itu
-		// malah bisa gak jalan kalau tab/pane lagi background/hidden).
-		// Tinggi arena-nya sendiri KONSTAN sepanjang battle (chat log
-		// scroll di dalem kontainer fix-height-nya sendiri), jadi cukup
-		// fokus SEKALI di sini — gak perlu di-scroll ulang lagi nanti.
+		// effect ini jalan SETELAH React commit DOM-nya, jadi arenaRef.current
+		// di sini udah pasti ke-render & posisinya akurat — gak perlu
+		// requestAnimationFrame (yang malah bisa gak jalan kalau tab lagi
+		// background/hidden). Tinggi arena-nya konstan sepanjang battle (chat
+		// log scroll di kontainer fix-height-nya sendiri), jadi cukup sekali.
 		if (!battle) return
 		arenaRef.current?.scrollIntoView({ behavior: "auto", block: "start" })
 	}, [battle])
@@ -217,32 +350,28 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	useEffect(() => {
 		if (!showInfo) return
 
-		// klik di mana pun di luar popover/tombolnya bakal nutup popover-nya
 		const handleClickOutside = (e) => {
-			if (!infoWrapRef.current?.contains(e.target)) {
-				setShowInfo(false)
-			}
+			if (!infoWrapRef.current?.contains(e.target)) setShowInfo(false)
 		}
 
 		document.addEventListener("mousedown", handleClickOutside)
 		return () => document.removeEventListener("mousedown", handleClickOutside)
 	}, [showInfo])
 
-	const isSimulating = battle && revealCount < battle.log.length
-
-	const handleSimulate = () => {
-		const result = simulateBattle(pokemonA, pokemonB)
-		setBattle(result)
-		setRevealCount(0)
-		setShowBattleBegin(true)
-		playBattleStartSound()
-	}
-
 	useEffect(() => {
 		if (!showBattleBegin) return
 		const timer = setTimeout(() => setShowBattleBegin(false), BATTLE_BEGIN_MS)
 		return () => clearTimeout(timer)
 	}, [showBattleBegin])
+
+	const isSimulating = battle && revealCount < battle.log.length
+
+	const handleSimulate = () => {
+		setBattle(simulateBattle(pokemonA, pokemonB))
+		setRevealCount(0)
+		setShowBattleBegin(true)
+		playBattleStartSound()
+	}
 
 	const visibleLog = battle ? battle.log.slice(0, revealCount) : []
 	const latest = visibleLog[visibleLog.length - 1]
@@ -253,20 +382,17 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	const currentHpA = latest ? latest.hpA : (battle?.maxHpA ?? 0)
 	const currentHpB = latest ? latest.hpB : (battle?.maxHpB ?? 0)
 
-	// cuma "attack" doang yang bikin fighter-nya "is-acting" (lunge +
-	// glow) — sebelumnya "faint" ikut kehitung juga, padahal `side` di
-	// entry "faint" itu si Pokemon yang BARU AJA KO, bukan yang
-	// nyerang. Efeknya: Pokemon yang HP-nya abis malah kelihatan
-	// "keaktifin buat nyerang" pas tick faint-nya kereveal, padahal dia
-	// udah kalah & gak jadi nyerang apa-apa lagi
+	// cuma entry "attack" yang bikin fighter-nya "is-acting" (lunge + glow)
+	// — `side` di entry "faint" itu si Pokemon yang BARU KENA KO, bukan
+	// yang nyerang, jadi kalau ikut dihitung, Pokemon yang udah kalah malah
+	// kelihatan kesorot kayak mau nyerang lagi
 	const activeSide = latest?.type === "attack" ? latest.side : null
 	// sisi yang KENA hit — kebalikan dari activeSide pas lagi attack, jadi
-	// fighter yang diserang bisa dikasih efek "kena" sendiri (kedip),
-	// misah dari efek lunge/glow yang nempel di fighter yang nyerang
-	const hitSide =
-		latest?.type === "attack" ? (latest.side === "a" ? "b" : "a") : null
-	// kena buat 1 tick reveal doang (700ms) — pas berikutnya latest udah
-	// pindah ke entry lain jadi shake/flash-nya otomatis berhenti sendiri
+	// fighter yang diserang bisa dikasih efek "kena" sendiri (kedip + geter
+	// + tebasan), misah dari efek lunge/glow yang nempel di penyerang
+	const hitSide = latest?.type === "attack" ? (latest.side === "a" ? "b" : "a") : null
+	// aktif cuma buat 1 tick reveal doang — begitu `latest` pindah ke entry
+	// berikutnya, shake/flash arena-nya otomatis berhenti sendiri
 	const isSuperHit = latest?.type === "attack" && latest.isSuperEffective
 	const isRevealed = battle && revealCount >= battle.log.length
 	const winnerPokemon =
@@ -276,47 +402,24 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 				? pokemonB
 				: null
 	// warna spotlight di belakang sprite pemenang ngikutin type-nya sendiri
-	// (bukan ijo flat) — biar tiap kemenangan kerasa beda & tetep nyambung
-	// sama palet warna type yang udah dipake di seluruh arena
+	// (bukan 1 warna flat) — biar tiap kemenangan kerasa beda & tetep
+	// nyambung sama palet warna type yang udah dipake di seluruh arena
 	const winnerColor = battle?.winner === "a" ? colorA : battle?.winner === "b" ? colorB : null
 
 	useEffect(() => {
 		if (winnerPokemon) playVictorySound()
 	}, [winnerPokemon])
 
-	// bunyi "krak" tiap ada attack entry baru ke-reveal — `latest` cuma
-	// ganti reference pas revealCount beneran maju ke entry berikutnya
-	// (visibleLog di-slice ulang tiap render, tapi entry-entry di
-	// dalemnya reference yang sama dari battle.log), jadi efek ini gak
-	// nembak berkali-kali gara-gara re-render biasa
+	// bunyi hit tiap ada attack entry baru ke-reveal — `latest` cuma ganti
+	// reference pas revealCount beneran maju ke entry berikutnya (entry
+	// object-nya sendiri reference yang sama dari battle.log), jadi efek
+	// ini gak nembak berkali-kali gara-gara re-render biasa
 	useEffect(() => {
 		if (latest?.type === "attack") playHitSound(latest.isCrit)
 	}, [latest])
 
 	// "result" gak ditampilin di chat — udah ada banner winner-nya sendiri
 	const chatEntries = visibleLog.filter((entry) => entry.type !== "result")
-
-	// nekenin "N damage"-nya jadi chip kecil di dalem bubble-nya, bukan
-	// cuma nyempil di tengah kalimat kayak teks biasa
-	const renderAttackText = (entry) => {
-		const marker = `${entry.damage} damage`
-		const idx = entry.text.indexOf(marker)
-		if (idx === -1) return entry.text
-
-		return (
-			<>
-				{entry.text.slice(0, idx)}
-				<span
-					className={`battle-damage-chip${
-						entry.isSuperEffective ? " is-super" : ""
-					}`}
-				>
-					{entry.damage} damage
-				</span>
-				{entry.text.slice(idx + marker.length)}
-			</>
-		)
-	}
 
 	return (
 		<div className="battle-section">
@@ -328,11 +431,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 				disabled={isSimulating}
 			>
 				<GiCrossedSwords size={18} />
-				{isSimulating
-					? "Simulating…"
-					: battle
-						? "Simulate Again"
-						: "Simulate Battle"}
+				{isSimulating ? "Simulating…" : battle ? "Simulate Again" : "Simulate Battle"}
 			</button>
 
 			{battle && (
@@ -351,7 +450,9 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						<div
 							className="battle-scoreboard"
 							title={`${pokemonA.name} ${scoreboard.a} : ${scoreboard.b} ${pokemonB.name}${
-								scoreboard.draw > 0 ? ` (${scoreboard.draw} draw${scoreboard.draw > 1 ? "s" : ""})` : ""
+								scoreboard.draw > 0
+									? ` (${scoreboard.draw} draw${scoreboard.draw > 1 ? "s" : ""})`
+									: ""
 							}`}
 						>
 							<span className="battle-scoreboard-score" style={{ color: colorA }}>
@@ -364,9 +465,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 							{scoreboard.draw > 0 && (
 								<>
 									<span className="battle-scoreboard-sep is-muted" />
-									<span className="battle-scoreboard-draw">
-										{scoreboard.draw}
-									</span>
+									<span className="battle-scoreboard-draw">{scoreboard.draw}</span>
 								</>
 							)}
 						</div>
@@ -381,185 +480,58 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						>
 							<MdInfoOutline size={18} />
 						</button>
-
-						{showInfo && (
-							<div className="battle-info-popover">
-								<div className="battle-info-header">
-									<p className="battle-info-title">How damage works</p>
-									<button
-										className="battle-info-close"
-										onClick={() => setShowInfo(false)}
-										aria-label="Close"
-									>
-										<MdClose size={16} />
-									</button>
-								</div>
-
-								<div className="battle-info-formula">
-									<code className="f-chip f-chip-neutral">Damage</code>
-									<span className="f-op">=</span>
-									<code className="f-chip f-chip-atk">
-										Attack <span className="f-op-inline">÷</span> Defense
-									</code>
-									<span className="f-op">×</span>
-									<code className="f-chip f-chip-type">
-										Type Effectiveness
-									</code>
-									<span className="f-op">×</span>
-									<code className="f-chip f-chip-luck">Luck</code>
-								</div>
-
-								<ul className="battle-info-list">
-									<li>
-										<code className="f-chip f-chip-atk">
-											Attack <span className="f-op-inline">÷</span> Defense
-										</code>
-										: the attacker&rsquo;s Attack against the target&rsquo;s
-										Defense. Higher Attack (or a weaker target Defense)
-										means more damage.
-									</li>
-									<li>
-										<code className="f-chip f-chip-type">
-											Type Effectiveness
-										</code>
-										: follows the same type chart as the games. e.g. Water
-										beats Fire, Fire beats Grass, Grass beats Water. A super
-										effective hit does more damage, a resisted hit does
-										less.
-									</li>
-									<li>
-										<code className="f-chip f-chip-luck">Luck</code>: a
-										small random swing (75% to 100%), so a rematch
-										won&rsquo;t always go the same way.
-									</li>
-								</ul>
-
-								<p className="battle-info-subheading">Other battle rules</p>
-
-								<ul className="battle-info-list">
-									<li>
-										<code className="f-chip f-chip-crit">Critical Hit</code>
-										: on top of all that, every attack also has a small 10%
-										chance to land a critical hit for 1.5 × extra damage.
-									</li>
-									<li>
-										<code className="f-chip f-chip-neutral">30 Rounds</code>: if
-										neither Pokémon is KO&rsquo;d by round 30, the battle ends
-										in a draw instead of dragging on forever.
-									</li>
-								</ul>
-							</div>
-						)}
+						{showInfo && <BattleInfoPopover onClose={() => setShowInfo(false)} />}
 					</div>
 
 					<div className="battle-stage">
-						<div
-							className={`battle-fighter side-a${activeSide === "a" ? " is-acting" : ""}${
-								hitSide === "a" ? " is-hit" : ""
-							}${battle.winner === "b" && isRevealed ? " is-fainted" : ""}`}
-							style={{ "--fighter-color": colorA }}
-						>
-							<PokemonImage
-								className="battle-fighter-image"
-								src={pokemonA.image}
-								alt={pokemonA.name}
-								iconSize={102}
-							/>
-							{hitSide === "a" && <SlashFX key={revealCount} />}
-						</div>
+						<BattleFighter
+							side="a"
+							pokemon={pokemonA}
+							color={colorA}
+							isActing={activeSide === "a"}
+							isHit={hitSide === "a"}
+							isFainted={battle.winner === "b" && isRevealed}
+							revealCount={revealCount}
+						/>
 
 						<span className="battle-stage-vs">VS</span>
 
-						<div
-							className={`battle-fighter side-b${activeSide === "b" ? " is-acting" : ""}${
-								hitSide === "b" ? " is-hit" : ""
-							}${battle.winner === "a" && isRevealed ? " is-fainted" : ""}`}
-							style={{ "--fighter-color": colorB }}
-						>
-							<PokemonImage
-								className="battle-fighter-image"
-								src={pokemonB.image}
-								alt={pokemonB.name}
-								iconSize={102}
-							/>
-							{hitSide === "b" && <SlashFX key={revealCount} />}
-						</div>
+						<BattleFighter
+							side="b"
+							pokemon={pokemonB}
+							color={colorB}
+							isActing={activeSide === "b"}
+							isHit={hitSide === "b"}
+							isFainted={battle.winner === "a" && isRevealed}
+							revealCount={revealCount}
+						/>
 					</div>
 
 					<div className="battle-hp-row">
-						<BattleHpBar
-							name={pokemonA.name}
-							hp={currentHpA}
-							maxHp={battle.maxHpA}
-						/>
-						<BattleHpBar
-							name={pokemonB.name}
-							hp={currentHpB}
-							maxHp={battle.maxHpB}
-						/>
+						<BattleHpBar name={pokemonA.name} hp={currentHpA} maxHp={battle.maxHpA} />
+						<BattleHpBar name={pokemonB.name} hp={currentHpB} maxHp={battle.maxHpB} />
 					</div>
 
 					<div className="battle-log-scroll" ref={logRef}>
 						<ul className="battle-chat">
-							{chatEntries.map((entry, i) => {
-								// baris paling akhir yang ke-reveal dikasih penekanan
-								// (opacity full + ring), baris-baris sebelumnya diredupin
-								// dikit — biar mata user fokus ke aksi yang lagi kejadian,
-								// sisanya kebaca kaya riwayat/histori chat
-								const isLatest = i === chatEntries.length - 1
-								return entry.type === "attack" ? (
-									<li
-										key={i}
-										className={`battle-chat-row side-${entry.side}${isLatest ? " is-latest" : ""}`}
-									>
-										<PokemonImage
-											className="battle-chat-avatar"
-											src={entry.side === "a" ? pokemonA.image : pokemonB.image}
-											iconSize={62}
-										/>
-										<div
-											className={`battle-chat-bubble${entry.isCrit ? " is-crit" : ""}`}
-											style={{
-												backgroundColor: entry.side === "a" ? colorA : colorB,
-											}}
-										>
-											{entry.isCrit && (
-												<span className="battle-crit-badge">💥 Critical Hit</span>
-											)}
-											{renderAttackText(entry)}
-										</div>
-									</li>
-								) : (
-									<li
-										key={i}
-										className={`battle-chat-system${isLatest ? " is-latest" : ""}`}
-									>
-										{entry.text}
-									</li>
-								)
-							})}
+							{chatEntries.map((entry, i) => (
+								<BattleChatEntry
+									key={i}
+									entry={entry}
+									isLatest={i === chatEntries.length - 1}
+									pokemon={entry.side === "a" ? pokemonA : pokemonB}
+									color={entry.side === "a" ? colorA : colorB}
+								/>
+							))}
 						</ul>
 
 						{winnerPokemon && (
-							<div className="battle-winner">
-								<Confetti key={confettiBurst} />
-								<div className="battle-winner-spotlight" style={{ "--winner-color": winnerColor }}>
-									<PokemonImage
-										className="battle-winner-image"
-										src={winnerPokemon.image}
-										alt={winnerPokemon.name}
-										iconSize={160}
-									/>
-								</div>
-								<button
-									className="battle-winner-ribbon"
-									onClick={() => setConfettiBurst((c) => c + 1)}
-									title="Celebrate again!"
-								>
-									<GiTrophy size={16} />
-									{winnerPokemon.name} wins!
-								</button>
-							</div>
+							<BattleWinnerBanner
+								pokemon={winnerPokemon}
+								color={winnerColor}
+								confettiBurst={confettiBurst}
+								onCelebrateAgain={() => setConfettiBurst((c) => c + 1)}
+							/>
 						)}
 					</div>
 				</div>

@@ -1,3 +1,11 @@
+// Semua efek suara di file ini disintesis langsung lewat Web Audio API
+// (gak ada file .mp3/.wav yang di-load) — dua "bahan dasar" di bawah
+// dipakai berulang buat nyusun tiap efek:
+//   - playNoiseBurst: white noise yang di-filter + di-envelope, buat
+//     bagian yang berisik/transient (crack, whoosh, dst)
+//   - playTone: 1 oscillator (nadanya boleh geser) + di-envelope, buat
+//     bagian yang lebih "musikal" (nada clash, sub-bass punch, dst)
+
 let sharedAudioContext = null
 
 const getAudioContext = () => {
@@ -13,283 +21,224 @@ const getAudioContext = () => {
 	return sharedAudioContext
 }
 
-// Stinger pembuka battle — MURNI sword clash "tring!": 2 nada tinggi
-// detuned (logam beradu) + transient noise band-pass pendek. Gak ada
-// lapisan rendah/riser/gong lagi — itu semua yang bikin kedengeran ada
-// unsur "boom"-nya, padahal maunya cuma bunyi pedang doang.
+const createNoiseBuffer = (ctx, duration) => {
+	const buffer = ctx.createBuffer(1, ctx.sampleRate * duration, ctx.sampleRate)
+	const data = buffer.getChannelData(0)
+	for (let i = 0; i < data.length; i++) {
+		// makin ke belakang makin pelan (fade-out linear) biar potongan
+		// noise-nya kedengeran kayak "burst" natural, bukan dipotong kasar
+		data[i] = (Math.random() * 2 - 1) * (1 - i / data.length)
+	}
+	return buffer
+}
+
+/**
+ * White noise yang di-filter (band-pass/high-pass, boleh nyapu naik/turun)
+ * lalu dikasih envelope volume. gainAttack opsional — kalau di-isi,
+ * volumenya naik dulu ke gainPeak (bukan langsung di titik puncak).
+ */
+const playNoiseBurst = (
+	ctx,
+	{ startTime, duration, filterType = "bandpass", freq, freqTo, Q = 1, gainPeak, gainAttack = 0, decayTime = duration },
+) => {
+	const source = ctx.createBufferSource()
+	source.buffer = createNoiseBuffer(ctx, duration)
+
+	const filter = ctx.createBiquadFilter()
+	filter.type = filterType
+	filter.Q.value = Q
+	if (freqTo !== undefined) {
+		filter.frequency.setValueAtTime(freq, startTime)
+		filter.frequency.exponentialRampToValueAtTime(freqTo, startTime + duration)
+	} else {
+		filter.frequency.value = freq
+	}
+
+	const gain = ctx.createGain()
+	if (gainAttack > 0) {
+		gain.gain.setValueAtTime(0.001, startTime)
+		gain.gain.exponentialRampToValueAtTime(gainPeak, startTime + gainAttack)
+	} else {
+		gain.gain.setValueAtTime(gainPeak, startTime)
+	}
+	gain.gain.exponentialRampToValueAtTime(0.001, startTime + decayTime)
+
+	source.connect(filter)
+	filter.connect(gain)
+	gain.connect(ctx.destination)
+	source.start(startTime)
+}
+
+/**
+ * 1 oscillator (frequency boleh nyapu dari `freq` ke `freqTo`) + envelope
+ * volume. gainAttack opsional — kalau di-isi, volumenya naik dulu ke
+ * gainPeak (bukan langsung di titik puncak).
+ */
+const playTone = (ctx, { startTime, duration, type = "sine", freq, freqTo, gainPeak, gainAttack = 0 }) => {
+	const osc = ctx.createOscillator()
+	osc.type = type
+	osc.frequency.setValueAtTime(freq, startTime)
+	if (freqTo !== undefined) {
+		osc.frequency.exponentialRampToValueAtTime(freqTo, startTime + duration)
+	}
+
+	const gain = ctx.createGain()
+	if (gainAttack > 0) {
+		gain.gain.setValueAtTime(0.001, startTime)
+		gain.gain.linearRampToValueAtTime(gainPeak, startTime + gainAttack)
+	} else {
+		gain.gain.setValueAtTime(gainPeak, startTime)
+	}
+	gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration)
+
+	osc.connect(gain)
+	gain.connect(ctx.destination)
+	osc.start(startTime)
+	osc.stop(startTime + duration)
+}
+
+/**
+ * 1 nada synth "futuristik" — 2 oscillator sawtooth dikit detuned (biar
+ * kedengeran "lebar", bukan tipis kaya nada tunggal) numpuk lewat 1
+ * lowpass filter yang cutoff-nya nyapu naik ("synth sweep"). Dipake
+ * buat nyusun chord kemenangan, 1 pemanggilan = 1 nada di chord-nya.
+ */
+const playSynthNote = (ctx, { startTime, freq, gainPeak, duration }) => {
+	const osc1 = ctx.createOscillator()
+	const osc2 = ctx.createOscillator()
+	osc1.type = "sawtooth"
+	osc2.type = "sawtooth"
+	osc1.frequency.setValueAtTime(freq, startTime)
+	osc2.frequency.setValueAtTime(freq * 1.006, startTime)
+
+	const filter = ctx.createBiquadFilter()
+	filter.type = "lowpass"
+	filter.Q.value = 0.8
+	filter.frequency.setValueAtTime(400, startTime)
+	filter.frequency.exponentialRampToValueAtTime(5200, startTime + 0.15)
+
+	const gain = ctx.createGain()
+	gain.gain.setValueAtTime(0, startTime)
+	gain.gain.linearRampToValueAtTime(gainPeak, startTime + 0.03)
+	gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration)
+
+	osc1.connect(filter)
+	osc2.connect(filter)
+	filter.connect(gain)
+	gain.connect(ctx.destination)
+	osc1.start(startTime)
+	osc2.start(startTime)
+	osc1.stop(startTime + duration)
+	osc2.stop(startTime + duration)
+}
+
+// Stinger pembuka battle — sword clash "tring!": 2 nada tinggi detuned
+// (logam beradu) + transient noise band-pass pendek (kilatnya).
 export const playBattleStartSound = () => {
 	try {
 		const ctx = getAudioContext()
 		const now = ctx.currentTime
 
-		// 2 nada tinggi dikit detuned biar berasa 2 pedang beradu, bukan 1
-		// bunyi "beep" doang
 		;[2600, 3150].forEach((freq, i) => {
-			const clash = ctx.createOscillator()
-			const clashGain = ctx.createGain()
-			clash.type = "triangle"
-			clash.frequency.setValueAtTime(freq, now + i * 0.02)
-			clashGain.gain.setValueAtTime(0.18, now + i * 0.02)
-			clashGain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.02 + 0.4)
-			clash.connect(clashGain)
-			clashGain.connect(ctx.destination)
-			clash.start(now + i * 0.02)
-			clash.stop(now + i * 0.02 + 0.4)
+			playTone(ctx, { startTime: now + i * 0.02, duration: 0.4, type: "triangle", freq, gainPeak: 0.18 })
 		})
 
-		// transient noise band-pass tinggi buat "kilat" logamnya pas kena
-		const clashNoiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.12, ctx.sampleRate)
-		const clashNoiseData = clashNoiseBuffer.getChannelData(0)
-		for (let i = 0; i < clashNoiseData.length; i++) {
-			clashNoiseData[i] = (Math.random() * 2 - 1) * (1 - i / clashNoiseData.length)
-		}
-		const clashNoise = ctx.createBufferSource()
-		clashNoise.buffer = clashNoiseBuffer
-		const clashFilter = ctx.createBiquadFilter()
-		clashFilter.type = "bandpass"
-		clashFilter.frequency.value = 3600
-		clashFilter.Q.value = 1.4
-		const clashNoiseGain = ctx.createGain()
-		clashNoiseGain.gain.setValueAtTime(0.4, now)
-		clashNoiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12)
-		clashNoise.connect(clashFilter)
-		clashFilter.connect(clashNoiseGain)
-		clashNoiseGain.connect(ctx.destination)
-		clashNoise.start(now)
+		playNoiseBurst(ctx, { startTime: now, duration: 0.12, freq: 3600, Q: 1.4, gainPeak: 0.4 })
 	} catch {
-		// silent
+		// silent — audio gagal nyala (autoplay policy dll) gak boleh bikin battle-nya error
 	}
 }
 
-// Fanfare kemenangan — versi lebih megah/futuristik, 4 lapis yang
-// numpuk jadi 1: (1) riser noise band-pass yang cutoff-nya nyapu naik
-// cepet (kesan "membangun" sebelum meledak), (2) sub impact pas
-// riser-nya nyampe puncak (bobot/dampaknya), (3) chord synth sawtooth
-// detuned + lowpass sweep (bukan triangle polos lagi — ini yang bikin
-// kedengeran "synth futuristik", bukan kotak musik), (4) shimmer nada
-// tinggi nyebar di atasnya buat efek "sparkle". Modern synth-y, bukan
-// fanfare akustik biasa.
+// Fanfare kemenangan, 4 lapis numpuk jadi 1: riser (kesan "membangun"
+// sebelum meledak) → sub impact (bobotnya) → chord synth 5 nada lewat
+// playSynthNote (badan "megah"-nya) → shimmer nada tinggi (efek sparkle).
 export const playVictorySound = () => {
 	try {
 		const ctx = getAudioContext()
 		const now = ctx.currentTime
-
-		// (1) riser — noise band-pass, cutoff-nya naik cepet
-		const riserBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.34, ctx.sampleRate)
-		const riserData = riserBuffer.getChannelData(0)
-		for (let i = 0; i < riserData.length; i++) {
-			riserData[i] = Math.random() * 2 - 1
-		}
-		const riser = ctx.createBufferSource()
-		riser.buffer = riserBuffer
-		const riserFilter = ctx.createBiquadFilter()
-		riserFilter.type = "bandpass"
-		riserFilter.Q.value = 0.7
-		riserFilter.frequency.setValueAtTime(300, now)
-		riserFilter.frequency.exponentialRampToValueAtTime(4200, now + 0.32)
-		const riserGain = ctx.createGain()
-		riserGain.gain.setValueAtTime(0.001, now)
-		riserGain.gain.exponentialRampToValueAtTime(0.22, now + 0.28)
-		riserGain.gain.exponentialRampToValueAtTime(0.001, now + 0.36)
-		riser.connect(riserFilter)
-		riserFilter.connect(riserGain)
-		riserGain.connect(ctx.destination)
-		riser.start(now)
-
 		const hitStart = now + 0.3
 
-		// (2) sub impact — nge-drop pas riser-nya nyampe puncak
-		const sub = ctx.createOscillator()
-		const subGain = ctx.createGain()
-		sub.type = "sine"
-		sub.frequency.setValueAtTime(95, hitStart)
-		sub.frequency.exponentialRampToValueAtTime(40, hitStart + 0.4)
-		subGain.gain.setValueAtTime(0.4, hitStart)
-		subGain.gain.exponentialRampToValueAtTime(0.001, hitStart + 0.5)
-		sub.connect(subGain)
-		subGain.connect(ctx.destination)
-		sub.start(hitStart)
-		sub.stop(hitStart + 0.5)
+		playNoiseBurst(ctx, {
+			startTime: now,
+			duration: 0.34,
+			freq: 300,
+			freqTo: 4200,
+			Q: 0.7,
+			gainAttack: 0.28,
+			gainPeak: 0.22,
+			decayTime: 0.36,
+		})
 
-		// (3) chord synth — sawtooth 2x detuned tipis (biar "lebar") lewat
-		// lowpass yang cutoff-nya nyapu naik ("synth sweep" khas
-		// futuristik), chord-nya lebih gede (5 nada) daripada arpeggio
-		// simpel sebelumnya
+		playTone(ctx, { startTime: hitStart, duration: 0.5, freq: 95, freqTo: 40, gainPeak: 0.4 })
+
 		const chordFreqs = [523.25, 659.25, 783.99, 987.77, 1046.5] // C5 E5 G5 B5 C6
 		chordFreqs.forEach((freq, i) => {
-			const start = hitStart + i * 0.035
-
-			const osc1 = ctx.createOscillator()
-			const osc2 = ctx.createOscillator()
-			osc1.type = "sawtooth"
-			osc2.type = "sawtooth"
-			osc1.frequency.setValueAtTime(freq, start)
-			osc2.frequency.setValueAtTime(freq * 1.006, start)
-
-			const filter = ctx.createBiquadFilter()
-			filter.type = "lowpass"
-			filter.Q.value = 0.8
-			filter.frequency.setValueAtTime(400, start)
-			filter.frequency.exponentialRampToValueAtTime(5200, start + 0.15)
-
-			const gain = ctx.createGain()
-			gain.gain.setValueAtTime(0, start)
-			gain.gain.linearRampToValueAtTime(0.1, start + 0.03)
-			gain.gain.exponentialRampToValueAtTime(0.001, start + 0.9)
-
-			osc1.connect(filter)
-			osc2.connect(filter)
-			filter.connect(gain)
-			gain.connect(ctx.destination)
-
-			osc1.start(start)
-			osc2.start(start)
-			osc1.stop(start + 0.9)
-			osc2.stop(start + 0.9)
+			playSynthNote(ctx, { startTime: hitStart + i * 0.035, freq, gainPeak: 0.1, duration: 0.9 })
 		})
 
-		// (4) shimmer — beberapa nada tinggi pendek, nyebar dikit2 di atas
-		// chord-nya buat efek "sparkle"
 		const shimmerFreqs = [2093, 2637, 3136, 2794]
 		shimmerFreqs.forEach((freq, i) => {
-			const start = hitStart + 0.1 + i * 0.09
-			const osc = ctx.createOscillator()
-			const gain = ctx.createGain()
-
-			osc.type = "sine"
-			osc.frequency.setValueAtTime(freq, start)
-
-			gain.gain.setValueAtTime(0, start)
-			gain.gain.linearRampToValueAtTime(0.08, start + 0.01)
-			gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35)
-
-			osc.connect(gain)
-			gain.connect(ctx.destination)
-
-			osc.start(start)
-			osc.stop(start + 0.35)
+			playTone(ctx, { startTime: hitStart + 0.1 + i * 0.09, duration: 0.35, freq, gainPeak: 0.08, gainAttack: 0.01 })
 		})
 	} catch {
-		// silent
+		// silent — audio gagal nyala (autoplay policy dll) gak boleh bikin battle-nya error
 	}
 }
 
-// Bunyi hit — sekarang ada "swing" sebelum impact-nya, biar kedengeran
-// kaya beneran NYERANG (senjata/cakar motong angin dulu baru kena),
-// bukan cuma bunyi "kena" doang: (0) whoosh — noise band-pass yang
-// cutoff-nya nyapu naik cepet & super pendek, itu yang ngasih kesan
-// ada gerakan/ayunan sebelum nyentuh. Nyusul abis itu baru 3 lapis
-// impact yang lama: (1) crack tajam buat transient "krek"-nya, (2)
-// body mid bandpass-noise yang bertekstur buat "thud"-nya, (3) sub
-// punch yang jatuh cepet ke frekuensi rendah buat "dorongan" bass-nya.
-// Crit dikasih gain & frekuensi lebih tinggi di semuanya.
+// Bunyi hit — whoosh (kesan ayunan/serangan motong angin) yang nyusul
+// jadi crack + body + sub punch (impact-nya). Crit dapet versi lebih
+// tebal/tinggi di semua lapisnya biar bedanya kerasa jelas.
 export const playHitSound = (isCrit = false) => {
 	try {
 		const ctx = getAudioContext()
 		const now = ctx.currentTime
 
-		// (0) whoosh — ayunan pendek sebelum kena
-		const whooshBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.09, ctx.sampleRate)
-		const whooshData = whooshBuffer.getChannelData(0)
-		for (let i = 0; i < whooshData.length; i++) {
-			whooshData[i] = Math.random() * 2 - 1
-		}
-		const whoosh = ctx.createBufferSource()
-		whoosh.buffer = whooshBuffer
-		const whooshFilter = ctx.createBiquadFilter()
-		whooshFilter.type = "bandpass"
-		whooshFilter.Q.value = 1.1
-		whooshFilter.frequency.setValueAtTime(650, now)
-		whooshFilter.frequency.exponentialRampToValueAtTime(isCrit ? 3600 : 2800, now + 0.08)
-		const whooshGain = ctx.createGain()
-		whooshGain.gain.setValueAtTime(0.001, now)
-		whooshGain.gain.exponentialRampToValueAtTime(isCrit ? 0.42 : 0.3, now + 0.05)
-		whooshGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09)
-		whoosh.connect(whooshFilter)
-		whooshFilter.connect(whooshGain)
-		whooshGain.connect(ctx.destination)
-		whoosh.start(now)
+		playNoiseBurst(ctx, {
+			startTime: now,
+			duration: 0.09,
+			freq: 650,
+			freqTo: isCrit ? 3600 : 2800,
+			Q: 1.1,
+			gainAttack: 0.05,
+			gainPeak: isCrit ? 0.42 : 0.3,
+		})
 
 		// impact-nya nyusul abis whoosh-nya sempet kedenger dulu
 		const impactStart = now + 0.07
 
-		// (1) crack — transient tajam & super pendek
-		const crackBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.055, ctx.sampleRate)
-		const crackData = crackBuffer.getChannelData(0)
-		for (let i = 0; i < crackData.length; i++) {
-			crackData[i] = (Math.random() * 2 - 1) * (1 - i / crackData.length)
-		}
-		const crack = ctx.createBufferSource()
-		crack.buffer = crackBuffer
-		const crackFilter = ctx.createBiquadFilter()
-		crackFilter.type = "highpass"
-		crackFilter.frequency.value = isCrit ? 2400 : 1800
-		const crackGain = ctx.createGain()
-		crackGain.gain.setValueAtTime(isCrit ? 0.8 : 0.6, impactStart)
-		crackGain.gain.exponentialRampToValueAtTime(0.001, impactStart + 0.055)
-		crack.connect(crackFilter)
-		crackFilter.connect(crackGain)
-		crackGain.connect(ctx.destination)
-		crack.start(impactStart)
+		playNoiseBurst(ctx, {
+			startTime: impactStart,
+			duration: 0.055,
+			filterType: "highpass",
+			freq: isCrit ? 2400 : 1800,
+			gainPeak: isCrit ? 0.8 : 0.6,
+		})
 
-		// (2) body — noise band-pass mid, lebih bertekstur dari tone biasa
-		const bodyBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.14, ctx.sampleRate)
-		const bodyData = bodyBuffer.getChannelData(0)
-		for (let i = 0; i < bodyData.length; i++) {
-			bodyData[i] = (Math.random() * 2 - 1) * (1 - i / bodyData.length)
-		}
-		const body = ctx.createBufferSource()
-		body.buffer = bodyBuffer
-		const bodyFilter = ctx.createBiquadFilter()
-		bodyFilter.type = "bandpass"
-		bodyFilter.frequency.value = isCrit ? 550 : 380
-		bodyFilter.Q.value = 0.7
-		const bodyGain = ctx.createGain()
-		bodyGain.gain.setValueAtTime(isCrit ? 0.6 : 0.42, impactStart)
-		bodyGain.gain.exponentialRampToValueAtTime(0.001, impactStart + 0.14)
-		body.connect(bodyFilter)
-		bodyFilter.connect(bodyGain)
-		bodyGain.connect(ctx.destination)
-		body.start(impactStart)
+		playNoiseBurst(ctx, {
+			startTime: impactStart,
+			duration: 0.14,
+			freq: isCrit ? 550 : 380,
+			Q: 0.7,
+			gainPeak: isCrit ? 0.6 : 0.42,
+		})
 
-		// (3) sub punch — nada rendah yang jatuh cepet, ngasih "dorongan"
-		const sub = ctx.createOscillator()
-		const subGain = ctx.createGain()
-		sub.type = "sine"
-		sub.frequency.setValueAtTime(isCrit ? 160 : 115, impactStart)
-		sub.frequency.exponentialRampToValueAtTime(35, impactStart + 0.1)
-		subGain.gain.setValueAtTime(isCrit ? 0.55 : 0.4, impactStart)
-		subGain.gain.exponentialRampToValueAtTime(0.001, impactStart + 0.16)
-		sub.connect(subGain)
-		subGain.connect(ctx.destination)
-		sub.start(impactStart)
-		sub.stop(impactStart + 0.16)
+		playTone(ctx, {
+			startTime: impactStart,
+			duration: 0.16,
+			freq: isCrit ? 160 : 115,
+			freqTo: 35,
+			gainPeak: isCrit ? 0.55 : 0.4,
+		})
 	} catch {
-		// silent
+		// silent — audio gagal nyala (autoplay policy dll) gak boleh bikin battle-nya error
 	}
 }
 
 export const playFavoriteSound = () => {
 	try {
 		const ctx = getAudioContext()
-		const now = ctx.currentTime
-
-		const osc = ctx.createOscillator()
-		const gain = ctx.createGain()
-
-		osc.type = "sine"
-		osc.frequency.setValueAtTime(600, now)
-		osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1)
-
-		gain.gain.setValueAtTime(0.15, now)
-		gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2)
-
-		osc.connect(gain)
-		gain.connect(ctx.destination)
-
-		osc.start(now)
-		osc.stop(now + 0.2)
+		playTone(ctx, { startTime: ctx.currentTime, duration: 0.2, freq: 600, freqTo: 1200, gainPeak: 0.15 })
 	} catch {
-		// silent
+		// silent — audio gagal nyala (autoplay policy dll) gak boleh bikin favorite-nya error
 	}
 }

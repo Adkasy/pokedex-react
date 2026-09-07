@@ -1187,12 +1187,11 @@
 	}
 }
 
-/* efek tebasan — balik jadi 1 blade doang (versi 3-lapis kemarin
-   kelihatan jelek), runcing di pojok kiri-BAWAH nyapu ke kanan-ATAS,
-   ujungnya pecah jadi 2 cabang kecil biar gak polos-polos amat.
-   transform-box:fill-box + origin di pojok tajemnya bikin animasi
-   nge-scale "keluar" dari titik itu — cepet (0.22s) biar berasa
-   "menjalar" dari kiri-bawah ke kanan-atas, bukan pop lambat */
+/* efek tebasan — 1 blade, runcing di pojok kiri-BAWAH nyapu ke
+   kanan-ATAS, ujungnya pecah jadi 2 cabang kecil biar gak polos-polos
+   amat. transform-box:fill-box + origin di pojok tajemnya bikin
+   animasi nge-scale "keluar" dari titik itu — cepet (0.22s) biar
+   berasa "menjalar" dari kiri-bawah ke kanan-atas, bukan pop lambat */
 .battle-hit-slash {
 	position: absolute;
 	inset: -20%;
@@ -1631,10 +1630,10 @@
 	}
 }
 
-/* spotlight ambient di belakang sprite (bukan glow nempel di pixel
-   sprite-nya kayak drop-shadow sebelumnya) — sengaja gede & blur biar
-   kesannya "panggung", warnanya ngikutin type si pemenang lewat
-   --winner-color yang di-set inline dari JS */
+/* spotlight ambient di belakang sprite (bukan glow yang nempel di
+   pixel sprite-nya) — sengaja gede & blur biar kesannya "panggung",
+   warnanya ngikutin type si pemenang lewat --winner-color yang
+   di-set inline dari JS */
 .battle-winner-spotlight {
 	position: relative;
 	display: flex;
@@ -2280,10 +2279,7 @@
 	   yang relatif lebih lega, jadi tiap bar `flex:1` ngegembung lebar
 	   banget buat ngisi ruang kosongnya — dikasih cap max-width biar
 	   tetep setipis di home, TANPA ganggu perilaku nyusut ke 2px di
-	   mobile (max-width gak mempengaruhi shrink, cuma ngebatesin growth).
-	   Sempet naik ke 4px biar gap-nya gak terlalu renggang, tapi kelamaan
-	   malah jadi kegedean, turun ke 3px — terus dinaikin dikiiit lagi
-	   ke 3.2px buat jalan tengah paling pas */
+	   mobile (max-width gak mempengaruhi shrink, cuma ngebatesin growth) */
 	max-width: 3.2px;
 	height: 100%;
 	background: currentColor;
