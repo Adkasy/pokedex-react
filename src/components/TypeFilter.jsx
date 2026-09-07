@@ -31,7 +31,7 @@ export const TypeFilter = ({ selectedTypes, onToggleType, onReset }) => (
 							className="type-filter-swatch"
 							style={{ backgroundColor: getTypeColor(typeName) }}
 						>
-							<TypeIcon type={typeName} size={13} />
+							<TypeIcon type={typeName} size={15} />
 						</span>
 						{typeName}
 					</label>
