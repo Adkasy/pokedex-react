@@ -431,21 +431,26 @@
 	width: 30px;
 	height: 30px;
 	padding: 0;
+	margin: 0;
 	line-height: 0;
 	box-sizing: border-box;
-	border-radius: 999px;
-	border: 1px solid var(--border);
-	background: var(--code-bg);
+	border-radius: 8px;
+	border: none;
+	background: none;
 	color: var(--text);
 	cursor: pointer;
 	transition:
 		color 0.15s ease,
-		border-color 0.15s ease;
+		background-color 0.15s ease;
+}
+
+.battle-info-btn svg {
+	display: block;
 }
 
 .battle-info-btn:hover {
 	color: var(--accent);
-	border-color: var(--accent);
+	background: var(--accent-bg);
 }
 
 .battle-info-popover {
@@ -647,10 +652,6 @@
 	transition: filter 0.2s ease;
 }
 
-.battle-fighter.side-a {
-	transform: scaleX(-1);
-}
-
 .battle-fighter.is-acting {
 	animation: battle-lunge 0.4s ease;
 }
@@ -679,15 +680,15 @@
 
 @keyframes battle-lunge-a {
 	0% {
-		transform: scaleX(-1) translateX(0);
+		transform: translateX(0);
 	}
 
 	40% {
-		transform: scaleX(-1) translateX(-10px);
+		transform: translateX(10px);
 	}
 
 	100% {
-		transform: scaleX(-1) translateX(0);
+		transform: translateX(0);
 	}
 }
 
