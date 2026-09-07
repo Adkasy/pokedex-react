@@ -182,27 +182,19 @@
 
 @keyframes loading-bounce {
 	0% {
-		transform: translateY(0) rotate(0deg) scale(1, 1);
-	}
-
-	10% {
-		transform: translateY(0) rotate(10deg) scale(1.15, 0.85);
+		transform: translateY(0) rotate(0deg);
 	}
 
 	35% {
-		transform: translateY(-28px) rotate(170deg) scale(0.95, 1.05);
+		transform: translateY(-28px) rotate(180deg);
 	}
 
 	55% {
-		transform: translateY(-28px) rotate(190deg) scale(0.95, 1.05);
-	}
-
-	80% {
-		transform: translateY(0) rotate(350deg) scale(1.15, 0.85);
+		transform: translateY(-28px) rotate(200deg);
 	}
 
 	100% {
-		transform: translateY(0) rotate(360deg) scale(1, 1);
+		transform: translateY(0) rotate(360deg);
 	}
 }
 
@@ -1865,6 +1857,21 @@
 	left: 14px;
 }
 
+.detail-header-top .card-play-btn {
+	width: 36px;
+	height: 36px;
+	background: rgba(255, 255, 255, 0.22);
+}
+
+.detail-header-top .card-play-btn:hover {
+	background: rgba(255, 255, 255, 0.35);
+}
+
+.detail-header-top .card-play-btn.is-playing {
+	width: 120px;
+	background: rgba(0, 0, 0, 0.3);
+}
+
 .card-play-btn-icon,
 .card-play-btn-wave {
 	position: absolute;
@@ -2222,7 +2229,7 @@
 	width: 100%;
 	display: flex;
 	align-items: center;
-	justify-content: flex-end;
+	justify-content: space-between;
 }
 
 .detail-nav {

@@ -1,13 +1,16 @@
 import { Fragment, useEffect, useState } from "react"
-import { useParams, Link } from "react-router"
+import { useParams, Link, useNavigate } from "react-router"
 import { MdChevronLeft, MdChevronRight } from "react-icons/md"
 import { getTypeColor } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { usePokemonStore } from "../store/usePokemonStore"
+import { useCryPlayerStore } from "../store/useCryPlayerStore"
 import TypeIcon, {
 	StarIcon,
 	PokeballIcon,
 	HumanIcon,
+	PlayIcon,
+	WaveformIcon,
 } from "../components/TypeIcon"
 import PokemonImage from "../components/PokemonImage"
 import LoadingSpinner from "../components/LoadingSpinner"
@@ -25,6 +28,7 @@ const STAT_BAR_MAX = 200
 
 const PokemonDetailPage = ({ index }) => {
 	const { name } = useParams()
+	const navigate = useNavigate()
 	const detailsByName = usePokemonStore((state) => state.detailsByName)
 	const ensureDetails = usePokemonStore((state) => state.ensureDetails)
 	const pokemon = detailsByName[name]
@@ -37,12 +41,45 @@ const PokemonDetailPage = ({ index }) => {
 	const isFavorite = useFavoriteStore((state) =>
 		pokemon ? state.favorites.some((f) => f.id === pokemon.id) : false,
 	)
+	const isPlayingCry = useCryPlayerStore(
+		(state) => !!pokemon && state.playingId === pokemon.id,
+	)
+	const playCry = useCryPlayerStore((state) => state.playCry)
 	const [species, setSpecies] = useState(null)
 	const [evolutionStages, setEvolutionStages] = useState([])
+
+	// prev/next Pokemon ngikutin urutan index (yang ngikutin urutan id
+	// dari PokeAPI) — bukan berdasarkan urutan generation/dex khusus.
+	// Dihitung dari `index`+`name` doang (bukan `pokemon`), jadi bisa
+	// dipake di useEffect keyboard di bawah sebelum early-return
+	const currentIndexPos = index.findIndex((item) => item.name === name)
+	const prevPokemon = currentIndexPos > 0 ? index[currentIndexPos - 1] : null
+	const nextPokemon =
+		currentIndexPos !== -1 && currentIndexPos < index.length - 1
+			? index[currentIndexPos + 1]
+			: null
 
 	useEffect(() => {
 		ensureDetails([name])
 	}, [name, ensureDetails])
+
+	// panah kiri/kanan keyboard = pindah ke Pokemon sebelumnya/berikutnya,
+	// kecuali user lagi ngetik di input/textarea (misal search bar)
+	useEffect(() => {
+		const handleKeyDown = (e) => {
+			const tag = e.target?.tagName
+			if (tag === "INPUT" || tag === "TEXTAREA") return
+
+			if (e.key === "ArrowLeft" && prevPokemon) {
+				navigate(`/pokemon/${prevPokemon.name}`)
+			} else if (e.key === "ArrowRight" && nextPokemon) {
+				navigate(`/pokemon/${nextPokemon.name}`)
+			}
+		}
+
+		document.addEventListener("keydown", handleKeyDown)
+		return () => document.removeEventListener("keydown", handleKeyDown)
+	}, [prevPokemon, nextPokemon, navigate])
 
 	useEffect(() => {
 		if (!pokemon) return
@@ -94,16 +131,6 @@ const PokemonDetailPage = ({ index }) => {
 	const catchDifficulty = getCatchDifficulty(species?.capture_rate)
 	const pokemonHeightM = pokemon.height / 10
 
-	// prev/next Pokemon ngikutin urutan index (yang ngikutin urutan id
-	// dari PokeAPI) — bukan berdasarkan urutan generation/dex khusus
-	const currentIndexPos = index.findIndex((item) => item.name === name)
-	const prevPokemon =
-		currentIndexPos > 0 ? index[currentIndexPos - 1] : null
-	const nextPokemon =
-		currentIndexPos !== -1 && currentIndexPos < index.length - 1
-			? index[currentIndexPos + 1]
-			: null
-
 	const MAX_FIGURE_PX = 140
 	const MIN_FIGURE_PX = 20
 	const tallestM = Math.max(pokemonHeightM, AVERAGE_HUMAN_HEIGHT_M)
@@ -128,6 +155,22 @@ const PokemonDetailPage = ({ index }) => {
 				</div>
 
 				<div className="detail-header-top">
+					{pokemon.cries?.latest && (
+						<button
+							className={`card-play-btn${isPlayingCry ? " is-playing" : ""}`}
+							onClick={() => playCry(pokemon.id, pokemon.cries.latest)}
+							title="Play Pokémon cry"
+							aria-label="Play Pokémon cry"
+						>
+							<span className="card-play-btn-icon">
+								<PlayIcon size={13} />
+							</span>
+							<span className="card-play-btn-wave">
+								<WaveformIcon playing={isPlayingCry} size={16} />
+							</span>
+						</button>
+					)}
+
 					<button
 						className={`card-favorite-btn${isFavorite ? " is-favorite" : ""}`}
 						onClick={() => {

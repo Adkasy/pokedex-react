@@ -65,7 +65,7 @@ const App = () => {
 
 			<div className="app">
 				{isLoading ? (
-					<LoadingSpinner label="Loading the Pokédex…" size={64} />
+					<LoadingSpinner size={64} />
 				) : error ? (
 					<p className="status-message status-error">{error.message}</p>
 				) : (
