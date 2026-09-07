@@ -197,9 +197,8 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	// "result" gak ditampilin di chat — udah ada banner winner-nya sendiri
 	const chatEntries = visibleLog.filter((entry) => entry.type !== "result")
 
-	// nekenin angka damage-nya jadi chip kecil di dalem bubble-nya, bukan
-	// cuma nyempil di tengah kalimat kayak teks biasa — "damage" nya
-	// sendiri dibiarin sebagai teks normal, cuma angkanya yang di-chip
+	// nekenin "N damage"-nya jadi chip kecil di dalem bubble-nya, bukan
+	// cuma nyempil di tengah kalimat kayak teks biasa
 	const renderAttackText = (entry) => {
 		const marker = `${entry.damage} damage`
 		const idx = entry.text.indexOf(marker)
@@ -213,9 +212,8 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						entry.isSuperEffective ? " is-super" : ""
 					}`}
 				>
-					{entry.damage}
+					{entry.damage} damage
 				</span>
-				{" damage"}
 				{entry.text.slice(idx + marker.length)}
 			</>
 		)

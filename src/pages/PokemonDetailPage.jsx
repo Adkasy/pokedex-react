@@ -305,12 +305,18 @@ const PokemonDetailPage = ({ index }) => {
 						<p className="detail-genus">
 							{genus}
 							{species?.is_mythical && (
-								<span className="detail-special-badge is-mythical">
+								<span
+									className="detail-special-badge is-mythical"
+									title="A Mythical Pokemon. These are even rarer than Legendaries and are usually only obtainable through special events, not by playing the game normally."
+								>
 									Mythical
 								</span>
 							)}
 							{!species?.is_mythical && species?.is_legendary && (
-								<span className="detail-special-badge is-legendary">
+								<span
+									className="detail-special-badge is-legendary"
+									title="A Legendary Pokemon. There's normally only one of these in the wild per game, and they tend to be tied to the game's story."
+								>
 									Legendary
 								</span>
 							)}

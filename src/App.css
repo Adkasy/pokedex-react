@@ -996,8 +996,12 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 20px;
+	gap: 44px;
 	margin-bottom: 18px;
+
+	@media (max-width: 480px) {
+		gap: 20px;
+	}
 }
 
 .battle-fighter {
@@ -1237,21 +1241,22 @@
 	color: #fef3c7;
 }
 
-/* chip putih transparan buat angka damage — overlay netral biar kebaca
-   di atas warna bubble apapun (tiap side punya warna beda ngikutin
-   type-nya), .is-super dikasih glow dikit pas hit-nya super effective */
+/* chip gelap + teks kuning buat "N damage" — background gelap netral
+   biar kontras di atas warna bubble apapun (tiap side punya warna beda
+   ngikutin type-nya), teks kuningnya yang bikin beda dari putihnya
+   bubble/teks sekitar */
 .battle-damage-chip {
 	display: inline-block;
 	padding: 0 6px;
 	border-radius: 6px;
-	background: rgba(255, 255, 255, 0.28);
+	background: rgba(0, 0, 0, 0.32);
+	color: #fbbf24;
 	font-weight: 800;
 	font-variant-numeric: tabular-nums;
 }
 
 .battle-damage-chip.is-super {
-	background: rgba(255, 255, 255, 0.42);
-	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+	color: #fca5a5;
 }
 
 .battle-chat-row.side-b .battle-chat-bubble {
@@ -2358,6 +2363,7 @@
 	text-transform: uppercase;
 	letter-spacing: 0.03em;
 	color: #3a2c00;
+	cursor: help;
 }
 
 .detail-special-badge.is-legendary {
