@@ -917,6 +917,21 @@
 	font-weight: 800;
 }
 
+/* pemisah visual antara penjelasan formula sama "aturan tambahan"
+   (crit/round limit) yang sebenernya bukan bagian dari formula-nya
+   sendiri, biar gak ketuker/dikira ikut ke-itung di rumus damage */
+.battle-info-subheading {
+	margin: 14px 0 8px;
+	padding-top: 14px;
+	border-top: 1px solid var(--border);
+	color: var(--text);
+	opacity: 0.55;
+	font-size: 10px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
 .btn.battle-simulate-btn {
 	display: inline-flex;
 	align-items: center;
@@ -2455,6 +2470,7 @@
 
 .detail-data-label {
 	color: var(--text);
+	font-weight: 700;
 	flex-shrink: 0;
 }
 

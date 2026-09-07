@@ -2,13 +2,15 @@
 // di tempat lain (type colors, chip battle simulator) biar nyambung
 // sama tema keseluruhan — bukan warna baru yang asal comot. Kuning
 // (electric) sengaja dihindarin sama sekali di sini — kepucetan/kurang
-// kontras kalau dipasangin teks putih, jadi generation-iv pake teal
-// (ice) aja sebagai gantinya.
+// kontras kalau dipasangin teks putih. Teal awalnya dipake buat
+// generation-iv tapi kemiripan sama biru-nya generation-ii, jadi diganti
+// ungu — beda lagi sama ungu-nya generation-ix (yang lebih ke magenta)
+// biar dua-duanya tetep kebeda.
 const GENERATION_COLORS = {
 	i: "#FD7D24", // fire
 	ii: "#4A90DA", // water
 	iii: "#62B957", // grass
-	iv: "#2BA89B", // ice, digelapin dikit dari teal-nya biar makin solid
+	iv: "#7C3AED", // violet, sengaja beda dari ungu-nya generation-ix
 	v: "#EA5D60", // psychic
 	vi: "#556AAE", // ghost
 	vii: "#ED6EC7", // fairy

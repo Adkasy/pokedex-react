@@ -319,16 +319,6 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 										small random swing (75% to 100%), so a rematch
 										won&rsquo;t always go the same way.
 									</li>
-									<li>
-										<code className="f-chip f-chip-crit">Critical Hit</code>
-										: on top of all that, every attack also has a small 10%
-										chance to land a critical hit for 1.5 × extra damage.
-									</li>
-									<li>
-										<code className="f-chip f-chip-neutral">30 Rounds</code>: if
-										neither Pokémon has fainted by round 30, the battle ends
-										in a draw instead of dragging on forever.
-									</li>
 								</ul>
 
 								<p className="battle-info-example">
@@ -340,6 +330,21 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 									Effectiveness is weak, and the hit only lands for about 7
 									to 8 damage instead of the usual amount.
 								</p>
+
+								<p className="battle-info-subheading">Other battle rules</p>
+
+								<ul className="battle-info-list">
+									<li>
+										<code className="f-chip f-chip-crit">Critical Hit</code>
+										: on top of all that, every attack also has a small 10%
+										chance to land a critical hit for 1.5 × extra damage.
+									</li>
+									<li>
+										<code className="f-chip f-chip-neutral">30 Rounds</code>: if
+										neither Pokémon has fainted by round 30, the battle ends
+										in a draw instead of dragging on forever.
+									</li>
+								</ul>
 							</div>
 						)}
 					</div>
