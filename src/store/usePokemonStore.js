@@ -6,16 +6,6 @@ import {
 	getDataDetailPokemon,
 } from "../api/pokeapi"
 
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-
-// Lokal (atau PokeAPI yang lagi ke-cache browser) sering ngebales dalam
-// hitungan puluhan ms — kecepetan banget buat animasi loading kelihatan
-// sama sekali. Numpuk fetch asli bareng `wait()` minimal segini biar
-// animasinya sempet ke-render minimal 1 siklus, bukan cuma nge-flash.
-const MIN_INDEX_LOAD_MS = 500
-const MIN_DETAIL_LOAD_MS = 350
-const MIN_TYPE_LOAD_MS = 350
-
 // Store terpusat buat data Pokemon: nyimpen index RINGAN semua Pokemon
 // (id + nama + gambar doang) sekali di awal, terus detail lengkap
 // (stats, types, dll) di-cache di sini per-nama begitu ada halaman yang
@@ -37,10 +27,7 @@ export const usePokemonStore = create((set, get) => ({
 		set({ isIndexLoading: true, indexError: null })
 
 		try {
-			const [index] = await Promise.all([
-				getPokemonIndex(),
-				wait(MIN_INDEX_LOAD_MS),
-			])
+			const index = await getPokemonIndex()
 			set({ index, isIndexLoading: false })
 		} catch (err) {
 			set({ indexError: err, isIndexLoading: false })
@@ -60,10 +47,9 @@ export const usePokemonStore = create((set, get) => ({
 		set({ pendingDetailNames: new Set([...pendingDetailNames, ...missing]) })
 
 		try {
-			const [details] = await Promise.all([
-				Promise.all(missing.map((n) => getDataDetailPokemon(`${BASE_URL}/pokemon/${n}`))),
-				wait(MIN_DETAIL_LOAD_MS),
-			])
+			const details = await Promise.all(
+				missing.map((n) => getDataDetailPokemon(`${BASE_URL}/pokemon/${n}`)),
+			)
 
 			set((state) => {
 				const nextDetails = { ...state.detailsByName }
@@ -99,10 +85,9 @@ export const usePokemonStore = create((set, get) => ({
 		set({ pendingTypeNames: new Set([...pendingTypeNames, ...missing]) })
 
 		try {
-			const [results] = await Promise.all([
-				Promise.all(missing.map((t) => getPokemonNamesByType(t))),
-				wait(MIN_TYPE_LOAD_MS),
-			])
+			const results = await Promise.all(
+				missing.map((t) => getPokemonNamesByType(t)),
+			)
 
 			set((state) => {
 				const nextMembers = { ...state.typeMembers }
