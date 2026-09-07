@@ -2348,6 +2348,7 @@
 	line-height: 1;
 	text-transform: capitalize;
 	padding: 0.35em 0.48em 0.35em 0.5em;
+	border: 1px solid rgba(255, 255, 255, 0.55);
 	border-radius: 6px;
 	white-space: nowrap;
 }
