@@ -1,13 +1,11 @@
 import { getTypeMultiplier } from "../constants/typeChart"
 import { capitalize } from "./text"
+import { getStat } from "./pokemonStats"
 
 const MAX_ROUNDS = 30
 const DAMAGE_CONSTANT = 6
 const CRIT_CHANCE = 0.1
 const CRIT_MULTIPLIER = 1.5
-
-const getStat = (pokemon, statName) =>
-	pokemon.stats.find((s) => s.stat.name === statName)?.base_stat ?? 0
 
 const rollDamage = (attacker, defender) => {
 	const attackStat = getStat(attacker, "attack")

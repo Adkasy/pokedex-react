@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router"
 import { MdShuffle } from "react-icons/md"
 import { getTypeColor } from "../constants/typeColors"
 import { STAT_LABELS } from "../constants/statLabels"
+import { getStat, getTotalStats } from "../utils/pokemonStats"
 import TypeIcon, { CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
 import BattleArena from "../components/BattleArena"
@@ -11,12 +12,6 @@ import LoadingSpinner from "../components/LoadingSpinner"
 import { usePokemonStore } from "../store/usePokemonStore"
 
 const STAT_BAR_MAX = 200
-
-const getStat = (pokemon, statName) =>
-	pokemon.stats.find((s) => s.stat.name === statName)?.base_stat ?? 0
-
-const getTotalStats = (pokemon) =>
-	pokemon.stats.reduce((sum, s) => sum + s.base_stat, 0)
 
 const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 	const scale = max ?? Math.max(rawA, rawB, 1) * 1.1
@@ -44,11 +39,7 @@ const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 
 	return (
 		<div className={`compare-stat-row${isTotal ? " is-total" : ""}`}>
-			<span
-				className={`compare-stat-value${aWins ? " is-winner" : ""}`}
-			>
-				{rawA}
-			</span>
+			<span className={`compare-stat-value${aWins ? " is-winner" : ""}`}>{rawA}</span>
 
 			<div className="compare-stat-track">
 				<div
@@ -62,46 +53,79 @@ const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 				/>
 			</div>
 
-			<span
-				className={`compare-stat-value${bWins ? " is-winner" : ""}`}
-			>
-				{rawB}
-			</span>
+			<span className={`compare-stat-value${bWins ? " is-winner" : ""}`}>{rawB}</span>
 		</div>
 	)
 }
 
-const CompareHead = ({ pokemon, isStrongerTotal = false }) => {
-	const color = getTypeColor(pokemon.types?.[0]?.type?.name)
+const CompareHead = ({ pokemon, color, isStrongerTotal = false }) => (
+	<Link to={`/pokemon/${pokemon.name}`} className="compare-head" style={{ backgroundColor: color }}>
+		{isStrongerTotal && (
+			<span className="compare-head-edge-badge" title="Higher total base stats">
+				Higher Total
+			</span>
+		)}
+		<PokemonImage className="compare-head-image" src={pokemon.image} alt={pokemon.name} iconSize={100} />
+		<p className="compare-head-id">#{String(pokemon.id).padStart(3, "0")}</p>
+		<p className="compare-head-name">{pokemon.name}</p>
+		<div className="type-badge-row">
+			{pokemon.types.map(({ type }) => (
+				<span key={type.name} className="type-badge">
+					<TypeIcon type={type.name} size={12} />
+					{type.name}
+				</span>
+			))}
+		</div>
+	</Link>
+)
+
+// heads + stat bars + battle arena — cuma dirender begitu pokemonA/B
+// keduanya udah ke-load, jadi di-component-in sendiri biar bisa itung
+// color/total sekali di sini (bukan berkali-kali kesebar di ComparePage)
+const CompareResult = ({ pokemonA, pokemonB }) => {
+	const colorA = getTypeColor(pokemonA.types?.[0]?.type?.name)
+	const colorB = getTypeColor(pokemonB.types?.[0]?.type?.name)
+	const totalA = getTotalStats(pokemonA)
+	const totalB = getTotalStats(pokemonB)
 
 	return (
-		<Link
-			to={`/pokemon/${pokemon.name}`}
-			className="compare-head"
-			style={{ backgroundColor: color }}
-		>
-			{isStrongerTotal && (
-				<span className="compare-head-edge-badge" title="Higher total base stats">
-					Higher Total
+		<div className="compare-result">
+			<div className="compare-heads">
+				<CompareHead pokemon={pokemonA} color={colorA} isStrongerTotal={totalA > totalB} />
+				<span
+					className="compare-vs"
+					style={{ "--vs-color-a": colorA, "--vs-color-b": colorB }}
+				>
+					VS
 				</span>
-			)}
-			<PokemonImage
-				className="compare-head-image"
-				src={pokemon.image}
-				alt={pokemon.name}
-				iconSize={100}
-			/>
-			<p className="compare-head-id">#{String(pokemon.id).padStart(3, "0")}</p>
-			<p className="compare-head-name">{pokemon.name}</p>
-			<div className="type-badge-row">
-				{pokemon.types.map(({ type }) => (
-					<span key={type.name} className="type-badge">
-						<TypeIcon type={type.name} size={12} />
-						{type.name}
-					</span>
-				))}
+				<CompareHead pokemon={pokemonB} color={colorB} isStrongerTotal={totalB > totalA} />
 			</div>
-		</Link>
+
+			<div className="compare-stats">
+				<CompareStatRow label="Height (m)" rawA={pokemonA.height / 10} rawB={pokemonB.height / 10} />
+				<CompareStatRow label="Weight (kg)" rawA={pokemonA.weight / 10} rawB={pokemonB.weight / 10} />
+
+				<div className="compare-stats-divider" role="separator" />
+
+				{Object.entries(STAT_LABELS).map(([statName, label]) => (
+					<CompareStatRow
+						key={statName}
+						label={label}
+						rawA={getStat(pokemonA, statName)}
+						rawB={getStat(pokemonB, statName)}
+						max={STAT_BAR_MAX}
+					/>
+				))}
+
+				<CompareStatRow label="Total" rawA={totalA} rawB={totalB} isTotal />
+			</div>
+
+			<BattleArena
+				key={`${pokemonA.name}-${pokemonB.name}`}
+				pokemonA={pokemonA}
+				pokemonB={pokemonB}
+			/>
+		</div>
 	)
 }
 
@@ -168,11 +192,7 @@ const ComparePage = ({ index }) => {
 			<h1 className="page-title">Compare</h1>
 
 			<div className="compare-picker">
-				<PokemonPicker
-					pokemonList={index}
-					value={nameA}
-					onChange={(name) => handleSelect("a", name)}
-				/>
+				<PokemonPicker pokemonList={index} value={nameA} onChange={(name) => handleSelect("a", name)} />
 				<button
 					className="compare-swap-btn"
 					onClick={handleSwap}
@@ -182,18 +202,10 @@ const ComparePage = ({ index }) => {
 				>
 					<CompareIcon size={20} />
 				</button>
-				<PokemonPicker
-					pokemonList={index}
-					value={nameB}
-					onChange={(name) => handleSelect("b", name)}
-				/>
+				<PokemonPicker pokemonList={index} value={nameB} onChange={(name) => handleSelect("b", name)} />
 			</div>
 
-			<button
-				className="btn compare-surprise-btn"
-				onClick={handleSurprise}
-				title="Random matchup"
-			>
+			<button className="btn compare-surprise-btn" onClick={handleSurprise} title="Random matchup">
 				<MdShuffle className="compare-surprise-icon" size={14} />
 				Random Matchup
 			</button>
@@ -203,69 +215,7 @@ const ComparePage = ({ index }) => {
 			) : !pokemonA || !pokemonB ? (
 				<LoadingSpinner />
 			) : (
-				<div className="compare-result">
-					<div className="compare-heads">
-						<CompareHead
-							pokemon={pokemonA}
-							isStrongerTotal={
-								getTotalStats(pokemonA) > getTotalStats(pokemonB)
-							}
-						/>
-						<span
-							className="compare-vs"
-							style={{
-								"--vs-color-a": getTypeColor(pokemonA.types?.[0]?.type?.name),
-								"--vs-color-b": getTypeColor(pokemonB.types?.[0]?.type?.name),
-							}}
-						>
-							VS
-						</span>
-						<CompareHead
-							pokemon={pokemonB}
-							isStrongerTotal={
-								getTotalStats(pokemonB) > getTotalStats(pokemonA)
-							}
-						/>
-					</div>
-
-					<div className="compare-stats">
-						<CompareStatRow
-							label="Height (m)"
-							rawA={pokemonA.height / 10}
-							rawB={pokemonB.height / 10}
-						/>
-						<CompareStatRow
-							label="Weight (kg)"
-							rawA={pokemonA.weight / 10}
-							rawB={pokemonB.weight / 10}
-						/>
-
-						<div className="compare-stats-divider" role="separator" />
-
-						{Object.entries(STAT_LABELS).map(([statName, label]) => (
-							<CompareStatRow
-								key={statName}
-								label={label}
-								rawA={getStat(pokemonA, statName)}
-								rawB={getStat(pokemonB, statName)}
-								max={STAT_BAR_MAX}
-							/>
-						))}
-
-						<CompareStatRow
-							label="Total"
-							rawA={getTotalStats(pokemonA)}
-							rawB={getTotalStats(pokemonB)}
-							isTotal
-						/>
-					</div>
-
-					<BattleArena
-						key={`${pokemonA.name}-${pokemonB.name}`}
-						pokemonA={pokemonA}
-						pokemonB={pokemonB}
-					/>
-				</div>
+				<CompareResult pokemonA={pokemonA} pokemonB={pokemonB} />
 			)}
 		</div>
 	)
