@@ -2283,10 +2283,9 @@
 	   banget buat ngisi ruang kosongnya — dikasih cap max-width biar
 	   tetep setipis di home, TANPA ganggu perilaku nyusut ke 2px di
 	   mobile (max-width gak mempengaruhi shrink, cuma ngebatesin growth).
-	   Naikin dari 3px ke 4px — makin lebar tiap bar, makin dikit sisa
-	   ruang yang perlu disebar justify-content:space-between jadi
-	   gap antar bar, jadi renggangnya berkurang tanpa harus nempel */
-	max-width: 4px;
+	   Sempet naik ke 4px biar gap-nya gak terlalu renggang, tapi kelamaan
+	   malah jadi kegedean — 3.5px jalan tengahnya */
+	max-width: 3.5px;
 	height: 100%;
 	background: currentColor;
 	border-radius: 1px;
