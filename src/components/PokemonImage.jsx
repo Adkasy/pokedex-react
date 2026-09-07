@@ -5,7 +5,7 @@ import { PokeballIcon } from "./TypeIcon"
 // punya official artwork di PokeAPI — src-nya null atau link-nya putus.
 // Daripada nampilin ikon broken-image bawaan browser, kita fallback ke
 // ikon pokeball placeholder yang gayanya nyambung sama UI.
-const PokemonImage = ({ src, alt = "", className, iconSize = 48 }) => {
+const PokemonImage = ({ src, alt = "", className, iconSize = 58 }) => {
 	const [failed, setFailed] = useState(false)
 
 	if (!src || failed) {

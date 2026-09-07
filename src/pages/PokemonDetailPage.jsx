@@ -212,7 +212,7 @@ const PokemonDetailPage = ({ index }) => {
 					className="detail-image"
 					src={pokemon.sprites.other["official-artwork"].front_default}
 					alt={pokemon.name}
-					iconSize={130}
+					iconSize={160}
 				/>
 			</div>
 
@@ -335,7 +335,7 @@ const PokemonDetailPage = ({ index }) => {
 										className="size-comparison-image"
 										src={pokemon.image}
 										alt={pokemon.name}
-										iconSize={Math.max(pokemonFigurePx * 0.65, 22)}
+										iconSize={Math.max(pokemonFigurePx * 0.8, 28)}
 									/>
 								</div>
 							</div>
@@ -402,7 +402,7 @@ const PokemonDetailPage = ({ index }) => {
 															className="evolution-node-image"
 															src={matched.image}
 															alt={member.name}
-															iconSize={26}
+															iconSize={32}
 														/>
 													) : (
 														<span className="evolution-node-fallback">
