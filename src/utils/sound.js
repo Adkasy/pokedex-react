@@ -174,19 +174,44 @@ export const playVictorySound = () => {
 	}
 }
 
-// Bunyi hit — 3 lapis biar lebih "berasa"/punchy daripada versi
-// sebelumnya (yang cuma noise band-pass + 1 nada kotak, jadi kedengeran
-// tipis): (1) crack tajam highpass-noise super pendek buat transient
-// "krek"-nya, (2) body mid bandpass-noise yang lebih bertekstur
-// (bukan tone oscillator murni) buat "thud"-nya, (3) sub punch sine
-// yang jatuh cepet ke frekuensi rendah buat "dorongan" bass-nya —
-// gabungan 3 ini yang bikin kerasa ada bobot beneran, bukan cuma
-// "beep" logam. Crit dikasih gain & frekuensi lebih tinggi di
-// ketiganya biar bedanya kerasa jelas.
+// Bunyi hit — sekarang ada "swing" sebelum impact-nya, biar kedengeran
+// kaya beneran NYERANG (senjata/cakar motong angin dulu baru kena),
+// bukan cuma bunyi "kena" doang: (0) whoosh — noise band-pass yang
+// cutoff-nya nyapu naik cepet & super pendek, itu yang ngasih kesan
+// ada gerakan/ayunan sebelum nyentuh. Nyusul abis itu baru 3 lapis
+// impact yang lama: (1) crack tajam buat transient "krek"-nya, (2)
+// body mid bandpass-noise yang bertekstur buat "thud"-nya, (3) sub
+// punch yang jatuh cepet ke frekuensi rendah buat "dorongan" bass-nya.
+// Crit dikasih gain & frekuensi lebih tinggi di semuanya.
 export const playHitSound = (isCrit = false) => {
 	try {
 		const ctx = getAudioContext()
 		const now = ctx.currentTime
+
+		// (0) whoosh — ayunan pendek sebelum kena
+		const whooshBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.09, ctx.sampleRate)
+		const whooshData = whooshBuffer.getChannelData(0)
+		for (let i = 0; i < whooshData.length; i++) {
+			whooshData[i] = Math.random() * 2 - 1
+		}
+		const whoosh = ctx.createBufferSource()
+		whoosh.buffer = whooshBuffer
+		const whooshFilter = ctx.createBiquadFilter()
+		whooshFilter.type = "bandpass"
+		whooshFilter.Q.value = 1.1
+		whooshFilter.frequency.setValueAtTime(650, now)
+		whooshFilter.frequency.exponentialRampToValueAtTime(isCrit ? 3600 : 2800, now + 0.08)
+		const whooshGain = ctx.createGain()
+		whooshGain.gain.setValueAtTime(0.001, now)
+		whooshGain.gain.exponentialRampToValueAtTime(isCrit ? 0.42 : 0.3, now + 0.05)
+		whooshGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09)
+		whoosh.connect(whooshFilter)
+		whooshFilter.connect(whooshGain)
+		whooshGain.connect(ctx.destination)
+		whoosh.start(now)
+
+		// impact-nya nyusul abis whoosh-nya sempet kedenger dulu
+		const impactStart = now + 0.07
 
 		// (1) crack — transient tajam & super pendek
 		const crackBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.055, ctx.sampleRate)
@@ -200,12 +225,12 @@ export const playHitSound = (isCrit = false) => {
 		crackFilter.type = "highpass"
 		crackFilter.frequency.value = isCrit ? 2400 : 1800
 		const crackGain = ctx.createGain()
-		crackGain.gain.setValueAtTime(isCrit ? 0.8 : 0.6, now)
-		crackGain.gain.exponentialRampToValueAtTime(0.001, now + 0.055)
+		crackGain.gain.setValueAtTime(isCrit ? 0.8 : 0.6, impactStart)
+		crackGain.gain.exponentialRampToValueAtTime(0.001, impactStart + 0.055)
 		crack.connect(crackFilter)
 		crackFilter.connect(crackGain)
 		crackGain.connect(ctx.destination)
-		crack.start(now)
+		crack.start(impactStart)
 
 		// (2) body — noise band-pass mid, lebih bertekstur dari tone biasa
 		const bodyBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.14, ctx.sampleRate)
@@ -220,25 +245,25 @@ export const playHitSound = (isCrit = false) => {
 		bodyFilter.frequency.value = isCrit ? 550 : 380
 		bodyFilter.Q.value = 0.7
 		const bodyGain = ctx.createGain()
-		bodyGain.gain.setValueAtTime(isCrit ? 0.6 : 0.42, now)
-		bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14)
+		bodyGain.gain.setValueAtTime(isCrit ? 0.6 : 0.42, impactStart)
+		bodyGain.gain.exponentialRampToValueAtTime(0.001, impactStart + 0.14)
 		body.connect(bodyFilter)
 		bodyFilter.connect(bodyGain)
 		bodyGain.connect(ctx.destination)
-		body.start(now)
+		body.start(impactStart)
 
 		// (3) sub punch — nada rendah yang jatuh cepet, ngasih "dorongan"
 		const sub = ctx.createOscillator()
 		const subGain = ctx.createGain()
 		sub.type = "sine"
-		sub.frequency.setValueAtTime(isCrit ? 160 : 115, now)
-		sub.frequency.exponentialRampToValueAtTime(35, now + 0.1)
-		subGain.gain.setValueAtTime(isCrit ? 0.55 : 0.4, now)
-		subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16)
+		sub.frequency.setValueAtTime(isCrit ? 160 : 115, impactStart)
+		sub.frequency.exponentialRampToValueAtTime(35, impactStart + 0.1)
+		subGain.gain.setValueAtTime(isCrit ? 0.55 : 0.4, impactStart)
+		subGain.gain.exponentialRampToValueAtTime(0.001, impactStart + 0.16)
 		sub.connect(subGain)
 		subGain.connect(ctx.destination)
-		sub.start(now)
-		sub.stop(now + 0.16)
+		sub.start(impactStart)
+		sub.stop(impactStart + 0.16)
 	} catch {
 		// silent
 	}
