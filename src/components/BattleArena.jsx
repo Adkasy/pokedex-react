@@ -167,7 +167,15 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 		if (!battle || revealCount >= battle.log.length) return
 
 		const timer = setTimeout(() => {
-			const nextCount = revealCount + 1
+			// begitu entry "faint" (salah satu Pokemon KO) kereveal, match-nya
+			// dianggep kelar seketika — lompat langsung ke akhir log (skip
+			// nunggu 1 tick lagi buat entry "result", yang toh gak
+			// ditampilin di chat-nya juga) biar gak ada jeda dimana si
+			// pemenang masih sempet ke-highlight/animasi lagi abis lawannya
+			// udah jatuh
+			const justRevealed = battle.log[revealCount]
+			const nextCount =
+				justRevealed?.type === "faint" ? battle.log.length : revealCount + 1
 			setRevealCount(nextCount)
 
 			// battle baru aja kelar kereveal semua — sekalian catet
