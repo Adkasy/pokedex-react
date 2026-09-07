@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { GiCrossedSwords, GiTrophy } from "react-icons/gi"
+import { MdInfoOutline } from "react-icons/md"
 import { simulateBattle } from "../utils/battleSimulator"
 import { getTypeColor } from "../constants/typeColors"
 import { playVictorySound } from "../utils/sound"
@@ -32,6 +33,7 @@ const BattleHpBar = ({ name, hp, maxHp }) => {
 const BattleArena = ({ pokemonA, pokemonB }) => {
 	const [battle, setBattle] = useState(null) // { log, maxHpA, maxHpB, winner }
 	const [revealCount, setRevealCount] = useState(0)
+	const [showInfo, setShowInfo] = useState(false)
 	const logRef = useRef(null)
 	const arenaRef = useRef(null)
 	const colorA = getTypeColor(pokemonA.types?.[0]?.type?.name)
@@ -101,6 +103,27 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 	return (
 		<div className="battle-section">
+			<button
+				className="battle-info-btn"
+				onClick={() => setShowInfo((v) => !v)}
+				aria-label="How is damage calculated?"
+				title="How is damage calculated?"
+			>
+				<MdInfoOutline size={18} />
+			</button>
+
+			{showInfo && (
+				<div className="battle-info-popover">
+					<p>
+						Each hit: the attacker&rsquo;s <strong>Attack</strong> stat
+						against the defender&rsquo;s <strong>Defense</strong> stat, then
+						boosted or weakened by type effectiveness (super effective /
+						not very effective), plus a small bit of random luck — so a
+						rematch doesn&rsquo;t always play out the same way.
+					</p>
+				</div>
+			)}
+
 			<button
 				className="btn btn-primary battle-simulate-btn"
 				onClick={handleSimulate}
