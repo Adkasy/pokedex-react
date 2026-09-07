@@ -299,7 +299,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 									<li>
 										<code className="f-chip f-chip-crit">💥 Critical Hit</code>
 										: on top of all that, every attack also has a small 6%
-										chance to land a critical hit for 1.5× extra damage.
+										chance to land a critical hit for 1.5 × extra damage.
 									</li>
 								</ul>
 
