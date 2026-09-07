@@ -494,19 +494,33 @@
 	background: var(--accent-bg);
 }
 
-.battle-info-formula {
+.battle-info-popover .battle-info-formula {
 	display: block;
 	margin: 0 0 14px;
 	padding: 10px 12px;
 	border-radius: 10px;
-	background: var(--accent-bg);
-	color: var(--accent);
+	border: 1px solid var(--border);
+	background: var(--bg);
+	color: var(--text-h);
 	font-family: var(--mono);
 	font-size: 12px;
 	font-weight: 700;
 	line-height: 1.5;
 	white-space: normal;
 	word-break: break-word;
+}
+
+.battle-info-formula .f-atk,
+.battle-info-formula .f-def {
+	color: #5b9dff;
+}
+
+.battle-info-formula .f-type {
+	color: #34d399;
+}
+
+.battle-info-formula .f-luck {
+	color: #fbbf24;
 }
 
 .battle-info-list {

@@ -157,7 +157,11 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								</div>
 
 								<code className="battle-info-formula">
-									Damage = (Attack ÷ Defense) × Type Effectiveness × Luck
+									<span className="f-damage">Damage</span> ={" "}
+									<span className="f-atk">Attack</span> ÷{" "}
+									<span className="f-def">Defense</span> ×{" "}
+									<span className="f-type">Type Effectiveness</span> ×{" "}
+									<span className="f-luck">Luck</span>
 								</code>
 
 								<ul className="battle-info-list">
@@ -167,8 +171,10 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 										Attack (or a weaker target Defense) means more damage.
 									</li>
 									<li>
-										<code>Type Effectiveness</code>: a super effective hit
-										does more damage, a resisted hit does less.
+										<code>Type Effectiveness</code>: follows the same type
+										chart as the games. e.g. Water beats Fire, Fire beats
+										Grass, Grass beats Water. A super effective hit does
+										more damage, a resisted hit does less.
 									</li>
 									<li>
 										<code>Luck</code>: a small random swing (85% to 100%),
