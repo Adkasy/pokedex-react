@@ -30,15 +30,40 @@ const PATHS = {
 	fairy: "M12 2l2 6 6 2-6 2-2 6-2-6-6-2 6-2z",
 }
 
+// Path-path di atas digambar tangan, jadi gak semuanya beneran ngisi
+// tengah-tengah viewBox 0-24-nya (misal "fire" itu ternyata numpuk di
+// bagian atas doang) — kalau viewBox dibiarin "0 0 24 24" polos, hasil
+// render-nya keliatan ketinggian/kerendahan pas disejajarin sama teks
+// di sebelahnya (align-items:center cuma nyeimbangin BOX-nya, bukan
+// "beratnya" gambar di dalem box itu). Angka-angka ini diukur langsung
+// dari getBBox() tiap path di browser (pusat gambarnya - 12, dibulatin),
+// dipake buat geser viewBox-nya per type biar isinya kebaca center.
+const VIEWBOX_Y_OFFSETS = {
+	fire: -3.5,
+	fighting: 0.5,
+	poison: -1,
+	ground: 1,
+	flying: -0.87,
+	bug: -1,
+	rock: -1.5,
+	ghost: -1,
+	dragon: -1,
+	dark: 0.34,
+	steel: -2,
+	fairy: -2,
+}
+
 const TypeIcon = ({ type, size = 12 }) => {
 	const d = PATHS[type]
 	if (!d) return null
+
+	const yOffset = VIEWBOX_Y_OFFSETS[type] ?? 0
 
 	return (
 		<svg
 			width={size}
 			height={size}
-			viewBox="0 0 24 24"
+			viewBox={`0 ${yOffset} 24 24`}
 			fill="none"
 			stroke="currentColor"
 			strokeWidth="2"
