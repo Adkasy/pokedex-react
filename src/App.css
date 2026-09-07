@@ -1994,7 +1994,7 @@
 
 .pokemon-card-body .type-badge {
 	font-size: 10px;
-	padding: 3px 12px;
+	padding: 3px 8px;
 	gap: 5px;
 }
 
@@ -2327,9 +2327,13 @@
    gak perlu se-menonjol chip di tempat lain */
 .compare-head .type-badge {
 	font-size: 10px;
-	padding: 3px 13px;
+	padding: 3px 8px;
 }
 
+/* rx/padding-nya ngikutin badge component asli di Figma (bukan pill
+   bulet penuh kayak sebelumnya) — cuma dibulatin dikit di sudutnya,
+   padding kiri-kanannya juga lebih rapet ngikutin proporsi referensi
+   (badge 25px tinggi di Figma, sudut rx=3, padding kiri-kanan ~5-6px) */
 .type-badge {
 	display: inline-flex;
 	align-items: center;
@@ -2344,8 +2348,8 @@
 	   beneran sejajar secara visual (teksnya keliatan "naik" dikit) */
 	line-height: 1;
 	text-transform: capitalize;
-	padding: 4px 16px;
-	border-radius: 999px;
+	padding: 4px 10px;
+	border-radius: 6px;
 	white-space: nowrap;
 }
 
