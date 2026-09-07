@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useSearchParams } from "react-router"
 import { MdShuffle } from "react-icons/md"
-import { getTypeColor } from "../constants/typeColors"
+import { getTypeColor, getPrimaryCardColor } from "../constants/typeColors"
 import { STAT_LABELS } from "../constants/statLabels"
 import { TypeBadge, CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
@@ -72,7 +72,9 @@ const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 }
 
 const CompareHead = ({ pokemon, isStrongerTotal = false }) => {
-	const color = getTypeColor(pokemon.types?.[0]?.type?.name)
+	// card-nya pake palette soft/pastel (bukan getTypeColor yang vivid)
+	// biar chip type di dalemnya selalu kebeda dari background-nya
+	const color = getPrimaryCardColor(pokemon.types)
 
 	return (
 		<Link

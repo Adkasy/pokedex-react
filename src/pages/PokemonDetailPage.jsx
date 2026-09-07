@@ -6,7 +6,7 @@ import {
 	MdKeyboardArrowDown,
 	MdAutoAwesome,
 } from "react-icons/md"
-import { getTypeColor, hexToRgba } from "../constants/typeColors"
+import { getTypeColor, getPrimaryCardColor, hexToRgba } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { usePokemonStore } from "../store/usePokemonStore"
 import { useCryPlayerStore } from "../store/useCryPlayerStore"
@@ -190,6 +190,10 @@ const PokemonDetailPage = ({ index }) => {
 	}
 
 	const primaryColor = getTypeColor(pokemon.types?.[0]?.type?.name)
+	// header-nya pake palette soft/pastel yang beda (bukan primaryColor
+	// yang vivid) — biar chip type di dalemnya (yang tetep pake warna
+	// vivid) selalu kebeda dari background-nya, gak pernah "nyatu"
+	const headerColor = getPrimaryCardColor(pokemon.types)
 
 	const genus = species?.genera.find((g) => g.language.name === "en")?.genus
 	const flavorTextEntry = species?.flavor_text_entries.find(
@@ -237,7 +241,7 @@ const PokemonDetailPage = ({ index }) => {
 
 	return (
 		<div className="detail-page">
-			<div className="detail-header" style={{ backgroundColor: primaryColor }}>
+			<div className="detail-header" style={{ backgroundColor: headerColor }}>
 				<p className="detail-watermark">{pokemon.name}</p>
 				<div className="detail-dots" />
 				<div className="detail-header-ornament">
