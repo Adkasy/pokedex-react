@@ -61,85 +61,34 @@ export const playBattleStartSound = () => {
 	}
 }
 
-// Fanfare kemenangan, 3 babak: (1) stab akor pembuka yang langsung
-// "nendang", (2) arpeggio naik C-E-G-C dengan bass di tiap not, (3) akor
-// final yang nge-ring panjang dibarengin sparkle cascade naik di atasnya
-// — biar berasa kayak fanfare beneran, bukan cuma satu arpeggio pendek.
+// Fanfare kemenangan — arpeggio 4 nada naik (C-E-G-C, major triad),
+// tiap nada nyusul dikit-dikit terus nada terakhir dibiarin nge-ring
+// lebih lama biar berasa "ini menang beneran", bukan cuma "pop" biasa.
 export const playVictorySound = () => {
 	try {
 		const ctx = getAudioContext()
 		const now = ctx.currentTime
-
-		const playChord = (freqs, start, duration, level) => {
-			freqs.forEach((freq) => {
-				const osc = ctx.createOscillator()
-				const gain = ctx.createGain()
-
-				osc.type = "triangle"
-				osc.frequency.setValueAtTime(freq, start)
-
-				gain.gain.setValueAtTime(0, start)
-				gain.gain.linearRampToValueAtTime(level, start + 0.02)
-				gain.gain.exponentialRampToValueAtTime(0.001, start + duration)
-
-				osc.connect(gain)
-				gain.connect(ctx.destination)
-
-				osc.start(start)
-				osc.stop(start + duration)
-			})
-		}
-
-		// (1) stab akor C major penuh, punchy — kesan "TA-DA!" pembuka
-		playChord([261.63, 329.63, 392, 523.25], now, 0.22, 0.15) // C4 E4 G4 C5
-
-		// (2) arpeggio naik, tiap not dikasih bass 1 oktaf di bawah
-		const notes = [523.25, 659.25, 783.99, 1046.5] // C5 E5 G5 C6
-		const arpStart = now + 0.16
+		const notes = [523.25, 659.25, 783.99, 1046.5] // C5, E5, G5, C6
 
 		notes.forEach((freq, i) => {
-			const start = arpStart + i * 0.11
-			const duration = 0.18
-
-			playChord([freq], start, duration, 0.19)
-
-			const bass = ctx.createOscillator()
-			const bassGain = ctx.createGain()
-			bass.type = "sine"
-			bass.frequency.setValueAtTime(freq / 2, start)
-			bassGain.gain.setValueAtTime(0, start)
-			bassGain.gain.linearRampToValueAtTime(0.12, start + 0.02)
-			bassGain.gain.exponentialRampToValueAtTime(0.001, start + duration)
-			bass.connect(bassGain)
-			bassGain.connect(ctx.destination)
-			bass.start(start)
-			bass.stop(start + duration)
-		})
-
-		// (3) akor final nge-ring panjang, ditumpuk sparkle cascade naik
-		// di atasnya — ini bagian "megah"-nya
-		const finalStart = arpStart + notes.length * 0.11
-		playChord([523.25, 659.25, 783.99, 1046.5], finalStart, 1.3, 0.11) // C5 E5 G5 C6
-
-		const sparkleNotes = [1046.5, 1174.66, 1318.51, 1567.98, 1760, 2093] // C6 D6 E6 G6 A6 C7
-		sparkleNotes.forEach((freq, i) => {
-			const start = finalStart + 0.1 + i * 0.07
+			const start = now + i * 0.11
+			const duration = i === notes.length - 1 ? 0.5 : 0.16
 
 			const osc = ctx.createOscillator()
 			const gain = ctx.createGain()
 
-			osc.type = "sine"
+			osc.type = "triangle"
 			osc.frequency.setValueAtTime(freq, start)
 
 			gain.gain.setValueAtTime(0, start)
-			gain.gain.linearRampToValueAtTime(0.11, start + 0.015)
-			gain.gain.exponentialRampToValueAtTime(0.001, start + 0.4)
+			gain.gain.linearRampToValueAtTime(0.18, start + 0.02)
+			gain.gain.exponentialRampToValueAtTime(0.001, start + duration)
 
 			osc.connect(gain)
 			gain.connect(ctx.destination)
 
 			osc.start(start)
-			osc.stop(start + 0.4)
+			osc.stop(start + duration)
 		})
 	} catch {
 		// silent

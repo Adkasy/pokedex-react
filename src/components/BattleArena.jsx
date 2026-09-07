@@ -5,7 +5,7 @@ import { simulateBattle } from "../utils/battleSimulator"
 import { getTypeColor } from "../constants/typeColors"
 import { playVictorySound, playBattleStartSound } from "../utils/sound"
 
-const REVEAL_DELAY_MS = 700
+const REVEAL_DELAY_MS = 500
 const BATTLE_BEGIN_MS = 950
 
 const BattleBeginOverlay = () => (

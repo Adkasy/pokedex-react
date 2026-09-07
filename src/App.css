@@ -454,10 +454,6 @@
 
 @keyframes battle-begin-bg {
 	0% {
-		opacity: 0;
-	}
-
-	8% {
 		opacity: 0.88;
 	}
 
@@ -513,10 +509,6 @@
 
 @keyframes battle-begin-rays-fade {
 	0% {
-		opacity: 0;
-	}
-
-	18% {
 		opacity: 1;
 	}
 
@@ -619,20 +611,23 @@
 
 @keyframes battle-begin-in {
 	0% {
-		opacity: 0;
-		transform: scale(3.2);
+		opacity: 0.6;
+		transform: scale(2);
 	}
 
-	20% {
+	8% {
 		opacity: 1;
-		transform: scale(0.9);
 	}
 
-	30% {
-		transform: scale(1.06);
+	22% {
+		transform: scale(0.92);
 	}
 
-	40% {
+	32% {
+		transform: scale(1.05);
+	}
+
+	42% {
 		transform: scale(1);
 	}
 
