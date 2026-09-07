@@ -46,14 +46,17 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	useEffect(() => {
 		logRef.current?.scrollTo({
 			top: logRef.current.scrollHeight,
-			behavior: "smooth",
+			behavior: "auto",
 		})
 	}, [revealCount])
 
 	useEffect(() => {
-		if (battle) {
-			arenaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
-		}
+		// useEffect udah jalan SETELAH React commit DOM-nya, jadi
+		// arenaRef.current di sini udah pasti ke-render & posisinya
+		// akurat — gak perlu nunggu requestAnimationFrame segala (itu
+		// malah bisa gak jalan kalau tab/pane lagi background/hidden).
+		if (!battle) return
+		arenaRef.current?.scrollIntoView({ behavior: "auto", block: "start" })
 	}, [battle])
 
 	const isSimulating = battle && revealCount < battle.log.length
@@ -79,10 +82,8 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 				? pokemonB
 				: null
 
-	const chatLog = visibleLog.filter((entry) => entry.type === "attack")
-	const systemLog = visibleLog.filter(
-		(entry) => entry.type === "start" || entry.type === "faint",
-	)
+	// "result" gak ditampilin di chat — udah ada banner winner-nya sendiri
+	const chatEntries = visibleLog.filter((entry) => entry.type !== "result")
 
 	return (
 		<div className="battle-section">
@@ -134,27 +135,23 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						/>
 					</div>
 
-					{systemLog.length > 0 && (
-						<ul className="battle-system-log">
-							{systemLog.map((entry, i) => (
-								<li key={i} className="battle-system-entry">
+					<ul className="battle-chat" ref={logRef}>
+						{chatEntries.map((entry, i) =>
+							entry.type === "attack" ? (
+								<li key={i} className={`battle-chat-row side-${entry.side}`}>
+									<img
+										className="battle-chat-avatar"
+										src={entry.side === "a" ? pokemonA.image : pokemonB.image}
+										alt=""
+									/>
+									<div className="battle-chat-bubble">{entry.text}</div>
+								</li>
+							) : (
+								<li key={i} className="battle-chat-system">
 									{entry.text}
 								</li>
-							))}
-						</ul>
-					)}
-
-					<ul className="battle-chat" ref={logRef}>
-						{chatLog.map((entry, i) => (
-							<li key={i} className={`battle-chat-row side-${entry.side}`}>
-								<img
-									className="battle-chat-avatar"
-									src={entry.side === "a" ? pokemonA.image : pokemonB.image}
-									alt=""
-								/>
-								<div className="battle-chat-bubble">{entry.text}</div>
-							</li>
-						))}
+							),
+						)}
 					</ul>
 
 					{winnerPokemon && (

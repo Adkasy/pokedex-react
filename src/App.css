@@ -418,16 +418,21 @@
 .battle-simulate-btn {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: 10px;
 	font-size: 15px;
 	font-weight: 700;
 	padding: 12px 28px;
+}
+
+.battle-simulate-btn svg {
+	flex-shrink: 0;
 }
 
 .battle-arena {
 	width: 100%;
 	max-width: 640px;
 	box-sizing: border-box;
+	scroll-margin-top: 90px;
 	border: 1px solid var(--border);
 	border-radius: 20px;
 	padding: 24px 24px 20px;
@@ -579,26 +584,8 @@
 	background: #e53935;
 }
 
-/* ===== System log — pesan status kayak "X moves first!" / "X fainted!" ===== */
-.battle-system-log {
-	list-style: none;
-	margin: 0 0 10px;
-	padding: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-}
-
-.battle-system-entry {
-	text-align: center;
-	font-size: 12px;
-	font-style: italic;
-	color: var(--text);
-	opacity: 0.75;
-	animation: battle-pop-in 0.25s ease both;
-}
-
-/* ===== Chat log — tiap serangan tampil kayak chat bubble ===== */
+/* ===== Chat log — tiap serangan tampil kayak chat bubble, pesan
+   status ("X moves first!"/"X fainted!") nyempil di tengah kronologis ===== */
 .battle-chat {
 	list-style: none;
 	margin: 0;
@@ -608,6 +595,21 @@
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.battle-chat::-webkit-scrollbar {
+	display: none;
+}
+
+.battle-chat-system {
+	text-align: center;
+	font-size: 12px;
+	font-style: italic;
+	color: var(--text);
+	opacity: 0.75;
+	animation: battle-pop-in 0.25s ease both;
 }
 
 .battle-chat-row {
@@ -697,12 +699,12 @@
 	width: 130px;
 	height: 130px;
 	object-fit: contain;
-	filter: drop-shadow(0 0 24px var(--accent))
-		drop-shadow(0 10px 14px rgba(0, 0, 0, 0.4));
+	filter: drop-shadow(0 0 24px var(--accent)) drop-shadow(0 10px 14px rgba(0, 0, 0, 0.4));
 	animation: battle-winner-float 2.4s ease-in-out infinite;
 }
 
 @keyframes battle-winner-float {
+
 	0%,
 	100% {
 		transform: translateY(0);
@@ -716,7 +718,7 @@
 .battle-winner-ribbon {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: 10px;
 	padding: 8px 24px;
 	border-radius: 999px;
 	background: linear-gradient(135deg, #ffd76a, var(--accent));
@@ -1088,10 +1090,12 @@
 }
 
 @keyframes skeleton-pulse {
+
 	0%,
 	100% {
 		opacity: 1;
 	}
+
 	50% {
 		opacity: 0.5;
 	}
@@ -1222,10 +1226,12 @@
 }
 
 @keyframes waveform-bounce {
+
 	0%,
 	100% {
 		transform: scaleY(0.3);
 	}
+
 	50% {
 		transform: scaleY(1);
 	}

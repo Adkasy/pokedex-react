@@ -1,9 +1,8 @@
 import { getTypeMultiplier } from "../constants/typeChart"
 import { capitalize } from "./text"
 
-const HP_SCALE = 3
 const MAX_ROUNDS = 30
-const DAMAGE_CONSTANT = 18
+const DAMAGE_CONSTANT = 6
 
 const getStat = (pokemon, statName) =>
 	pokemon.stats.find((s) => s.stat.name === statName)?.base_stat ?? 0
@@ -40,8 +39,8 @@ const effectivenessNote = (typeMult) => {
 // tujuannya biar seru ditonton & hasilnya gak selalu ketebak.
 export const simulateBattle = (pokemonA, pokemonB) => {
 	const log = []
-	const maxHpA = getStat(pokemonA, "hp") * HP_SCALE
-	const maxHpB = getStat(pokemonB, "hp") * HP_SCALE
+	const maxHpA = getStat(pokemonA, "hp")
+	const maxHpB = getStat(pokemonB, "hp")
 	const hp = { a: maxHpA, b: maxHpB }
 	const pokemon = { a: pokemonA, b: pokemonB }
 
