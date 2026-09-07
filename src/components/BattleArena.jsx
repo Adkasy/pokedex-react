@@ -253,17 +253,26 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 					</span>
 
 					{(scoreboard.a > 0 || scoreboard.b > 0 || scoreboard.draw > 0) && (
-						<div className="battle-scoreboard">
-							<span className="battle-scoreboard-name">{pokemonA.name}</span>
-							<span className="battle-scoreboard-score">{scoreboard.a}</span>
-							<span className="battle-scoreboard-sep">:</span>
-							<span className="battle-scoreboard-score">{scoreboard.b}</span>
-							<span className="battle-scoreboard-name">{pokemonB.name}</span>
+						<div
+							className="battle-scoreboard"
+							title={`${pokemonA.name} ${scoreboard.a} : ${scoreboard.b} ${pokemonB.name}${
+								scoreboard.draw > 0 ? ` (${scoreboard.draw} draw${scoreboard.draw > 1 ? "s" : ""})` : ""
+							}`}
+						>
+							<span className="battle-scoreboard-score" style={{ color: colorA }}>
+								{scoreboard.a}
+							</span>
+							<span className="battle-scoreboard-sep" />
+							<span className="battle-scoreboard-score" style={{ color: colorB }}>
+								{scoreboard.b}
+							</span>
 							{scoreboard.draw > 0 && (
-								<span className="battle-scoreboard-draw">
-									({scoreboard.draw} draw
-									{scoreboard.draw > 1 ? "s" : ""})
-								</span>
+								<>
+									<span className="battle-scoreboard-sep is-muted" />
+									<span className="battle-scoreboard-draw">
+										{scoreboard.draw}
+									</span>
+								</>
 							)}
 						</div>
 					)}

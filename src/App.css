@@ -957,12 +957,9 @@
 	margin: 14px 0 8px;
 	padding-top: 14px;
 	border-top: 1px solid var(--border);
-	color: var(--text);
-	opacity: 0.55;
-	font-size: 10px;
-	font-weight: 800;
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
+	color: var(--text-h);
+	font-size: 13px;
+	font-weight: 700;
 }
 
 .btn.battle-simulate-btn {
@@ -1367,10 +1364,9 @@
 	}
 }
 
-/* ===== Scoreboard ===== */
-/* posisinya di tengah-tengah .battle-arena, sejajar sama round chip
-   (kiri) & tombol info (kanan) — ukurannya disamain sama round chip
-   (padding/font-size sama) biar 3 elemen di baris atas ini konsisten */
+/* ===== Scoreboard — angka doang, gak ada nama, gaya digital/HUD
+   (font mono + glow tipis ngikutin warna type masing-masing sisi)
+   biar kesannya modern/futuristik, bukan label teks biasa ===== */
 .battle-scoreboard {
 	/* height FIXED sama kayak .battle-round-chip/.battle-info-btn (30px)
 	   biar top:8px yang sama beneran nyejejerin titik tengahnya, bukan
@@ -1384,38 +1380,41 @@
 	justify-content: center;
 	height: 30px;
 	gap: 8px;
-	padding: 0 16px;
+	padding: 0 18px;
 	border-radius: 999px;
 	border: 1px solid var(--border);
 	background: var(--bg);
-	color: var(--text-h);
-	font-size: 12px;
-	font-weight: 700;
-	line-height: 1;
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
 	transform: translateX(-50%);
-}
-
-.battle-scoreboard-name {
-	color: var(--text);
-	text-transform: capitalize;
-	opacity: 0.8;
+	cursor: default;
 }
 
 .battle-scoreboard-score {
-	color: var(--accent);
-	font-size: 13px;
+	font-family: var(--mono);
+	font-size: 15px;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+	text-shadow: 0 0 6px currentColor;
 }
 
 .battle-scoreboard-sep {
-	color: var(--text);
-	opacity: 0.5;
+	width: 1px;
+	height: 12px;
+	background: var(--border);
+}
+
+.battle-scoreboard-sep.is-muted {
+	height: 8px;
+	opacity: 0.6;
 }
 
 .battle-scoreboard-draw {
 	color: var(--text);
-	opacity: 0.6;
-	font-weight: 600;
+	opacity: 0.55;
+	font-family: var(--mono);
 	font-size: 11px;
+	font-weight: 700;
 }
 
 @keyframes battle-winner-in {
