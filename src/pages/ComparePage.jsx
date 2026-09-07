@@ -165,7 +165,7 @@ const ComparePage = ({ index }) => {
 				onClick={handleSurprise}
 				title="Random matchup"
 			>
-				<MdShuffle size={14} />
+				<MdShuffle className="compare-surprise-icon" size={14} />
 				Random Matchup
 			</button>
 

@@ -222,6 +222,27 @@
 
 .btn.compare-surprise-btn:hover {
 	opacity: 1;
+	color: #5b9dff;
+	border-color: #5b9dff;
+	background: rgba(91, 157, 255, 0.12);
+}
+
+.compare-surprise-icon {
+	transition: transform 0.15s ease;
+}
+
+.btn.compare-surprise-btn:hover .compare-surprise-icon {
+	animation: compare-shuffle-spin 0.5s ease;
+}
+
+@keyframes compare-shuffle-spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 .pokemon-picker {
@@ -1997,6 +2018,61 @@
 	min-width: 20px;
 	color: var(--text);
 	opacity: 0.6;
+}
+
+.pagination-jump {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-left: 12px;
+	margin-left: 4px;
+	border-left: 1px solid var(--border);
+}
+
+.pagination-jump-label {
+	font-size: 13px;
+	color: var(--text);
+	opacity: 0.7;
+}
+
+.pagination-jump-input {
+	width: 56px;
+	height: 36px;
+	padding: 0 8px;
+	border-radius: 999px;
+	border: 1px solid var(--border);
+	background: var(--bg);
+	color: var(--text-h);
+	font-size: 14px;
+	font-weight: 600;
+	text-align: center;
+	appearance: textfield;
+	-moz-appearance: textfield;
+}
+
+.pagination-jump-input::-webkit-outer-spin-button,
+.pagination-jump-input::-webkit-inner-spin-button {
+	appearance: none;
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.pagination-jump-input:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+
+.pagination-jump-total {
+	font-size: 13px;
+	color: var(--text);
+	opacity: 0.6;
+}
+
+.pagination .btn.pagination-jump-btn {
+	width: auto;
+	min-width: 52px;
+	padding: 0 14px;
+	height: 36px;
 }
 
 /* ===== Detail page ===== */
