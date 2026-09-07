@@ -378,6 +378,9 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								alt={pokemonA.name}
 								iconSize={85}
 							/>
+							{hitSide === "a" && (
+								<span key={revealCount} className="battle-hit-slash" aria-hidden="true" />
+							)}
 						</div>
 
 						<span className="battle-stage-vs">VS</span>
@@ -393,6 +396,9 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								alt={pokemonB.name}
 								iconSize={85}
 							/>
+							{hitSide === "b" && (
+								<span key={revealCount} className="battle-hit-slash" aria-hidden="true" />
+							)}
 						</div>
 					</div>
 

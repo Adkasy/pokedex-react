@@ -516,21 +516,38 @@
 	text-transform: capitalize;
 }
 
+/* "VS" kaya stempel comic — dibelah diagonal jadi warna type
+   masing-masing sisi (bukan lingkaran polos 1 warna lagi), dimiringin
+   dikit biar kerasa ada energi/impact, bukan cuma badge statis.
+   line-height:1 + padding-bottom kecil buat kompensasi optical
+   centering huruf kapital ("VS") yang keliatan turun dikit kalau cuma
+   ngandelin align-items/justify-content flex doang */
 .compare-vs {
 	flex-shrink: 0;
 	align-self: center;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 42px;
-	height: 42px;
-	border-radius: 50%;
-	border: 2px solid var(--accent);
-	background: var(--code-bg);
-	color: var(--accent);
-	font-size: 13px;
-	font-weight: 800;
+	width: 50px;
+	height: 50px;
+	padding-bottom: 2px;
+	border-radius: 14px;
+	transform: rotate(-8deg);
+	background: linear-gradient(
+		135deg,
+		var(--vs-color-a, var(--accent)) 0%,
+		var(--vs-color-a, var(--accent)) 47%,
+		var(--vs-color-b, var(--accent)) 53%,
+		var(--vs-color-b, var(--accent)) 100%
+	);
+	box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.5);
+	color: #fff;
+	font-size: 17px;
+	font-weight: 900;
+	font-style: italic;
+	line-height: 1;
 	letter-spacing: 0.02em;
+	text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
 }
 
 .compare-stats {
@@ -1131,6 +1148,73 @@
 
 	35% {
 		filter: brightness(2.4) saturate(0.4) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+	}
+}
+
+/* efek "tebasan" nyilang (kaya kena serangan tajam) yang numpuk di
+   atas flash putih-nya .battle-fighter-image — 2 garis nyilang beda
+   arah biar kerasa "X", muncul & ilang cepet ngikutin 1 tick reveal
+   (elemen-nya sendiri di-remount tiap hit via key={revealCount}) */
+.battle-hit-slash {
+	position: absolute;
+	inset: -14px;
+	z-index: 4;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.battle-hit-slash::before,
+.battle-hit-slash::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 160%;
+	height: 3px;
+	background: linear-gradient(90deg, transparent, #fff 25%, #fff 75%, transparent);
+	box-shadow: 0 0 8px 1px rgba(255, 255, 255, 0.85);
+	opacity: 0;
+}
+
+.battle-hit-slash::before {
+	animation: battle-hit-slash-a 0.3s ease-out;
+}
+
+.battle-hit-slash::after {
+	animation: battle-hit-slash-b 0.3s ease-out 0.05s;
+}
+
+@keyframes battle-hit-slash-a {
+	0% {
+		opacity: 0;
+		transform: translate(-50%, -50%) rotate(-35deg) scaleX(0.2);
+	}
+
+	30% {
+		opacity: 1;
+		transform: translate(-50%, -50%) rotate(-35deg) scaleX(1);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translate(-50%, -50%) rotate(-35deg) scaleX(1);
+	}
+}
+
+@keyframes battle-hit-slash-b {
+	0% {
+		opacity: 0;
+		transform: translate(-50%, -50%) rotate(35deg) scaleX(0.2);
+	}
+
+	30% {
+		opacity: 1;
+		transform: translate(-50%, -50%) rotate(35deg) scaleX(1);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translate(-50%, -50%) rotate(35deg) scaleX(1);
 	}
 }
 

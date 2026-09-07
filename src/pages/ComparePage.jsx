@@ -211,7 +211,15 @@ const ComparePage = ({ index }) => {
 								getTotalStats(pokemonA) > getTotalStats(pokemonB)
 							}
 						/>
-						<span className="compare-vs">VS</span>
+						<span
+							className="compare-vs"
+							style={{
+								"--vs-color-a": getTypeColor(pokemonA.types?.[0]?.type?.name),
+								"--vs-color-b": getTypeColor(pokemonB.types?.[0]?.type?.name),
+							}}
+						>
+							VS
+						</span>
 						<CompareHead
 							pokemon={pokemonB}
 							isStrongerTotal={
