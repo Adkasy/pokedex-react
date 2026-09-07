@@ -15,15 +15,7 @@ import {
 	getSizeComparisonLabel,
 	AVERAGE_HUMAN_HEIGHT_M,
 } from "../utils/pokedexFacts"
-
-const STAT_LABELS = {
-	hp: "HP",
-	attack: "Attack",
-	defense: "Defense",
-	"special-attack": "Sp. Atk",
-	"special-defense": "Sp. Def",
-	speed: "Speed",
-}
+import { STAT_LABELS } from "../constants/statLabels"
 
 const STAT_BAR_MAX = 200
 
@@ -102,7 +94,7 @@ const PokemonDetailPage = ({ pokemonList }) => {
 				<p className="detail-watermark">{pokemon.name}</p>
 				<div className="detail-dots" />
 				<div className="detail-header-ornament">
-					<PokeballIcon size={340} />
+					<PokeballIcon size={420} />
 				</div>
 
 				<div className="detail-header-top">

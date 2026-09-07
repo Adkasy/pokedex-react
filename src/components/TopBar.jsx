@@ -1,5 +1,5 @@
 import { Link } from "react-router"
-import { PokeballIcon, StarIcon } from "./TypeIcon"
+import { PokeballIcon, StarIcon, CompareIcon } from "./TypeIcon"
 import SearchBar from "./SearchBar"
 
 const TopBar = ({ onSearch, initialSearch }) => {
@@ -15,6 +15,10 @@ const TopBar = ({ onSearch, initialSearch }) => {
 			<SearchBar onSearch={onSearch} initialSearch={initialSearch} />
 
 			<nav className="top-bar-nav">
+				<Link to="/compare" className="top-bar-link">
+					<CompareIcon size={16} />
+					<span className="top-bar-link-text">Compare</span>
+				</Link>
 				<Link to="/favorites" className="top-bar-link">
 					<StarIcon size={16} />
 					<span className="top-bar-link-text">Favorites</span>
