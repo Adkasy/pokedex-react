@@ -197,6 +197,30 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	// "result" gak ditampilin di chat — udah ada banner winner-nya sendiri
 	const chatEntries = visibleLog.filter((entry) => entry.type !== "result")
 
+	// nekenin angka damage-nya jadi chip kecil di dalem bubble-nya, bukan
+	// cuma nyempil di tengah kalimat kayak teks biasa — "damage" nya
+	// sendiri dibiarin sebagai teks normal, cuma angkanya yang di-chip
+	const renderAttackText = (entry) => {
+		const marker = `${entry.damage} damage`
+		const idx = entry.text.indexOf(marker)
+		if (idx === -1) return entry.text
+
+		return (
+			<>
+				{entry.text.slice(0, idx)}
+				<span
+					className={`battle-damage-chip${
+						entry.isSuperEffective ? " is-super" : ""
+					}`}
+				>
+					{entry.damage}
+				</span>
+				{" damage"}
+				{entry.text.slice(idx + marker.length)}
+			</>
+		)
+	}
+
 	return (
 		<div className="battle-section">
 			{showBattleBegin && <BattleBeginOverlay />}
@@ -379,7 +403,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 											{entry.isCrit && (
 												<span className="battle-crit-badge">💥 Critical Hit</span>
 											)}
-											{entry.text}
+											{renderAttackText(entry)}
 										</div>
 									</li>
 								) : (

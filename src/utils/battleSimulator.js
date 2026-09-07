@@ -84,6 +84,10 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 				side,
 				isCrit,
 				isSuperEffective: typeMult > 1,
+				// damage-nya dipisah di field sendiri (bukan cuma nempel di
+				// `text`) biar BattleArena bisa nge-render angkanya jadi
+				// chip/highlight sendiri, bukan cuma teks polos
+				damage,
 				// "Critical hit!" gak perlu ditulis di teksnya lagi — udah ada
 				// badge "💥 Critical Hit" sendiri di atas bubble-nya kalau isCrit
 				text: `${capitalize(attacker.name)} attacks! ${capitalize(
