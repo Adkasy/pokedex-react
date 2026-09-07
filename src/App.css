@@ -1349,7 +1349,7 @@
 }
 
 /* ===== Scoreboard — angka doang, gak ada nama, gaya digital/HUD
-   (font mono + glow tipis ngikutin warna type masing-masing sisi)
+   (font mono + tabular-nums ngikutin warna type masing-masing sisi)
    biar kesannya modern/futuristik, bukan label teks biasa ===== */
 .battle-scoreboard {
 	/* height FIXED sama kayak .battle-round-chip/.battle-info-btn (30px)
@@ -1379,7 +1379,6 @@
 	font-weight: 800;
 	font-variant-numeric: tabular-nums;
 	line-height: 1;
-	text-shadow: 0 0 6px currentColor;
 }
 
 .battle-scoreboard-sep {
@@ -1419,7 +1418,7 @@
 	width: 190px;
 	height: 190px;
 	object-fit: contain;
-	filter: drop-shadow(0 0 24px #17a35e) drop-shadow(0 10px 14px rgba(0, 0, 0, 0.4));
+	filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.4));
 	animation: battle-winner-float 2.4s ease-in-out infinite;
 }
 
@@ -1435,6 +1434,9 @@
 	}
 }
 
+/* warna gold/amber (bukan ijo lagi) biar berasa kaya "trophy", plus
+   shimmer sweep yang sama kayak .ability-detail-hidden biar konsisten
+   sama treatment "spesial" yang udah dipake di tempat lain */
 .battle-winner-ribbon {
 	position: relative;
 	z-index: 2;
@@ -1444,22 +1446,37 @@
 	padding: 8px 24px;
 	border-radius: 999px;
 	border: none;
-	background: #17a35e;
+	background: #d69e1f;
 	color: #fff;
 	font-size: 15px;
 	font-weight: 800;
 	text-transform: capitalize;
 	font-family: inherit;
 	cursor: pointer;
-	box-shadow: 0 10px 20px -8px rgba(23, 163, 94, 0.6);
+	overflow: hidden;
+	box-shadow: 0 10px 20px -8px rgba(214, 158, 31, 0.55);
 	transition:
 		transform 0.15s ease,
 		box-shadow 0.15s ease;
 }
 
+.battle-winner-ribbon::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		100deg,
+		transparent 30%,
+		rgba(255, 255, 255, 0.5) 50%,
+		transparent 70%
+	);
+	background-size: 220% 100%;
+	animation: ability-hidden-shimmer 2.6s ease-in-out infinite;
+}
+
 .battle-winner-ribbon:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 14px 24px -8px rgba(23, 163, 94, 0.7);
+	box-shadow: 0 14px 24px -8px rgba(214, 158, 31, 0.65);
 }
 
 .battle-winner-ribbon:active {
