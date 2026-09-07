@@ -33,6 +33,7 @@ import {
 import { STAT_LABELS } from "../constants/statLabels"
 import { TYPE_COLORS } from "../constants/typeColors"
 import { getTypeMultiplier } from "../constants/typeChart"
+import { formatGeneration } from "../utils/text"
 
 const STAT_BAR_MAX = 200
 const MOVES_PREVIEW_COUNT = 24
@@ -560,7 +561,7 @@ const PokemonDetailPage = ({ index }) => {
 							Weaknesses
 						</h2>
 
-						<div className="type-badge-row">
+						<div className="type-badge-row detail-weaknesses-row">
 							{weaknesses.map((typeName) => (
 								<span key={typeName} className="type-badge">
 									<TypeIcon type={typeName} size={12} />
@@ -596,7 +597,7 @@ const PokemonDetailPage = ({ index }) => {
 									className={`detail-toggle-icon${
 										showAllMoves ? " is-expanded" : ""
 									}`}
-									size={18}
+									size={13}
 								/>
 							</button>
 						)}
@@ -631,7 +632,8 @@ const PokemonDetailPage = ({ index }) => {
 													{effect.short_effect}
 												</p>
 												<p className="ability-detail-gen">
-													Generation: {detail.generation.name}
+													Introduced in{" "}
+													{formatGeneration(detail.generation.name)}
 												</p>
 											</>
 										) : (

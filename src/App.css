@@ -1947,7 +1947,8 @@
 	gap: 5px;
 }
 
-.compare-head .type-badge-row {
+.compare-head .type-badge-row,
+.detail-weaknesses-row {
 	justify-content: center;
 }
 
@@ -2407,7 +2408,7 @@
 .detail-section {
 	position: relative;
 	z-index: 1;
-	margin-bottom: 24px;
+	margin-bottom: 36px;
 }
 
 .detail-section-title {
@@ -2625,14 +2626,14 @@
 	-webkit-appearance: none;
 	display: inline-flex;
 	align-items: center;
-	gap: 4px;
-	margin-top: 12px;
-	padding: 6px 14px;
+	gap: 2px;
+	margin-top: 10px;
+	padding: 3px 10px;
 	border-radius: 999px;
 	border: 1px solid var(--accent-border);
 	background: var(--accent-bg);
 	color: var(--accent);
-	font-size: 13px;
+	font-size: 11px;
 	font-weight: 700;
 	cursor: pointer;
 	transition:
@@ -2706,7 +2707,6 @@
 	color: var(--text);
 	opacity: 0.6;
 	font-size: 11px;
-	text-transform: capitalize;
 }
 
 /* ===== Pokedex flavor text ===== */
