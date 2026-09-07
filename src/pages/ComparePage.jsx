@@ -3,6 +3,7 @@ import { getTypeColor } from "../constants/typeColors"
 import { STAT_LABELS } from "../constants/statLabels"
 import TypeIcon, { CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
+import BattleArena from "../components/BattleArena"
 
 const STAT_BAR_MAX = 200
 
@@ -169,6 +170,12 @@ const ComparePage = ({ pokemonList }) => {
 							isTotal
 						/>
 					</div>
+
+					<BattleArena
+						key={`${pokemonA.name}-${pokemonB.name}`}
+						pokemonA={pokemonA}
+						pokemonB={pokemonB}
+					/>
 				</div>
 			)}
 		</div>
