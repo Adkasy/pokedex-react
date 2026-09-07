@@ -245,8 +245,13 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	const currentHpA = latest ? latest.hpA : (battle?.maxHpA ?? 0)
 	const currentHpB = latest ? latest.hpB : (battle?.maxHpB ?? 0)
 
-	const activeSide =
-		latest?.type === "attack" || latest?.type === "faint" ? latest.side : null
+	// cuma "attack" doang yang bikin fighter-nya "is-acting" (lunge +
+	// glow) — sebelumnya "faint" ikut kehitung juga, padahal `side` di
+	// entry "faint" itu si Pokemon yang BARU AJA KO, bukan yang
+	// nyerang. Efeknya: Pokemon yang HP-nya abis malah kelihatan
+	// "keaktifin buat nyerang" pas tick faint-nya kereveal, padahal dia
+	// udah kalah & gak jadi nyerang apa-apa lagi
+	const activeSide = latest?.type === "attack" ? latest.side : null
 	// sisi yang KENA hit — kebalikan dari activeSide pas lagi attack, jadi
 	// fighter yang diserang bisa dikasih efek "kena" sendiri (kedip),
 	// misah dari efek lunge/glow yang nempel di fighter yang nyerang
