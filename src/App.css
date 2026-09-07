@@ -786,6 +786,11 @@
 	color: #f472b6;
 }
 
+.f-chip.f-chip-crit {
+	background: rgba(251, 191, 36, 0.15);
+	color: #fbbf24;
+}
+
 .f-op-inline {
 	font-family: var(--sans);
 	font-size: 1.3em;

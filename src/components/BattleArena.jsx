@@ -296,6 +296,11 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 										small random swing (75% to 100%), so a rematch
 										won&rsquo;t always go the same way.
 									</li>
+									<li>
+										<code className="f-chip f-chip-crit">💥 Critical Hit</code>
+										: on top of all that, every attack also has a small 6%
+										chance to land a critical hit for 1.5× extra damage.
+									</li>
 								</ul>
 
 								<p className="battle-info-example">
