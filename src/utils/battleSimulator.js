@@ -84,9 +84,11 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 				side,
 				isCrit,
 				isSuperEffective: typeMult > 1,
+				// "Critical hit!" gak perlu ditulis di teksnya lagi — udah ada
+				// badge "💥 Critical Hit" sendiri di atas bubble-nya kalau isCrit
 				text: `${capitalize(attacker.name)} attacks! ${capitalize(
 					defender.name,
-				)} takes ${damage} damage.${isCrit ? " Critical hit!" : ""}${effectivenessNote(typeMult)}`,
+				)} takes ${damage} damage.${effectivenessNote(typeMult)}`,
 				hpA: hp.a,
 				hpB: hp.b,
 			})

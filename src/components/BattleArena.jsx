@@ -361,7 +361,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 											}}
 										>
 											{entry.isCrit && (
-												<span className="battle-crit-badge">💥 CRIT</span>
+												<span className="battle-crit-badge">💥 Critical Hit</span>
 											)}
 											{entry.text}
 										</div>
