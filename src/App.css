@@ -2349,6 +2349,15 @@
 	white-space: nowrap;
 }
 
+/* line-height:1 doang belum bikin teksnya PERSIS sejajar sama icon-nya
+   — sisa ~0.5px lagi itu dari metrik font-nya sendiri (area kosong
+   di atas huruf beda sama di bawahnya), diukur langsung di browser.
+   Nudge manual dikit ke bawah biar kelar bener-bener match */
+.type-badge-label {
+	display: inline-block;
+	transform: translateY(0.5px);
+}
+
 /* ===== Buttons ===== */
 .btn {
 	appearance: none;

@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router"
 import { MdShuffle } from "react-icons/md"
 import { getTypeColor } from "../constants/typeColors"
 import { STAT_LABELS } from "../constants/statLabels"
-import TypeIcon, { CompareIcon } from "../components/TypeIcon"
+import { TypeBadge, CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
 import BattleArena from "../components/BattleArena"
 import PokemonImage from "../components/PokemonImage"
@@ -95,10 +95,7 @@ const CompareHead = ({ pokemon, isStrongerTotal = false }) => {
 			<p className="compare-head-name">{pokemon.name}</p>
 			<div className="type-badge-row">
 				{pokemon.types.map(({ type }) => (
-					<span key={type.name} className="type-badge">
-						<TypeIcon type={type.name} size={12} />
-						{type.name}
-					</span>
+					<TypeBadge key={type.name} type={type.name} size={10} />
 				))}
 			</div>
 		</Link>

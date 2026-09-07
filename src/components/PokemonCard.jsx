@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router"
 import { getTypeColor, hexToRgba } from "../constants/typeColors"
-import TypeIcon, { PlayIcon, StarIcon, WaveformIcon } from "./TypeIcon"
+import { TypeBadge, PlayIcon, StarIcon, WaveformIcon } from "./TypeIcon"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { useCryPlayerStore } from "../store/useCryPlayerStore"
 import { playFavoriteSound } from "../utils/sound"
@@ -65,10 +65,7 @@ const PokemonCard = ({
 					{types?.length > 0 && (
 						<div className="type-badge-row">
 							{types.map(({ type }) => (
-								<span key={type.name} className="type-badge">
-									<TypeIcon type={type.name} size={10} />
-									{type.name}
-								</span>
+								<TypeBadge key={type.name} type={type.name} size={10} />
 							))}
 						</div>
 					)}

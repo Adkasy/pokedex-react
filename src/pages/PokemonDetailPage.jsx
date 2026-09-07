@@ -10,7 +10,8 @@ import { getTypeColor, hexToRgba } from "../constants/typeColors"
 import { useFavoriteStore } from "../store/useFavoriteStore"
 import { usePokemonStore } from "../store/usePokemonStore"
 import { useCryPlayerStore } from "../store/useCryPlayerStore"
-import TypeIcon, {
+import {
+	TypeBadge,
 	StarIcon,
 	PokeballIcon,
 	HumanIcon,
@@ -326,10 +327,7 @@ const PokemonDetailPage = ({ index }) => {
 
 					<div className="type-badge-row detail-type-row">
 						{pokemon.types.map(({ type }) => (
-							<span key={type.name} className="type-badge">
-								<TypeIcon type={type.name} size={12} />
-								{type.name}
-							</span>
+							<TypeBadge key={type.name} type={type.name} size={12} />
 						))}
 					</div>
 
@@ -569,10 +567,7 @@ const PokemonDetailPage = ({ index }) => {
 
 						<div className="type-badge-row detail-weaknesses-row">
 							{weaknesses.map((typeName) => (
-								<span key={typeName} className="type-badge">
-									<TypeIcon type={typeName} size={12} />
-									{typeName}
-								</span>
+								<TypeBadge key={typeName} type={typeName} size={12} />
 							))}
 						</div>
 					</section>

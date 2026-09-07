@@ -83,6 +83,20 @@ const TypeIcon = ({ type, size = 12 }) => {
 	)
 }
 
+// icon + nama type dalem 1 pill — dipake di mana-mana (card, compare,
+// detail), jadi disatuin di sini daripada nulis ulang <span
+// className="type-badge"><TypeIcon />{name}</span> di tiap file. Nama
+// type-nya dibungkus <span> sendiri (bukan text node polos) soalnya
+// butuh nudge dikit lewat CSS (.type-badge-label) — tanpa itu teksnya
+// keliatan ~0.5px lebih naik dari icon-nya (font metrics, bukan bug
+// CSS), meski line-height udah di-set 1.
+export const TypeBadge = ({ type, size = 12 }) => (
+	<span className="type-badge">
+		<TypeIcon type={type} size={size} />
+		<span className="type-badge-label">{type}</span>
+	</span>
+)
+
 export const StarIcon = ({ filled = false, size = 16 }) => (
 	<svg
 		width={size}
