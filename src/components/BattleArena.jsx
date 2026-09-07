@@ -224,7 +224,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 									<code className="f-chip f-chip-neutral">Damage</code>
 									<span className="f-op">=</span>
 									<code className="f-chip f-chip-atk">
-										Attack ÷ Defense
+										Attack <span className="f-op-inline">÷</span> Defense
 									</code>
 									<span className="f-op">×</span>
 									<code className="f-chip f-chip-type">
@@ -237,7 +237,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								<ul className="battle-info-list">
 									<li>
 										<code className="f-chip f-chip-atk">
-											Attack ÷ Defense
+											Attack <span className="f-op-inline">÷</span> Defense
 										</code>
 										: the attacker&rsquo;s Attack against the target&rsquo;s
 										Defense. Higher Attack (or a weaker target Defense)
