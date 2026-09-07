@@ -516,38 +516,46 @@
 	text-transform: capitalize;
 }
 
-/* "VS" kaya stempel comic — dibelah diagonal jadi warna type
-   masing-masing sisi (bukan lingkaran polos 1 warna lagi), dimiringin
-   dikit biar kerasa ada energi/impact, bukan cuma badge statis.
-   line-height:1 + padding-bottom kecil buat kompensasi optical
-   centering huruf kapital ("VS") yang keliatan turun dikit kalau cuma
-   ngandelin align-items/justify-content flex doang */
+/* "VS" jadi chip HUD kecil — bentuk oktagon (sudut kepotong, kesan
+   "tech panel", bukan lingkaran/kotak biasa), border tipis gradient
+   ngikutin warna type ke-2 sisi (dibikin dari 2 layer: layer luar
+   full gradient, layer dalem dark fill — jaraknya via padding 2px,
+   itu yang jadi "border"-nya), glow tipis di luar biar nyambung sama
+   chip2 lain (round chip/scoreboard) yang juga ada glow soft. Gak
+   dimiringin lagi & teksnya mono biar kesannya minimalis/futuristik,
+   bukan comic stamp */
 .compare-vs {
+	--vs-clip: polygon(
+		24% 0%, 76% 0%, 100% 24%, 100% 76%,
+		76% 100%, 24% 100%, 0% 76%, 0% 24%
+	);
 	flex-shrink: 0;
 	align-self: center;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 50px;
-	height: 50px;
-	padding-bottom: 2px;
-	border-radius: 14px;
-	transform: rotate(-8deg);
-	background: linear-gradient(
-		135deg,
-		var(--vs-color-a, var(--accent)) 0%,
-		var(--vs-color-a, var(--accent)) 47%,
-		var(--vs-color-b, var(--accent)) 53%,
-		var(--vs-color-b, var(--accent)) 100%
-	);
-	box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.5);
-	color: #fff;
-	font-size: 17px;
-	font-weight: 900;
-	font-style: italic;
+	width: 44px;
+	height: 44px;
+	padding: 2px;
+	clip-path: var(--vs-clip);
+	background: linear-gradient(135deg, var(--vs-color-a, var(--accent)), var(--vs-color-b, var(--accent)));
+	box-shadow: 0 0 18px -6px var(--vs-color-a, var(--accent));
+}
+
+.compare-vs-inner {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	clip-path: var(--vs-clip);
+	background: var(--code-bg);
+	color: var(--text-h);
+	font-family: var(--mono);
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0.1em;
 	line-height: 1;
-	letter-spacing: 0.02em;
-	text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
 }
 
 .compare-stats {
@@ -1151,70 +1159,55 @@
 	}
 }
 
-/* efek "tebasan" nyilang (kaya kena serangan tajam) yang numpuk di
-   atas flash putih-nya .battle-fighter-image — 2 garis nyilang beda
-   arah biar kerasa "X", muncul & ilang cepet ngikutin 1 tick reveal
-   (elemen-nya sendiri di-remount tiap hit via key={revealCount}) */
+/* efek tebasan pedang melengkung yang numpuk di atas flash putih-nya
+   .battle-fighter-image — bukan garis lurus nyilang lagi, tapi 1 path
+   lengkung yang "digambar" progresif (stroke-dashoffset 1 -> 0) biar
+   keliatan kaya nebas/nyapu ngalir, bukan langsung nongol utuh.
+   glow-nya path sama tapi lebih tebal + blur di belakang path
+   tipis/tajam-nya biar keliatan ada "cahaya" ngikutin ujung tebasan */
 .battle-hit-slash {
 	position: absolute;
-	inset: -14px;
+	inset: -20%;
 	z-index: 4;
+	overflow: visible;
 	pointer-events: none;
-	overflow: hidden;
 }
 
-.battle-hit-slash::before,
-.battle-hit-slash::after {
-	content: "";
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 160%;
-	height: 3px;
-	background: linear-gradient(90deg, transparent, #fff 25%, #fff 75%, transparent);
-	box-shadow: 0 0 8px 1px rgba(255, 255, 255, 0.85);
-	opacity: 0;
+.battle-hit-slash-glow,
+.battle-hit-slash-edge {
+	fill: none;
+	stroke-linecap: round;
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+	animation: battle-hit-slash-draw 0.42s ease-out forwards;
 }
 
-.battle-hit-slash::before {
-	animation: battle-hit-slash-a 0.3s ease-out;
+.battle-hit-slash-glow {
+	stroke: rgba(255, 255, 255, 0.55);
+	stroke-width: 10;
+	filter: blur(4px);
 }
 
-.battle-hit-slash::after {
-	animation: battle-hit-slash-b 0.3s ease-out 0.05s;
+.battle-hit-slash-edge {
+	stroke: #fff;
+	stroke-width: 2.5;
+	filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
 }
 
-@keyframes battle-hit-slash-a {
+@keyframes battle-hit-slash-draw {
 	0% {
-		opacity: 0;
-		transform: translate(-50%, -50%) rotate(-35deg) scaleX(0.2);
+		stroke-dashoffset: 1;
+		opacity: 1;
 	}
 
-	30% {
+	55% {
+		stroke-dashoffset: 0;
 		opacity: 1;
-		transform: translate(-50%, -50%) rotate(-35deg) scaleX(1);
 	}
 
 	100% {
+		stroke-dashoffset: 0;
 		opacity: 0;
-		transform: translate(-50%, -50%) rotate(-35deg) scaleX(1);
-	}
-}
-
-@keyframes battle-hit-slash-b {
-	0% {
-		opacity: 0;
-		transform: translate(-50%, -50%) rotate(35deg) scaleX(0.2);
-	}
-
-	30% {
-		opacity: 1;
-		transform: translate(-50%, -50%) rotate(35deg) scaleX(1);
-	}
-
-	100% {
-		opacity: 0;
-		transform: translate(-50%, -50%) rotate(35deg) scaleX(1);
 	}
 }
 

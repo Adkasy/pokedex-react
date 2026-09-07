@@ -46,6 +46,18 @@ const BattleHpBar = ({ name, hp, maxHp }) => {
 	)
 }
 
+// path melengkung kaya tebasan pedang (bukan garis lurus/nyilang) —
+// pathLength="1" bikin panjang path dinormalisasi jadi 0-1 apapun
+// bentuk lengkungnya, jadi stroke-dasharray/dashoffset di CSS bisa
+// "gambar" path-nya dikit demi dikit (kesan tebasannya njalar/nyapu,
+// bukan langsung muncul utuh)
+const SlashFX = () => (
+	<svg className="battle-hit-slash" viewBox="0 0 100 100" aria-hidden="true">
+		<path className="battle-hit-slash-glow" d="M18,85 Q55,60 85,15" pathLength="1" />
+		<path className="battle-hit-slash-edge" d="M18,85 Q55,60 85,15" pathLength="1" />
+	</svg>
+)
+
 const CONFETTI_COLORS = ["#ff6b57", "#5b9dff", "#34d399", "#fbbf24", "#e879f9"]
 const CONFETTI_COUNT = 70
 
@@ -378,9 +390,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								alt={pokemonA.name}
 								iconSize={85}
 							/>
-							{hitSide === "a" && (
-								<span key={revealCount} className="battle-hit-slash" aria-hidden="true" />
-							)}
+							{hitSide === "a" && <SlashFX key={revealCount} />}
 						</div>
 
 						<span className="battle-stage-vs">VS</span>
@@ -396,9 +406,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								alt={pokemonB.name}
 								iconSize={85}
 							/>
-							{hitSide === "b" && (
-								<span key={revealCount} className="battle-hit-slash" aria-hidden="true" />
-							)}
+							{hitSide === "b" && <SlashFX key={revealCount} />}
 						</div>
 					</div>
 

@@ -218,7 +218,7 @@ const ComparePage = ({ index }) => {
 								"--vs-color-b": getTypeColor(pokemonB.types?.[0]?.type?.name),
 							}}
 						>
-							VS
+							<span className="compare-vs-inner">VS</span>
 						</span>
 						<CompareHead
 							pokemon={pokemonB}
