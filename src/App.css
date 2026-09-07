@@ -585,21 +585,24 @@
 
 /* ===== Chat log — tiap serangan tampil kayak chat bubble, pesan
    status ("X moves first!"/"X fainted!") nyempil di tengah kronologis ===== */
-.battle-chat {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	max-height: 400px;
+.battle-log-scroll {
+	height: 420px;
 	overflow-y: auto;
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 }
 
-.battle-chat::-webkit-scrollbar {
+.battle-log-scroll::-webkit-scrollbar {
 	display: none;
+}
+
+.battle-chat {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 
 .battle-chat-system {
@@ -643,8 +646,8 @@
 
 .battle-chat-avatar {
 	flex-shrink: 0;
-	width: 52px;
-	height: 52px;
+	width: 72px;
+	height: 72px;
 	object-fit: contain;
 	filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
 }
@@ -690,8 +693,8 @@
 }
 
 .battle-winner-image {
-	width: 130px;
-	height: 130px;
+	width: 190px;
+	height: 190px;
 	object-fit: contain;
 	filter: drop-shadow(0 0 24px #17a35e) drop-shadow(0 10px 14px rgba(0, 0, 0, 0.4));
 	animation: battle-winner-float 2.4s ease-in-out infinite;

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { GiCrossedSwords, GiTrophy } from "react-icons/gi"
 import { simulateBattle } from "../utils/battleSimulator"
 import { getTypeColor } from "../constants/typeColors"
+import { playVictorySound } from "../utils/sound"
 
 const REVEAL_DELAY_MS = 700
 
@@ -33,7 +34,6 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 	const [revealCount, setRevealCount] = useState(0)
 	const logRef = useRef(null)
 	const arenaRef = useRef(null)
-	const winnerRef = useRef(null)
 	const colorA = getTypeColor(pokemonA.types?.[0]?.type?.name)
 	const colorB = getTypeColor(pokemonB.types?.[0]?.type?.name)
 
@@ -47,6 +47,9 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 		return () => clearTimeout(timer)
 	}, [battle, revealCount])
 
+	// scroll ke bawah tiap ada entry baru MUNCUL — termasuk pas banner
+	// winner-nya nongol (dia bagian dari kontainer scroll yang sama),
+	// jadi gak perlu effect terpisah lagi buat itu
 	useEffect(() => {
 		logRef.current?.scrollTo({
 			top: logRef.current.scrollHeight,
@@ -59,6 +62,9 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 		// arenaRef.current di sini udah pasti ke-render & posisinya
 		// akurat — gak perlu nunggu requestAnimationFrame segala (itu
 		// malah bisa gak jalan kalau tab/pane lagi background/hidden).
+		// Tinggi arena-nya sendiri KONSTAN sepanjang battle (chat log
+		// scroll di dalem kontainer fix-height-nya sendiri), jadi cukup
+		// fokus SEKALI di sini — gak perlu di-scroll ulang lagi nanti.
 		if (!battle) return
 		arenaRef.current?.scrollIntoView({ behavior: "auto", block: "start" })
 	}, [battle])
@@ -87,11 +93,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 				: null
 
 	useEffect(() => {
-		// begitu banner winner muncul, ikutin scroll ke situ juga — biar
-		// user gak harus scroll manual pas battle-nya udah kelar
-		if (winnerPokemon) {
-			winnerRef.current?.scrollIntoView({ behavior: "auto", block: "end" })
-		}
+		if (winnerPokemon) playVictorySound()
 	}, [winnerPokemon])
 
 	// "result" gak ditampilin di chat — udah ada banner winner-nya sendiri
@@ -147,45 +149,47 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						/>
 					</div>
 
-					<ul className="battle-chat" ref={logRef}>
-						{chatEntries.map((entry, i) =>
-							entry.type === "attack" ? (
-								<li key={i} className={`battle-chat-row side-${entry.side}`}>
-									<img
-										className="battle-chat-avatar"
-										src={entry.side === "a" ? pokemonA.image : pokemonB.image}
-										alt=""
-									/>
-									<div
-										className="battle-chat-bubble"
-										style={{
-											backgroundColor: entry.side === "a" ? colorA : colorB,
-										}}
-									>
+					<div className="battle-log-scroll" ref={logRef}>
+						<ul className="battle-chat">
+							{chatEntries.map((entry, i) =>
+								entry.type === "attack" ? (
+									<li key={i} className={`battle-chat-row side-${entry.side}`}>
+										<img
+											className="battle-chat-avatar"
+											src={entry.side === "a" ? pokemonA.image : pokemonB.image}
+											alt=""
+										/>
+										<div
+											className="battle-chat-bubble"
+											style={{
+												backgroundColor: entry.side === "a" ? colorA : colorB,
+											}}
+										>
+											{entry.text}
+										</div>
+									</li>
+								) : (
+									<li key={i} className="battle-chat-system">
 										{entry.text}
-									</div>
-								</li>
-							) : (
-								<li key={i} className="battle-chat-system">
-									{entry.text}
-								</li>
-							),
-						)}
-					</ul>
+									</li>
+								),
+							)}
+						</ul>
 
-					{winnerPokemon && (
-						<div className="battle-winner" ref={winnerRef}>
-							<img
-								className="battle-winner-image"
-								src={winnerPokemon.image}
-								alt={winnerPokemon.name}
-							/>
-							<div className="battle-winner-ribbon">
-								<GiTrophy size={16} />
-								{winnerPokemon.name} wins!
+						{winnerPokemon && (
+							<div className="battle-winner">
+								<img
+									className="battle-winner-image"
+									src={winnerPokemon.image}
+									alt={winnerPokemon.name}
+								/>
+								<div className="battle-winner-ribbon">
+									<GiTrophy size={16} />
+									{winnerPokemon.name} wins!
+								</div>
 							</div>
-						</div>
-					)}
+						)}
+					</div>
 				</div>
 			)}
 		</div>
