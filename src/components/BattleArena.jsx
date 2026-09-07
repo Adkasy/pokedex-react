@@ -30,10 +30,47 @@ const BattleHpBar = ({ name, hp, maxHp }) => {
 	)
 }
 
+const CONFETTI_COLORS = ["#ff6b57", "#5b9dff", "#34d399", "#fbbf24", "#e879f9"]
+const CONFETTI_COUNT = 28
+
+const Confetti = () => {
+	// lazy initializer — cuma jalan sekali pas mount (bukan tiap
+	// render), jadi generate posisi random di sini valid/gak "impure"
+	const [pieces] = useState(() =>
+		Array.from({ length: CONFETTI_COUNT }).map((_, i) => ({
+			id: i,
+			left: Math.random() * 100,
+			color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+			delay: Math.random() * 0.4,
+			duration: 1.6 + Math.random() * 0.8,
+			rotate: Math.random() * 360,
+		})),
+	)
+
+	return (
+		<div className="battle-confetti" aria-hidden="true">
+			{pieces.map((p) => (
+				<span
+					key={p.id}
+					className="battle-confetti-piece"
+					style={{
+						left: `${p.left}%`,
+						backgroundColor: p.color,
+						animationDelay: `${p.delay}s`,
+						animationDuration: `${p.duration}s`,
+						transform: `rotate(${p.rotate}deg)`,
+					}}
+				/>
+			))}
+		</div>
+	)
+}
+
 const BattleArena = ({ pokemonA, pokemonB }) => {
 	const [battle, setBattle] = useState(null) // { log, maxHpA, maxHpB, winner }
 	const [revealCount, setRevealCount] = useState(0)
 	const [showInfo, setShowInfo] = useState(false)
+	const [scoreboard, setScoreboard] = useState({ a: 0, b: 0, draw: 0 })
 	const logRef = useRef(null)
 	const arenaRef = useRef(null)
 	const infoWrapRef = useRef(null)
@@ -44,7 +81,18 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 		if (!battle || revealCount >= battle.log.length) return
 
 		const timer = setTimeout(() => {
-			setRevealCount((c) => c + 1)
+			const nextCount = revealCount + 1
+			setRevealCount(nextCount)
+
+			// battle baru aja kelar kereveal semua — sekalian catet
+			// skornya di sini (di dalem callback, bukan langsung di body
+			// effect) sekali doang buat battle ini
+			if (nextCount >= battle.log.length) {
+				setScoreboard((prev) => ({
+					...prev,
+					[battle.winner]: prev[battle.winner] + 1,
+				}))
+			}
 		}, REVEAL_DELAY_MS)
 
 		return () => clearTimeout(timer)
@@ -131,6 +179,22 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 						: "Simulate Battle"}
 			</button>
 
+			{(scoreboard.a > 0 || scoreboard.b > 0 || scoreboard.draw > 0) && (
+				<div className="battle-scoreboard">
+					<span className="battle-scoreboard-name">{pokemonA.name}</span>
+					<span className="battle-scoreboard-score">{scoreboard.a}</span>
+					<span className="battle-scoreboard-sep">:</span>
+					<span className="battle-scoreboard-score">{scoreboard.b}</span>
+					<span className="battle-scoreboard-name">{pokemonB.name}</span>
+					{scoreboard.draw > 0 && (
+						<span className="battle-scoreboard-draw">
+							({scoreboard.draw} draw
+							{scoreboard.draw > 1 ? "s" : ""})
+						</span>
+					)}
+				</div>
+			)}
+
 			{battle && (
 				<div className="battle-arena" ref={arenaRef}>
 					<div className="battle-info-wrap" ref={infoWrapRef}>
@@ -196,8 +260,11 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 								</ul>
 
 								<p className="battle-info-example">
-									Example: Charizard is Fire-type, Blastoise is Water-type.
-									Water resists Fire, so when Charizard attacks, its Type
+									<strong className="battle-info-example-label">
+										Example:
+									</strong>{" "}
+									Charizard is Fire-type, Blastoise is Water-type. Water
+									resists Fire, so when Charizard attacks, its Type
 									Effectiveness is weak, and the hit only lands for about 7
 									to 8 damage instead of the usual amount.
 								</p>
@@ -267,6 +334,7 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 						{winnerPokemon && (
 							<div className="battle-winner">
+								<Confetti />
 								<img
 									className="battle-winner-image"
 									src={winnerPokemon.image}
