@@ -7,10 +7,8 @@ import FavoritesPage from "./pages/FavoritesPage"
 import ComparePage from "./pages/ComparePage"
 import NotFoundPage from "./pages/NotFoundPage"
 import TopBar from "./components/TopBar"
-import SkeletonCard from "./components/SkeletonCard"
+import LoadingSpinner from "./components/LoadingSpinner"
 import { usePokemonStore } from "./store/usePokemonStore"
-
-const SKELETON_COUNT = 9
 
 const App = () => {
 	const index = usePokemonStore((state) => state.index)
@@ -67,11 +65,7 @@ const App = () => {
 
 			<div className="app">
 				{isLoading ? (
-					<ul className="pokemon-grid">
-						{Array.from({ length: SKELETON_COUNT }).map((_, i) => (
-							<SkeletonCard key={i} />
-						))}
-					</ul>
+					<LoadingSpinner label="Loading the Pokédex…" size={64} />
 				) : error ? (
 					<p className="status-message status-error">{error.message}</p>
 				) : (
