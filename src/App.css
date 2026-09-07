@@ -449,7 +449,7 @@
 	overflow: hidden;
 	pointer-events: none;
 	background: #050505;
-	animation: battle-begin-bg 1.35s ease forwards;
+	animation: battle-begin-bg 0.95s ease forwards;
 }
 
 @keyframes battle-begin-bg {
@@ -474,7 +474,7 @@
 	position: absolute;
 	inset: 0;
 	background: #fff;
-	animation: battle-begin-flash-pulse 0.4s ease-out forwards;
+	animation: battle-begin-flash-pulse 0.3s ease-out forwards;
 }
 
 @keyframes battle-begin-flash-pulse {
@@ -497,8 +497,8 @@
 		transparent 6deg 15deg
 	);
 	animation:
-		battle-begin-rays-spin 1.35s linear forwards,
-		battle-begin-rays-fade 1.35s ease forwards;
+		battle-begin-rays-spin 0.95s linear forwards,
+		battle-begin-rays-fade 0.95s ease forwards;
 }
 
 @keyframes battle-begin-rays-spin {
@@ -535,7 +535,7 @@
 	height: 30px;
 	border: 5px solid var(--accent);
 	border-radius: 50%;
-	animation: battle-begin-ring-expand 1s cubic-bezier(0.1, 0.6, 0.3, 1) forwards;
+	animation: battle-begin-ring-expand 0.7s cubic-bezier(0.1, 0.6, 0.3, 1) forwards;
 }
 
 @keyframes battle-begin-ring-expand {
@@ -570,7 +570,7 @@
 	);
 	transform: rotate(-7deg) scaleX(0);
 	opacity: 0;
-	animation: battle-begin-slash-in 0.8s cubic-bezier(0.16, 0.9, 0.25, 1) forwards;
+	animation: battle-begin-slash-in 0.55s cubic-bezier(0.16, 0.9, 0.25, 1) forwards;
 }
 
 @keyframes battle-begin-slash-in {
@@ -609,7 +609,7 @@
 		0 0 40px var(--accent),
 		0 0 80px rgba(255, 107, 87, 0.6),
 		0 6px 16px rgba(0, 0, 0, 0.7);
-	animation: battle-begin-in 1.35s cubic-bezier(0.15, 0.8, 0.25, 1.15) forwards;
+	animation: battle-begin-in 0.95s cubic-bezier(0.15, 0.8, 0.25, 1.15) forwards;
 
 	@media (max-width: 640px) {
 		font-size: 36px;

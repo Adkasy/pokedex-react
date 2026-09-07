@@ -13,42 +13,29 @@ const getAudioContext = () => {
 	return sharedAudioContext
 }
 
-// Stinger pembuka battle — numpuk beberapa layer biar berasa kayak
-// "impact hit" di game fighting: kick rendah yang mletak (pitch turun
-// cepat), noise burst pendek buat "clang", riser naik yang ngasih
-// energi, terus gong metalik yang nge-ring lama di belakang.
+// Stinger pembuka battle — mulai dari sword clash "tring!" (2 nada
+// tinggi detuned + transient noise metalik), disusul riser naik yang
+// ngasih energi, terus gong yang nge-ring di belakang. Gak ada
+// kick/bass rendah lagi — itu yang bikin awalnya kedengeran "BOOM"
+// aneh, gak nyambung sama tema pedang.
 export const playBattleStartSound = () => {
 	try {
 		const ctx = getAudioContext()
 		const now = ctx.currentTime
 
-		// kick: freq turun cepat dari 160 ke 45Hz, envelope tajam = "BOOM"
-		const kick = ctx.createOscillator()
-		const kickGain = ctx.createGain()
-		kick.type = "sine"
-		kick.frequency.setValueAtTime(160, now)
-		kick.frequency.exponentialRampToValueAtTime(45, now + 0.22)
-		kickGain.gain.setValueAtTime(0.9, now)
-		kickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4)
-		kick.connect(kickGain)
-		kickGain.connect(ctx.destination)
-		kick.start(now)
-		kick.stop(now + 0.4)
-
 		// sword clash "tring!" — 2 nada tinggi dikit detuned (logam beradu)
-		// + transient noise band-pass pendek biar berasa ada "kilat" logamnya,
-		// numpuk barengan kick di t=0 jadi satu impact yang solid
+		// + transient noise band-pass pendek biar berasa ada "kilat" logamnya
 		;[2600, 2950].forEach((freq) => {
 			const clash = ctx.createOscillator()
 			const clashGain = ctx.createGain()
 			clash.type = "triangle"
 			clash.frequency.setValueAtTime(freq, now)
-			clashGain.gain.setValueAtTime(0.14, now)
-			clashGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4)
+			clashGain.gain.setValueAtTime(0.16, now)
+			clashGain.gain.exponentialRampToValueAtTime(0.001, now + 0.45)
 			clash.connect(clashGain)
 			clashGain.connect(ctx.destination)
 			clash.start(now)
-			clash.stop(now + 0.4)
+			clash.stop(now + 0.45)
 		})
 
 		const clashNoiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.12, ctx.sampleRate)
@@ -63,31 +50,12 @@ export const playBattleStartSound = () => {
 		clashFilter.frequency.value = 3200
 		clashFilter.Q.value = 1.2
 		const clashNoiseGain = ctx.createGain()
-		clashNoiseGain.gain.setValueAtTime(0.3, now)
+		clashNoiseGain.gain.setValueAtTime(0.35, now)
 		clashNoiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12)
 		clashNoise.connect(clashFilter)
 		clashFilter.connect(clashNoiseGain)
 		clashNoiseGain.connect(ctx.destination)
 		clashNoise.start(now)
-
-		// noise burst pendek (di-highpass biar "clang", bukan "hiss")
-		const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.25, ctx.sampleRate)
-		const noiseData = noiseBuffer.getChannelData(0)
-		for (let i = 0; i < noiseData.length; i++) {
-			noiseData[i] = (Math.random() * 2 - 1) * (1 - i / noiseData.length)
-		}
-		const noise = ctx.createBufferSource()
-		noise.buffer = noiseBuffer
-		const noiseFilter = ctx.createBiquadFilter()
-		noiseFilter.type = "highpass"
-		noiseFilter.frequency.value = 1500
-		const noiseGain = ctx.createGain()
-		noiseGain.gain.setValueAtTime(0.3, now)
-		noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2)
-		noise.connect(noiseFilter)
-		noiseFilter.connect(noiseGain)
-		noiseGain.connect(ctx.destination)
-		noise.start(now)
 
 		// riser: nanjak abis impact-nya, ngasih rasa "energi lagi ngumpul"
 		const riser = ctx.createOscillator()
