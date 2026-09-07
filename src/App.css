@@ -744,15 +744,17 @@
 	left: 8px;
 	z-index: 5;
 	display: inline-flex;
-	align-items: baseline;
+	align-items: center;
+	justify-content: center;
 	gap: 2px;
-	padding: 5px 12px;
+	padding: 2px 16px;
 	border-radius: 999px;
 	background: var(--bg);
 	border: 1px solid var(--border);
 	color: var(--text-h);
 	font-size: 12px;
 	font-weight: 700;
+	line-height: 1;
 	letter-spacing: 0.02em;
 }
 
