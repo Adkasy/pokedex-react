@@ -735,6 +735,33 @@
 	z-index: 5;
 }
 
+/* chip round counter, mirror posisi sama .battle-info-wrap di sisi
+   kiri — angka round-nya ngikutin entry log yang lagi ke-reveal, jadi
+   update real-time bareng jalannya pertarungan */
+.battle-round-chip {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	z-index: 5;
+	display: inline-flex;
+	align-items: baseline;
+	gap: 2px;
+	padding: 5px 12px;
+	border-radius: 999px;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	color: var(--text-h);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+.battle-round-chip-max {
+	color: var(--text);
+	opacity: 0.55;
+	font-weight: 600;
+}
+
 .battle-info-btn {
 	display: inline-flex;
 	align-items: center;

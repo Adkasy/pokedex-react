@@ -174,6 +174,10 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 	const visibleLog = battle ? battle.log.slice(0, revealCount) : []
 	const latest = visibleLog[visibleLog.length - 1]
+	// ngikutin round entry yang paling baru ke-reveal — jadi kelihatan
+	// "real-time" nambah bareng jalannya pertarungan, bukan cuma angka
+	// akhir yang muncul sekaligus
+	const currentRound = latest?.round ?? 1
 	const currentHpA = latest ? latest.hpA : (battle?.maxHpA ?? 0)
 	const currentHpB = latest ? latest.hpB : (battle?.maxHpB ?? 0)
 
@@ -258,6 +262,11 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 					ref={arenaRef}
 				>
 					{isSuperHit && <div key={revealCount} className="battle-hit-flash" />}
+
+					<span className="battle-round-chip" title="Current round">
+						Round {currentRound}
+						<span className="battle-round-chip-max">/{battle.maxRounds}</span>
+					</span>
 
 					<div className="battle-info-wrap" ref={infoWrapRef}>
 						<button

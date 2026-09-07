@@ -60,6 +60,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 	log.push({
 		type: "start",
 		side: null,
+		round: 1,
 		text: `${capitalize(pokemon[first].name)} moves first because it has higher speed!`,
 		hpA: hp.a,
 		hpB: hp.b,
@@ -82,6 +83,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 			log.push({
 				type: "attack",
 				side,
+				round,
 				isCrit,
 				isSuperEffective: typeMult > 1,
 				// damage-nya dipisah di field sendiri (bukan cuma nempel di
@@ -101,6 +103,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 				log.push({
 					type: "faint",
 					side: other,
+					round,
 					text: `${capitalize(defender.name)} fainted!`,
 					hpA: hp.a,
 					hpB: hp.b,
@@ -117,6 +120,7 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 	log.push({
 		type: "result",
 		side: winner === "draw" ? null : winner,
+		round: Math.min(round, MAX_ROUNDS),
 		text:
 			winner === "draw"
 				? `Neither one fainted after ${MAX_ROUNDS} rounds — it's a draw!`
@@ -125,5 +129,5 @@ export const simulateBattle = (pokemonA, pokemonB) => {
 		hpB: hp.b,
 	})
 
-	return { log, winner, maxHpA, maxHpB }
+	return { log, winner, maxHpA, maxHpB, maxRounds: MAX_ROUNDS }
 }
