@@ -156,29 +156,42 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 									</button>
 								</div>
 
-								<code className="battle-info-formula">
-									<span className="f-damage">Damage</span> ={" "}
-									<span className="f-atk">Attack</span> ÷{" "}
-									<span className="f-def">Defense</span> ×{" "}
-									<span className="f-type">Type Effectiveness</span> ×{" "}
-									<span className="f-luck">Luck</span>
-								</code>
+								<div className="battle-info-formula">
+									<code className="f-chip f-chip-neutral">Damage</code>
+									<span className="f-op">=</span>
+									<code className="f-chip f-chip-atk">
+										Attack ÷ Defense
+									</code>
+									<span className="f-op">×</span>
+									<code className="f-chip f-chip-type">
+										Type Effectiveness
+									</code>
+									<span className="f-op">×</span>
+									<code className="f-chip f-chip-luck">Luck</code>
+								</div>
 
 								<ul className="battle-info-list">
 									<li>
-										<code>Attack ÷ Defense</code>: the attacker&rsquo;s
-										Attack against the target&rsquo;s Defense. Higher
-										Attack (or a weaker target Defense) means more damage.
+										<code className="f-chip f-chip-atk">
+											Attack ÷ Defense
+										</code>
+										: the attacker&rsquo;s Attack against the target&rsquo;s
+										Defense. Higher Attack (or a weaker target Defense)
+										means more damage.
 									</li>
 									<li>
-										<code>Type Effectiveness</code>: follows the same type
-										chart as the games. e.g. Water beats Fire, Fire beats
-										Grass, Grass beats Water. A super effective hit does
-										more damage, a resisted hit does less.
+										<code className="f-chip f-chip-type">
+											Type Effectiveness
+										</code>
+										: follows the same type chart as the games. e.g. Water
+										beats Fire, Fire beats Grass, Grass beats Water. A super
+										effective hit does more damage, a resisted hit does
+										less.
 									</li>
 									<li>
-										<code>Luck</code>: a small random swing (85% to 100%),
-										so a rematch won&rsquo;t always go the same way.
+										<code className="f-chip f-chip-luck">Luck</code>: a
+										small random swing (75% to 100%), so a rematch
+										won&rsquo;t always go the same way.
 									</li>
 								</ul>
 

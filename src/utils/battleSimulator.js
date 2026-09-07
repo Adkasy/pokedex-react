@@ -14,7 +14,7 @@ const rollDamage = (attacker, defender) => {
 	const defenderTypes = defender.types.map((t) => t.type.name)
 
 	const typeMult = getTypeMultiplier(attackType, defenderTypes)
-	const randomFactor = 0.85 + Math.random() * 0.15
+	const randomFactor = 0.75 + Math.random() * 0.25
 
 	const damage = Math.max(
 		1,

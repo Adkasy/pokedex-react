@@ -348,7 +348,7 @@
 
 .compare-heads {
 	display: flex;
-	align-items: center;
+	align-items: stretch;
 	gap: 28px;
 	margin-bottom: 20px;
 }
@@ -394,6 +394,7 @@
 
 .compare-vs {
 	flex-shrink: 0;
+	align-self: center;
 	font-size: 15px;
 	font-weight: 800;
 	color: var(--accent);
@@ -494,33 +495,54 @@
 	background: var(--accent-bg);
 }
 
-.battle-info-popover .battle-info-formula {
-	display: block;
+.battle-info-formula {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
 	margin: 0 0 14px;
-	padding: 10px 12px;
-	border-radius: 10px;
-	border: 1px solid var(--border);
-	background: var(--bg);
-	color: var(--text-h);
+}
+
+.f-op {
+	color: var(--text);
+	opacity: 0.6;
 	font-family: var(--mono);
 	font-size: 12px;
 	font-weight: 700;
-	line-height: 1.5;
-	white-space: normal;
-	word-break: break-word;
 }
 
-.battle-info-formula .f-atk,
-.battle-info-formula .f-def {
+.f-chip {
+	display: inline-block;
+	padding: 3px 9px;
+	border-radius: 8px;
+	font-family: var(--mono);
+	font-size: 11px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.f-chip.f-chip-neutral {
+	background: var(--border);
+	color: var(--text-h);
+}
+
+.f-chip.f-chip-atk {
+	background: rgba(91, 157, 255, 0.15);
 	color: #5b9dff;
 }
 
-.battle-info-formula .f-type {
+.f-chip.f-chip-type {
+	background: rgba(52, 211, 153, 0.15);
 	color: #34d399;
 }
 
-.battle-info-formula .f-luck {
+.f-chip.f-chip-luck {
+	background: rgba(251, 191, 36, 0.15);
 	color: #fbbf24;
+}
+
+.battle-info-list .f-chip {
+	white-space: normal;
 }
 
 .battle-info-list {
@@ -537,25 +559,14 @@
 	color: var(--text-h);
 }
 
-.battle-info-popover code {
-	display: inline-block;
-	padding: 1px 6px;
-	border-radius: 6px;
-	background: var(--accent-bg);
-	color: var(--accent);
-	font-family: var(--mono);
-	font-size: 11px;
-	font-weight: 700;
-}
-
 .battle-info-example {
 	margin: 0;
 	padding-top: 12px;
 	border-top: 1px solid var(--border);
 	font-size: 12px;
+	font-weight: 700;
 	line-height: 1.6;
-	color: var(--text);
-	opacity: 0.85;
+	color: var(--accent);
 }
 
 .btn.battle-simulate-btn {
