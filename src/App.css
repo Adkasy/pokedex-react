@@ -543,6 +543,15 @@
 	background: var(--code-bg);
 }
 
+/* misahin height/weight dari stats battle (HP/Attack/dst) — garis tipis
+   doang, gak usah pake margin gede biar tetep nyatu ritmenya sama
+   compare-stat-row lain di sekitarnya */
+.compare-stats-divider {
+	height: 1px;
+	margin: 10px 0;
+	background: var(--border);
+}
+
 /* ===== Battle simulator ===== */
 .battle-section {
 	position: relative;

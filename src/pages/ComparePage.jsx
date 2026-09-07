@@ -240,6 +240,8 @@ const ComparePage = ({ index }) => {
 							rawB={pokemonB.weight / 10}
 						/>
 
+						<div className="compare-stats-divider" role="separator" />
+
 						{Object.entries(STAT_LABELS).map(([statName, label]) => (
 							<CompareStatRow
 								key={statName}
