@@ -457,6 +457,7 @@
 }
 
 .compare-head {
+	position: relative;
 	flex: 1;
 	min-width: 0;
 	display: flex;
@@ -468,11 +469,31 @@
 	color: #fff;
 	text-decoration: none;
 	text-align: center;
-	transition: transform 0.15s ease;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
 }
 
 .compare-head:hover {
-	transform: translateY(-4px);
+	transform: translateY(-6px) scale(1.02);
+	box-shadow: 0 16px 28px -12px rgba(0, 0, 0, 0.45);
+}
+
+/* badge kecil di pojok kartu pokemon yang total base stat-nya lebih
+   tinggi — cuma di atas kertas, sebelum battle beneran disimulasiin */
+.compare-head-edge-badge {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	padding: 3px 9px;
+	border-radius: 999px;
+	background: rgba(0, 0, 0, 0.28);
+	color: #fff;
+	font-size: 9px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+	white-space: nowrap;
 }
 
 .compare-head-image {
@@ -498,9 +519,18 @@
 .compare-vs {
 	flex-shrink: 0;
 	align-self: center;
-	font-size: 15px;
-	font-weight: 800;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 42px;
+	height: 42px;
+	border-radius: 50%;
+	border: 2px solid var(--accent);
+	background: var(--code-bg);
 	color: var(--accent);
+	font-size: 13px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
 }
 
 .compare-stats {
@@ -1037,11 +1067,26 @@
 }
 
 .battle-fighter {
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: 110px;
 	height: 110px;
+}
+
+/* bayangan elips di "tanah" bawah sprite — ::before dirender sebelum
+   <img>-nya jadi otomatis kepaint di belakang tanpa perlu z-index */
+.battle-fighter::before {
+	content: "";
+	position: absolute;
+	bottom: 4px;
+	left: 50%;
+	width: 60px;
+	height: 12px;
+	border-radius: 50%;
+	background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4) 0%, transparent 72%);
+	transform: translateX(-50%);
 }
 
 .battle-fighter-image {
@@ -1068,6 +1113,25 @@
 
 .battle-fighter.side-b.is-acting {
 	animation-name: battle-lunge-b;
+}
+
+/* fighter yang KENA hit kedip putih sekilas — misah dari .is-acting
+   (nempel di penyerang), ini nempel di yang diserang biar dampak
+   pukulannya kerasa dari 2 sisi, bukan cuma dari yang mukul doang */
+.battle-fighter.is-hit .battle-fighter-image {
+	animation: battle-hit-blink 0.35s ease;
+}
+
+@keyframes battle-hit-blink {
+
+	0%,
+	100% {
+		filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+	}
+
+	35% {
+		filter: brightness(2.4) saturate(0.4) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+	}
 }
 
 .battle-fighter.is-fainted {
@@ -1207,7 +1271,13 @@
 	font-size: 13px;
 	font-weight: 700;
 	color: var(--accent);
+	opacity: 0.5;
 	animation: battle-pop-in 0.25s ease both;
+	transition: opacity 0.25s ease;
+}
+
+.battle-chat-system.is-latest {
+	opacity: 1;
 }
 
 .battle-chat-row {
@@ -1215,7 +1285,21 @@
 	align-items: flex-end;
 	gap: 8px;
 	max-width: 82%;
+	opacity: 0.55;
 	animation: battle-pop-in 0.25s ease both;
+	transition: opacity 0.25s ease;
+}
+
+/* entry terakhir yang ke-reveal ditonjolin (full opacity + ring tipis
+   di bubble-nya) biar fokus mata user ngikutin aksi yang lagi
+   kejadian — entry2 sebelumnya keliatan "meredup" kaya histori chat */
+.battle-chat-row.is-latest {
+	opacity: 1;
+}
+
+.battle-chat-row.is-latest .battle-chat-bubble {
+	outline: 2px solid rgba(255, 255, 255, 0.3);
+	outline-offset: 2px;
 }
 
 .battle-chat-row.side-a {
@@ -1549,6 +1633,7 @@
 	height: 8px;
 	border-radius: 999px;
 	background: var(--border);
+	transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .compare-stat-bar.side-a {
@@ -1573,13 +1658,23 @@
 }
 
 .compare-stat-row.is-total {
-	margin-top: 8px;
-	padding-top: 12px;
-	border-top: 1px solid var(--border);
+	margin-top: 10px;
+	padding: 10px;
+	border-radius: 10px;
+	background: var(--bg);
 }
 
 .compare-stat-row.is-total .compare-stat-value {
 	font-size: 15px;
+}
+
+.compare-stat-row.is-total .compare-stat-label {
+	font-weight: 800;
+	color: var(--text-h);
+}
+
+.compare-stat-row.is-total .compare-stat-bar {
+	height: 10px;
 }
 
 /* ===== Type filter ===== */

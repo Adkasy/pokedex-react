@@ -183,6 +183,11 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 	const activeSide =
 		latest?.type === "attack" || latest?.type === "faint" ? latest.side : null
+	// sisi yang KENA hit — kebalikan dari activeSide pas lagi attack, jadi
+	// fighter yang diserang bisa dikasih efek "kena" sendiri (kedip),
+	// misah dari efek lunge/glow yang nempel di fighter yang nyerang
+	const hitSide =
+		latest?.type === "attack" ? (latest.side === "a" ? "b" : "a") : null
 	// kena buat 1 tick reveal doang (700ms) — pas berikutnya latest udah
 	// pindah ke entry lain jadi shake/flash-nya otomatis berhenti sendiri
 	const isSuperHit = latest?.type === "attack" && latest.isSuperEffective
@@ -364,8 +369,8 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 					<div className="battle-stage">
 						<div
 							className={`battle-fighter side-a${activeSide === "a" ? " is-acting" : ""}${
-								battle.winner === "b" && isRevealed ? " is-fainted" : ""
-							}`}
+								hitSide === "a" ? " is-hit" : ""
+							}${battle.winner === "b" && isRevealed ? " is-fainted" : ""}`}
 						>
 							<PokemonImage
 								className="battle-fighter-image"
@@ -379,8 +384,8 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 						<div
 							className={`battle-fighter side-b${activeSide === "b" ? " is-acting" : ""}${
-								battle.winner === "a" && isRevealed ? " is-fainted" : ""
-							}`}
+								hitSide === "b" ? " is-hit" : ""
+							}${battle.winner === "a" && isRevealed ? " is-fainted" : ""}`}
 						>
 							<PokemonImage
 								className="battle-fighter-image"
@@ -406,9 +411,17 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 					<div className="battle-log-scroll" ref={logRef}>
 						<ul className="battle-chat">
-							{chatEntries.map((entry, i) =>
-								entry.type === "attack" ? (
-									<li key={i} className={`battle-chat-row side-${entry.side}`}>
+							{chatEntries.map((entry, i) => {
+								// baris paling akhir yang ke-reveal dikasih penekanan
+								// (opacity full + ring), baris-baris sebelumnya diredupin
+								// dikit — biar mata user fokus ke aksi yang lagi kejadian,
+								// sisanya kebaca kaya riwayat/histori chat
+								const isLatest = i === chatEntries.length - 1
+								return entry.type === "attack" ? (
+									<li
+										key={i}
+										className={`battle-chat-row side-${entry.side}${isLatest ? " is-latest" : ""}`}
+									>
 										<PokemonImage
 											className="battle-chat-avatar"
 											src={entry.side === "a" ? pokemonA.image : pokemonB.image}
@@ -427,11 +440,14 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 										</div>
 									</li>
 								) : (
-									<li key={i} className="battle-chat-system">
+									<li
+										key={i}
+										className={`battle-chat-system${isLatest ? " is-latest" : ""}`}
+									>
 										{entry.text}
 									</li>
-								),
-							)}
+								)
+							})}
 						</ul>
 
 						{winnerPokemon && (

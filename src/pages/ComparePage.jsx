@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Link, useSearchParams } from "react-router"
 import { MdShuffle } from "react-icons/md"
 import { getTypeColor } from "../constants/typeColors"
@@ -25,6 +25,23 @@ const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 	const aWins = rawA > rawB
 	const bWins = rawB > rawA
 
+	// bar-nya mulai dari lebar 0%, baru "ngisi" ke lebar aslinya abis
+	// render pertama — 2x requestAnimationFrame biar browser sempet
+	// commit state 0%-nya dulu sebelum ke-transition ke lebar final,
+	// kalau cuma 1x kadang keburu digabung jadi 1 paint & animasinya
+	// gak kelihatan sama sekali
+	const [filled, setFilled] = useState(false)
+	useEffect(() => {
+		let raf2
+		const raf1 = requestAnimationFrame(() => {
+			raf2 = requestAnimationFrame(() => setFilled(true))
+		})
+		return () => {
+			cancelAnimationFrame(raf1)
+			cancelAnimationFrame(raf2)
+		}
+	}, [])
+
 	return (
 		<div className={`compare-stat-row${isTotal ? " is-total" : ""}`}>
 			<span
@@ -36,12 +53,12 @@ const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 			<div className="compare-stat-track">
 				<div
 					className={`compare-stat-bar side-a${aWins ? " is-winner" : ""}`}
-					style={{ width: `${pctA}%` }}
+					style={{ width: filled ? `${pctA}%` : "0%" }}
 				/>
 				<span className="compare-stat-label">{label}</span>
 				<div
 					className={`compare-stat-bar side-b${bWins ? " is-winner" : ""}`}
-					style={{ width: `${pctB}%` }}
+					style={{ width: filled ? `${pctB}%` : "0%" }}
 				/>
 			</div>
 
@@ -54,7 +71,7 @@ const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 	)
 }
 
-const CompareHead = ({ pokemon }) => {
+const CompareHead = ({ pokemon, isStrongerTotal = false }) => {
 	const color = getTypeColor(pokemon.types?.[0]?.type?.name)
 
 	return (
@@ -63,6 +80,11 @@ const CompareHead = ({ pokemon }) => {
 			className="compare-head"
 			style={{ backgroundColor: color }}
 		>
+			{isStrongerTotal && (
+				<span className="compare-head-edge-badge" title="Higher total base stats">
+					Higher Total
+				</span>
+			)}
 			<PokemonImage
 				className="compare-head-image"
 				src={pokemon.image}
@@ -183,9 +205,19 @@ const ComparePage = ({ index }) => {
 			) : (
 				<div className="compare-result">
 					<div className="compare-heads">
-						<CompareHead pokemon={pokemonA} />
+						<CompareHead
+							pokemon={pokemonA}
+							isStrongerTotal={
+								getTotalStats(pokemonA) > getTotalStats(pokemonB)
+							}
+						/>
 						<span className="compare-vs">VS</span>
-						<CompareHead pokemon={pokemonB} />
+						<CompareHead
+							pokemon={pokemonB}
+							isStrongerTotal={
+								getTotalStats(pokemonB) > getTotalStats(pokemonA)
+							}
+						/>
 					</div>
 
 					<div className="compare-stats">
