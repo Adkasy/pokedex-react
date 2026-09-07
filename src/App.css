@@ -1858,6 +1858,12 @@
 }
 
 .detail-header-top .card-play-btn {
+	/* .card-play-btn-icon/-wave itu position:absolute;inset:0 — tanpa
+	   position:relative di sini, mereka bakal nempel ke leluhur
+	   positioned TERDEKAT (.detail-header-top, selebar header), bukan ke
+	   tombol bulet kecil ini. Itu penyebab icon-nya "misah" & pas playing
+	   dia ngestretch ke lebar container, bukan ke lebar tombolnya. */
+	position: relative;
 	width: 36px;
 	height: 36px;
 	background: rgba(255, 255, 255, 0.22);
@@ -1868,7 +1874,7 @@
 }
 
 .detail-header-top .card-play-btn.is-playing {
-	width: 120px;
+	width: 33%;
 	background: rgba(0, 0, 0, 0.3);
 }
 
