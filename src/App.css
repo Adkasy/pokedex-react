@@ -739,6 +739,9 @@
    kiri — angka round-nya ngikutin entry log yang lagi ke-reveal, jadi
    update real-time bareng jalannya pertarungan */
 .battle-round-chip {
+	/* height FIXED (bukan ngikutin padding) dan sama persis kayak
+	   .battle-info-btn (30px) — biar sama-sama top:8px, titik tengah
+	   vertikalnya otomatis sejajar, gak ada yang keliatan naik/turun */
 	position: absolute;
 	top: 8px;
 	left: 8px;
@@ -746,8 +749,9 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	height: 30px;
 	gap: 2px;
-	padding: 5px 16px;
+	padding: 0 16px;
 	border-radius: 999px;
 	background: var(--bg);
 	border: 1px solid var(--border);
@@ -1368,14 +1372,19 @@
    (kiri) & tombol info (kanan) — ukurannya disamain sama round chip
    (padding/font-size sama) biar 3 elemen di baris atas ini konsisten */
 .battle-scoreboard {
+	/* height FIXED sama kayak .battle-round-chip/.battle-info-btn (30px)
+	   biar top:8px yang sama beneran nyejejerin titik tengahnya, bukan
+	   cuma nyejejerin sisi atasnya doang */
 	position: absolute;
 	top: 8px;
 	left: 50%;
 	z-index: 5;
 	display: flex;
 	align-items: center;
+	justify-content: center;
+	height: 30px;
 	gap: 8px;
-	padding: 5px 16px;
+	padding: 0 16px;
 	border-radius: 999px;
 	border: 1px solid var(--border);
 	background: var(--bg);
