@@ -2272,6 +2272,12 @@
 	   (flex-basis 0% + flex-shrink) — jadi keliatannya blank/ilang
 	   sama sekali, bukan cuma rapet */
 	min-width: 2px;
+	/* di detail page, bar-nya cuma 20 biji (vs 60 di home) buat container
+	   yang relatif lebih lega, jadi tiap bar `flex:1` ngegembung lebar
+	   banget buat ngisi ruang kosongnya — dikasih cap max-width biar
+	   tetep setipis di home, TANPA ganggu perilaku nyusut ke 2px di
+	   mobile (max-width gak mempengaruhi shrink, cuma ngebatesin growth) */
+	max-width: 3px;
 	height: 100%;
 	background: currentColor;
 	border-radius: 1px;
