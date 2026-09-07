@@ -46,20 +46,70 @@ const BattleHpBar = ({ name, hp, maxHp }) => {
 	)
 }
 
-// shape "cakar" — bukan garis tipis lagi, tapi bidang solid runcing
-// yang ngelebar di tengah terus ngecil lagi ke 2 ujungnya (kaya bekas
-// cakaran/tebasan pedang beneran), ada 1 notch/gerigi kecil di sisi
-// dalemnya biar gak terlalu mulus & polos. Animasinya nge-scale dari
-// titik ujung tajemnya (transform-origin di titik itu) biar kesannya
-// nyapu keluar dari 1 titik, bukan cuma fade in
+const SPARK_COUNT = 7
+
+// percikan kecil yang mumbul dari titik ujung tumpul si cakaran (tempat
+// "kontak"-nya) — beberapa garis pendek yang sebar ke segala arah terus
+// ilang cepet, ngasih kesan ada serpihan kena tebas, bukan cuma 1
+// bidang solid doang tanpa detail
+const HitSparks = () => {
+	// lazy initializer — 1x doang pas mount, jadi generate arah random
+	// di sini valid (SlashFX di-remount tiap hit lewat key={revealCount})
+	const [sparks] = useState(() =>
+		Array.from({ length: SPARK_COUNT }).map((_, i) => ({
+			id: i,
+			angle: (360 / SPARK_COUNT) * i + (Math.random() * 24 - 12),
+			dist: 14 + Math.random() * 12,
+			len: 5 + Math.random() * 5,
+			delay: Math.random() * 0.06,
+		})),
+	)
+
+	return (
+		<g className="battle-hit-sparks">
+			{sparks.map((s) => (
+				<line
+					key={s.id}
+					className="battle-hit-spark"
+					x1="82"
+					y1="20"
+					x2="82"
+					y2={20 - s.len}
+					style={{
+						"--spark-angle": `${s.angle}deg`,
+						"--spark-dist": `${s.dist}px`,
+						animationDelay: `${s.delay}s`,
+					}}
+				/>
+			))}
+		</g>
+	)
+}
+
+// blade "cakar" — runcing di pojok kiri-BAWAH, ngelebar jadi ujung
+// tumpul/bundar di kanan-ATAS (arahnya kebalik dari sebelumnya: dari
+// kiri-bawah nebas ke kanan-atas). 3 path sama bentuknya ditumpuk
+// geser dikit2 (2 aksen lebih tipis/transparan + 1 utama) biar kaya
+// bekas CAKARAN (3 goresan sejajar), bukan cuma 1 bidang polos —
+// itu yang bikin "bertekstur". Koordinatnya udah di-bake per path
+// (bukan pake CSS transform buat geno) soalnya animasi CSS transform
+// bakal nimpa attribute transform SVG-nya kalau digabung, terus
+// ditutup sama HitSparks biar ada kesan "percikan" pas kena
 const SlashFX = () => (
 	<svg className="battle-hit-slash" viewBox="0 0 100 100" aria-hidden="true">
 		<path
-			className="battle-hit-slash-claw"
-			d="M14,10 C42,16 70,42 86,80 C80,90 70,92 62,88
-				C56,74 60,66 52,58 L58,64 L46,50
-				C38,38 26,24 14,10 Z"
+			className="battle-hit-slash-accent"
+			d="M10,96 Q55,69 78.7,34.1 A9,9 0 0,1 65.3,21.9 Q33,48 10,96 Z"
 		/>
+		<path
+			className="battle-hit-slash-claw"
+			d="M20,88 Q65,61 88.7,26.1 A9,9 0 0,1 75.3,13.9 Q43,40 20,88 Z"
+		/>
+		<path
+			className="battle-hit-slash-accent is-second"
+			d="M30,80 Q75,53 98.7,18.1 A9,9 0 0,1 85.3,5.9 Q53,32 30,80 Z"
+		/>
+		<HitSparks />
 	</svg>
 )
 

@@ -1137,10 +1137,13 @@
 	}
 }
 
-/* efek "cakar/tebasan" — bidang solid (bukan garis tipis lagi) yang
-   numpuk di atas flash putih-nya .battle-fighter-image, referensinya
-   bekas cakaran runcing di 2 ujung, ngelebar di tengah, sama 1 notch
-   kecil di sisi dalem biar gak terlalu mulus */
+/* efek "cakaran" — 3 blade sejajar (1 utama + 2 aksen tipis/transparan
+   digeser dikit) numpuk di atas flash putih-nya .battle-fighter-image,
+   arahnya runcing di kiri-BAWAH ngelebar jadi tumpul/bundar di
+   kanan-ATAS (nebas dari bawah ke atas). transform-box:fill-box bikin
+   transform-origin ngikutin bounding box masing2 path sendiri, jadi
+   1 nilai origin ("titik tajemnya" ada di pojok kiri-bawah bbox tiap
+   shape) valid buat ketiga-tiganya meskipun posisinya digeser beda2 */
 .battle-hit-slash {
 	position: absolute;
 	inset: -20%;
@@ -1149,13 +1152,29 @@
 	pointer-events: none;
 }
 
+.battle-hit-slash-claw,
+.battle-hit-slash-accent {
+	transform-box: fill-box;
+	transform-origin: 0% 100%;
+	animation: battle-hit-claw-draw 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
 .battle-hit-slash-claw {
 	fill: #fff;
 	filter:
 		drop-shadow(0 0 6px rgba(150, 220, 255, 0.85))
 		drop-shadow(0 0 12px rgba(255, 255, 255, 0.5));
-	transform-origin: 14% 10%;
-	animation: battle-hit-claw-draw 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.battle-hit-slash-accent {
+	fill: rgba(255, 255, 255, 0.5);
+	filter: drop-shadow(0 0 4px rgba(150, 220, 255, 0.6));
+	animation-delay: 0.02s;
+}
+
+.battle-hit-slash-accent.is-second {
+	fill: rgba(255, 255, 255, 0.35);
+	animation-delay: 0.05s;
 }
 
 @keyframes battle-hit-claw-draw {
@@ -1176,6 +1195,31 @@
 	100% {
 		transform: scale(1.05);
 		opacity: 0;
+	}
+}
+
+/* percikan — beberapa garis pendek yang mumbul dari titik "kontak"
+   (deket ujung tumpul si blade) ke segala arah, ilang cepet — biar ada
+   detail serpihan, gak cuma 1 bidang tebasan doang tanpa reaksi */
+.battle-hit-spark {
+	stroke: #fff;
+	stroke-width: 2;
+	stroke-linecap: round;
+	filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9));
+	transform-origin: 82% 20%;
+	opacity: 0;
+	animation: battle-hit-spark-fly 0.3s ease-out forwards;
+}
+
+@keyframes battle-hit-spark-fly {
+	0% {
+		opacity: 1;
+		transform: rotate(var(--spark-angle)) translateY(0);
+	}
+
+	100% {
+		opacity: 0;
+		transform: rotate(var(--spark-angle)) translateY(calc(-1 * var(--spark-dist)));
 	}
 }
 
