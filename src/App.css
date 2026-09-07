@@ -517,6 +517,7 @@
 }
 
 .battle-arena {
+	position: relative;
 	width: 100%;
 	box-sizing: border-box;
 	scroll-margin-top: 90px;
@@ -675,6 +676,7 @@
 .battle-log-scroll {
 	height: 420px;
 	overflow-y: auto;
+	text-align: left;
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 }
@@ -693,7 +695,7 @@
 }
 
 .battle-chat-system {
-	text-align: left;
+	padding-left: 4px;
 	font-size: 12px;
 	font-style: italic;
 	color: var(--text);

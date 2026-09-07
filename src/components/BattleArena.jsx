@@ -103,44 +103,6 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 	return (
 		<div className="battle-section">
-			<div className="battle-info-wrap">
-				<button
-					className="battle-info-btn"
-					onClick={() => setShowInfo((v) => !v)}
-					aria-label="How is damage calculated?"
-					title="How is damage calculated?"
-				>
-					<MdInfoOutline size={18} />
-				</button>
-
-				{showInfo && (
-					<div className="battle-info-popover">
-						<p className="battle-info-title">How damage works</p>
-						<ul className="battle-info-list">
-							<li>
-								<code>Attack ÷ Defense</code>: the attacker&rsquo;s Attack
-								against the target&rsquo;s Defense. Higher Attack (or a
-								weaker target Defense) means more damage.
-							</li>
-							<li>
-								<code>× Type Effectiveness</code>: a super effective hit
-								does more damage, a resisted hit does less.
-							</li>
-							<li>
-								<code>× Luck (85% to 100%)</code>: each hit gets a small
-								random swing, so a rematch won&rsquo;t always go the same
-								way.
-							</li>
-						</ul>
-						<p className="battle-info-example">
-							Example: Charizard (Attack 84) hits Blastoise (Defense 100)
-							with a Fire move. Water resists Fire, so it only lands for
-							about 7 to 8 damage instead of double that.
-						</p>
-					</div>
-				)}
-			</div>
-
 			<button
 				className="btn btn-primary battle-simulate-btn"
 				onClick={handleSimulate}
@@ -156,6 +118,44 @@ const BattleArena = ({ pokemonA, pokemonB }) => {
 
 			{battle && (
 				<div className="battle-arena" ref={arenaRef}>
+					<div className="battle-info-wrap">
+						<button
+							className="battle-info-btn"
+							onClick={() => setShowInfo((v) => !v)}
+							aria-label="How is damage calculated?"
+							title="How is damage calculated?"
+						>
+							<MdInfoOutline size={18} />
+						</button>
+
+						{showInfo && (
+							<div className="battle-info-popover">
+								<p className="battle-info-title">How damage works</p>
+								<ul className="battle-info-list">
+									<li>
+										<code>Attack ÷ Defense</code>: the attacker&rsquo;s
+										Attack against the target&rsquo;s Defense. Higher
+										Attack (or a weaker target Defense) means more damage.
+									</li>
+									<li>
+										<code>× Type Effectiveness</code>: a super effective
+										hit does more damage, a resisted hit does less.
+									</li>
+									<li>
+										<code>× Luck (85% to 100%)</code>: each hit gets a
+										small random swing, so a rematch won&rsquo;t always go
+										the same way.
+									</li>
+								</ul>
+								<p className="battle-info-example">
+									Example: Charizard (Attack 84) hits Blastoise (Defense
+									100) with a Fire move. Water resists Fire, so it only
+									lands for about 7 to 8 damage instead of double that.
+								</p>
+							</div>
+						)}
+					</div>
+
 					<div className="battle-stage">
 						<div
 							className={`battle-fighter side-a${activeSide === "a" ? " is-acting" : ""}${
