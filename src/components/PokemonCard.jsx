@@ -94,7 +94,7 @@ const PokemonCard = ({
 					className="pokemon-card-image"
 					src={image}
 					alt={name}
-					iconSize={64}
+					iconSize={150}
 				/>
 			</li>
 		</Link>

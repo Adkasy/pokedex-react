@@ -66,7 +66,7 @@ const CompareHead = ({ pokemon }) => {
 				className="compare-head-image"
 				src={pokemon.image}
 				alt={pokemon.name}
-				iconSize={64}
+				iconSize={115}
 			/>
 			<p className="compare-head-id">#{String(pokemon.id).padStart(3, "0")}</p>
 			<p className="compare-head-name">{pokemon.name}</p>
