@@ -33,6 +33,13 @@ const PokemonPicker = ({
 		optionRefs.current[activeIndex]?.scrollIntoView({ block: "nearest" })
 	}, [activeIndex])
 
+	// kalau component-nya unmount pas timer blur (di bawah) masih jalan,
+	// timernya harus dibatalin juga — biar gak coba setState ke component
+	// yang udah gak ada
+	useEffect(() => {
+		return () => clearTimeout(blurTimeout.current)
+	}, [])
+
 	const openMenu = () => {
 		clearTimeout(blurTimeout.current)
 		setQuery("")
