@@ -38,7 +38,7 @@ Screenshots — drop PNGs in docs/screenshots/ and uncomment:
 - [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
 - [React Router](https://reactrouter.com/) — client-side routing + `useSearchParams` for URL-synced state
 - [Zustand](https://zustand.docs.pmnd.rs/) — the Pokemon data store (index + on-demand detail/type caches), favorites (persisted), and the cry-player store
-- [react-icons](https://react-icons.github.io/react-icons/) — mixed with a few hand-rolled inline SVGs for type icons
+- [react-icons](https://react-icons.github.io/react-icons/) — used for a handful of UI icons; the 18 type icons and the type badge styling (icon size, colors, padding) are ported directly from the project's Figma design file instead
 - Plain CSS (custom properties for theming incl. light/dark, keyframe animations for the battle simulator and loading spinner)
 - Web Audio API — synthesized sound effects (favorite toggle, battle-start sword clash, hit impact, victory fanfare) built from a couple of small reusable oscillator/noise helpers, no audio assets
 - [PokeAPI](https://pokeapi.co/) — no API key required
@@ -82,7 +82,7 @@ src/
     LoadingSpinner.jsx       # bouncing pokeball loading indicator
     SkeletonCard.jsx         # loading placeholder card
     BattleArena.jsx          # the battle simulator UI — stage, hit VFX, HP bars, scoreboard, chat log, damage-formula popover
-    TypeIcon.jsx             # inline SVG + react-icons icons (type icons, star, play, pokeball, etc.)
+    TypeIcon.jsx             # type icons (from Figma) + a few inline SVG/react-icons icons (star, play, pokeball, etc.)
   pages/
     PokemonGridPage.jsx      # home — grid, filter, search, pagination
     PokemonDetailPage.jsx    # single Pokemon detail view, composed from one section component per block (stats, weaknesses, moves, abilities, evolution, ...)
