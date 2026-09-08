@@ -1292,13 +1292,16 @@
 	}
 }
 
+/* side-b ada di sisi KANAN panggung, jadi lunge-nya ke arah KIRI
+   (translateX negatif) — biar beneran maju ke arah lawannya, bukan malah
+   ke kanan kaya battle-lunge-a (yang di sisi kiri, majunya ke kanan) */
 @keyframes battle-lunge-b {
 	0% {
 		transform: translateX(0);
 	}
 
 	40% {
-		transform: translateX(10px);
+		transform: translateX(-10px);
 	}
 
 	100% {
@@ -1955,13 +1958,10 @@
 .pokemon-card:hover {
 	overflow: visible;
 	z-index: 5;
+	transform: translateY(-10px);
 	transition:
 		transform 0.15s ease,
 		box-shadow 0.15s ease;
-}
-
-.pokemon-card:hover {
-	transform: translateY(-10px);
 }
 
 .pokemon-card-dots {
@@ -2394,50 +2394,6 @@
 .btn-primary:hover {
 	opacity: 0.92;
 	box-shadow: 0 10px 18px -6px var(--accent-border);
-}
-
-.btn-card {
-	position: relative;
-	z-index: 1;
-	display: inline-block;
-	border: 1px solid rgba(255, 255, 255, 0.5);
-	border-radius: 999px;
-	padding: 7px 16px;
-	font-size: 12px;
-	font-weight: 600;
-	color: #fff;
-	background: rgba(255, 255, 255, 0.16);
-	cursor: pointer;
-	text-decoration: none;
-	transition:
-		background 0.15s ease,
-		transform 0.15s ease;
-}
-
-.btn-card:hover {
-	background: rgba(255, 255, 255, 0.3);
-	transform: translateY(-1px);
-}
-
-/* ===== Load more ===== */
-.load-more-wrapper {
-	display: flex;
-	justify-content: center;
-	padding-top: 8px;
-}
-
-.btn-load-more {
-	padding: 12px 28px;
-	font-weight: 600;
-}
-
-.card-actions {
-	position: relative;
-	z-index: 1;
-	display: flex;
-	flex-direction: row;
-	gap: 8px;
-	flex-wrap: wrap;
 }
 
 /* ===== Pagination ===== */
