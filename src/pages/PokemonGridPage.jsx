@@ -61,11 +61,6 @@ const PokemonGridPage = ({ index, keyword }) => {
 		(p) => detailsByName[p.name] ?? { name: p.name, pending: true },
 	)
 
-	const handleAddFavorite = (id) => {
-		const pokemon = Object.values(detailsByName).find((item) => item.id === id)
-		if (pokemon) addFavoritePokemon(pokemon)
-	}
-
 	const toggleType = (typeName) => {
 		setSearchParams((prev) => {
 			const next = new URLSearchParams(prev)
@@ -132,7 +127,7 @@ const PokemonGridPage = ({ index, keyword }) => {
 				<>
 					<PokemonList
 						data={paginatedPokemon}
-						onAddFavorite={handleAddFavorite}
+						onAddFavorite={addFavoritePokemon}
 					/>
 
 					<Pagination

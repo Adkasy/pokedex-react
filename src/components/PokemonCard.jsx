@@ -17,8 +17,8 @@ const PokemonCard = ({
 	onAddFavorite,
 }) => {
 	const [frozenIndex] = useState(index)
-	// card-nya pake palette soft/pastel (bukan getTypeColor yang vivid)
-	// biar chip type di dalemnya selalu kebeda dari background-nya
+	// palette soft/pastel, bukan yang vivid — liat comment CARD_COLORS di
+	// typeColors.js buat alasannya
 	const primaryColor = getPrimaryCardColor(types)
 	const isFavorite = useFavoriteStore((state) =>
 		state.favorites.some((f) => f.id === id),
@@ -53,7 +53,7 @@ const PokemonCard = ({
 						if (isFavorite) {
 							removeFavorite(id)
 						} else {
-							onAddFavorite(id)
+							onAddFavorite()
 						}
 					}}
 					aria-label="Toggle favorite"

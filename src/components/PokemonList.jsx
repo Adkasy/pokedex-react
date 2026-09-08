@@ -22,7 +22,7 @@ const PokemonList = ({ data, onAddFavorite }) => {
 						types={types}
 						cries={cries}
 						index={index}
-						onAddFavorite={onAddFavorite}
+						onAddFavorite={() => onAddFavorite(pokemon)}
 					/>
 				)
 			})}
