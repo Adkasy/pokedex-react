@@ -32,13 +32,12 @@ import {
 	getSizeComparisonLabel,
 	AVERAGE_HUMAN_HEIGHT_M,
 } from "../utils/pokedexFacts"
-import { STAT_LABELS } from "../constants/statLabels"
+import { STAT_LABELS, STAT_BAR_MAX } from "../constants/statLabels"
 import { TYPE_COLORS } from "../constants/typeColors"
 import { getTypeMultiplier } from "../constants/typeChart"
 import { formatGeneration } from "../utils/text"
 import { getGenerationColor } from "../constants/generationColors"
 
-const STAT_BAR_MAX = 200
 const MOVES_PREVIEW_COUNT = 15
 const MAX_FIGURE_PX = 140
 const MIN_FIGURE_PX = 20
@@ -669,9 +668,9 @@ const PokemonDetailPage = ({ index }) => {
 	}
 
 	const primaryColor = getPrimaryTypeColor(pokemon.types)
-	// header-nya pake palette soft/pastel yang beda (bukan primaryColor
-	// yang vivid) — biar chip type di dalemnya (yang tetep pake warna
-	// vivid) selalu kebeda dari background-nya, gak pernah "nyatu"
+	// header-nya pake headerColor (soft/pastel), bukan primaryColor (vivid)
+	// yang dipake section-section lain — liat comment CARD_COLORS di
+	// typeColors.js buat alasannya
 	const headerColor = getPrimaryCardColor(pokemon.types)
 	const flavorTextEntry = species?.flavor_text_entries.find(
 		(f) => f.language.name === "en",

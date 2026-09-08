@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useSearchParams } from "react-router"
 import { MdShuffle } from "react-icons/md"
 import { getPrimaryTypeColor, getPrimaryCardColor } from "../constants/typeColors"
-import { STAT_LABELS } from "../constants/statLabels"
+import { STAT_LABELS, STAT_BAR_MAX } from "../constants/statLabels"
 import { getStat, getTotalStats } from "../utils/pokemonStats"
 import { TypeBadge, CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
@@ -10,8 +10,6 @@ import BattleArena from "../components/BattleArena"
 import PokemonImage from "../components/PokemonImage"
 import LoadingSpinner from "../components/LoadingSpinner"
 import { usePokemonStore } from "../store/usePokemonStore"
-
-const STAT_BAR_MAX = 200
 
 const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 	const scale = max ?? Math.max(rawA, rawB, 1) * 1.1
@@ -59,8 +57,8 @@ const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 }
 
 const CompareHead = ({ pokemon, isStrongerTotal = false }) => {
-	// card-nya pake palette soft/pastel (bukan getTypeColor yang vivid)
-	// biar chip type di dalemnya selalu kebeda dari background-nya
+	// palette soft/pastel, bukan yang vivid — liat comment CARD_COLORS di
+	// typeColors.js buat alasannya
 	const color = getPrimaryCardColor(pokemon.types)
 
 	return (
