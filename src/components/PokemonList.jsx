@@ -5,6 +5,12 @@ import SkeletonCard from "./SkeletonCard"
 // juga placeholder `{ name, pending: true }` buat slot yang detailnya
 // masih di-fetch (liat PokemonGridPage) — placeholder itu ditampilin
 // sebagai skeleton card, bukan card beneran.
+//
+// `onAddFavorite` dari pemanggil (PokemonGridPage) nerima 1 argumen:
+// objek pokemon yang mau ditambahin favorite. Di bawah, tiap PokemonCard
+// dikasih VERSI YANG UDAH DI-BUNGKUS `() => onAddFavorite(pokemon)` —
+// jadi PokemonCard sendiri tinggal manggil tanpa argumen, gak perlu tau
+// bentuk objek pokemon-nya sama sekali.
 const PokemonList = ({ data, onAddFavorite }) => {
 	return (
 		<ul className="pokemon-grid">

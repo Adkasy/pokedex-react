@@ -8,7 +8,13 @@ import { PokeballIcon } from "./TypeIcon"
 // yang sama juga dipake pas gambarnya masih di-download (misal abis pilih
 // Pokemon baru yang gambarnya belum pernah ke-load browser) — biar gak
 // ada jeda kosong sebelum gambarnya tiba-tiba "muncul begitu aja".
-const PokemonImage = ({ src, alt = "", className, iconSize = 58 }) => {
+//
+// PENTING soal ukuran: gambar ASLI-nya (elemen <img>) ukurannya diatur
+// dari LUAR lewat `className` (CSS-nya yang nentuin width/height, liat
+// App.css misal `.pokemon-card-image`). `fallbackIconSize` di bawah CUMA
+// ngatur ukuran ikon pokeball placeholder-nya doang, BUKAN ukuran gambar
+// aslinya — jangan ketuker.
+const PokemonImage = ({ src, alt = "", className, fallbackIconSize = 58 }) => {
 	const [status, setStatus] = useState(src ? "loading" : "failed") // "loading" | "loaded" | "failed"
 
 	// nyimpen `src` yang "udah dilihat" render sebelumnya — dipake buat
@@ -50,7 +56,7 @@ const PokemonImage = ({ src, alt = "", className, iconSize = 58 }) => {
 			<span
 				className={`pokemon-image-fallback${status === "loading" ? " is-loading" : ""}${className ? ` ${className}` : ""}`}
 			>
-				<PokeballIcon size={iconSize} />
+				<PokeballIcon size={fallbackIconSize} />
 			</span>
 		)
 	}

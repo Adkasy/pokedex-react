@@ -7,6 +7,10 @@ import { useCryPlayerStore } from "../store/useCryPlayerStore"
 import { playFavoriteSound } from "../utils/sound"
 import PokemonImage from "./PokemonImage"
 
+// `onAddFavorite` di sini SENGAJA gak butuh argumen — pemanggilnya
+// (PokemonList) udah "nempelin" pokemon spesifik buat card ini duluan,
+// jadi PokemonCard sendiri gak perlu tau/oper data pokemon-nya lagi,
+// tinggal panggil doang pas tombolnya diklik.
 const PokemonCard = ({
 	id,
 	name,
@@ -93,7 +97,7 @@ const PokemonCard = ({
 					className="pokemon-card-image"
 					src={image}
 					alt={name}
-					iconSize={100}
+					fallbackIconSize={100}
 				/>
 			</li>
 		</Link>

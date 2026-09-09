@@ -133,7 +133,7 @@ const PokemonPicker = ({
 									<PokemonImage
 										className="pokemon-picker-option-image"
 										src={p.image}
-										iconSize={24}
+										fallbackIconSize={24}
 									/>
 									<span className="pokemon-picker-option-id">
 										#{String(p.id).padStart(3, "0")}

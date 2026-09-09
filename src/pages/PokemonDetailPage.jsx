@@ -38,6 +38,12 @@ import { getTypeMultiplier } from "../constants/typeChart"
 import { formatGeneration } from "../utils/text"
 import { getGenerationColor } from "../constants/generationColors"
 
+// File ini isinya 1 halaman, tapi dipecah jadi banyak component kecil:
+// tiap section (DetailHeader, PokedexDataSection, GenderRatioSection,
+// dst.) didefinisikan dulu di bawah, masing-masing cuma nerima data yang
+// dia BENERAN butuhin lewat props (bukan 1 objek `pokemon` gede dioper
+// ke semua). Baru paling bawah ada `PokemonDetailPage` sendiri — itu
+// yang beneran fetch data & nyusun semua section itu jadi 1 halaman utuh.
 const MOVES_PREVIEW_COUNT = 15
 const MAX_FIGURE_PX = 140
 const MIN_FIGURE_PX = 20
@@ -176,7 +182,7 @@ const DetailHeader = ({
 				className="detail-image"
 				src={pokemon.sprites.other["official-artwork"].front_default}
 				alt={pokemon.name}
-				iconSize={160}
+				fallbackIconSize={160}
 			/>
 		</div>
 	)
@@ -321,7 +327,7 @@ const SizeComparisonSection = ({ pokemon, primaryColor }) => {
 								className="size-comparison-image"
 								src={pokemon.image}
 								alt={pokemon.name}
-								iconSize={Math.max(pokemonFigurePx * 0.8, 28)}
+								fallbackIconSize={Math.max(pokemonFigurePx * 0.8, 28)}
 							/>
 						</div>
 					</div>
@@ -495,7 +501,7 @@ const EvolutionChainSection = ({ evolutionStages, currentName, index, primaryCol
 												className="evolution-node-image"
 												src={matched.image}
 												alt={member.name}
-												iconSize={32}
+												fallbackIconSize={32}
 											/>
 										) : (
 											<span className="evolution-node-fallback">
@@ -522,6 +528,9 @@ const EvolutionChainSection = ({ evolutionStages, currentName, index, primaryCol
 const PokemonDetailPage = ({ index }) => {
 	const { name } = useParams()
 	const navigate = useNavigate()
+	// cache detail Pokemon yang SAMA dipake bareng PokemonGridPage &
+	// ComparePage (1 store global) — kalau Pokemon ini kebetulan udah
+	// pernah ke-fetch di halaman lain, di sini gak perlu fetch ulang
 	const detailsByName = usePokemonStore((state) => state.detailsByName)
 	const ensureDetails = usePokemonStore((state) => state.ensureDetails)
 	const pokemon = detailsByName[name]
@@ -538,6 +547,11 @@ const PokemonDetailPage = ({ index }) => {
 		(state) => !!pokemon && state.playingId === pokemon.id,
 	)
 	const playCry = useCryPlayerStore((state) => state.playCry)
+	// species/evolutionStages/abilityDetails BUKAN dari usePokemonStore
+	// kaya `pokemon` di atas — data ini cuma kepake di halaman detail doang
+	// (gak dipake grid/compare), jadi gak worth ditaro di store global.
+	// Di-fetch & disimpen lokal di sini aja lewat effect-effect di bawah,
+	// re-fetch tiap ganti Pokemon (`name` berubah).
 	const [species, setSpecies] = useState(null)
 	const [evolutionStages, setEvolutionStages] = useState([])
 	const [abilityDetails, setAbilityDetails] = useState({})
