@@ -7,9 +7,13 @@ import {
 } from "../api/pokeapi"
 
 // Store terpusat buat data Pokemon: nyimpen index RINGAN semua Pokemon
-// (id + nama + gambar doang) sekali di awal, terus detail lengkap
-// (stats, types, dll) di-cache di sini per-nama begitu ada halaman yang
-// butuh — jadi gak perlu fetch detail buat SEMUA Pokemon di awal.
+// (id + nama + gambar doang) sekali di awal (di-load App.jsx), terus
+// detail lengkap (stats, types, dll) di-cache di sini per-nama begitu
+// ada halaman yang butuh — jadi gak perlu fetch detail buat SEMUA
+// Pokemon di awal. `detailsByName` ini yang dipake bareng-bareng sama
+// PokemonGridPage, ComparePage, dan PokemonDetailPage — Pokemon yang
+// udah ke-fetch di 1 halaman otomatis kepake juga di halaman lain,
+// gak perlu fetch ulang.
 export const usePokemonStore = create((set, get) => ({
 	index: [],
 	isIndexLoading: true,

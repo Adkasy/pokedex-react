@@ -33,6 +33,13 @@ const PokemonPicker = ({
 		optionRefs.current[activeIndex]?.scrollIntoView({ block: "nearest" })
 	}, [activeIndex])
 
+	// kalau component-nya unmount pas timer blur (di bawah) masih jalan,
+	// timernya harus dibatalin juga — biar gak coba setState ke component
+	// yang udah gak ada
+	useEffect(() => {
+		return () => clearTimeout(blurTimeout.current)
+	}, [])
+
 	const openMenu = () => {
 		clearTimeout(blurTimeout.current)
 		setQuery("")
@@ -126,7 +133,7 @@ const PokemonPicker = ({
 									<PokemonImage
 										className="pokemon-picker-option-image"
 										src={p.image}
-										iconSize={24}
+										fallbackIconSize={24}
 									/>
 									<span className="pokemon-picker-option-id">
 										#{String(p.id).padStart(3, "0")}

@@ -215,7 +215,7 @@ const BattleFighter = ({ side, pokemon, color, isActing, isHit, isFainted, revea
 			className="battle-fighter-image"
 			src={pokemon.image}
 			alt={pokemon.name}
-			iconSize={102}
+			fallbackIconSize={102}
 		/>
 		{isHit && <SlashFX key={revealCount} />}
 	</div>
@@ -253,7 +253,7 @@ const BattleChatEntry = ({ entry, isLatest, pokemon, color }) => {
 
 	return (
 		<li className={`battle-chat-row side-${entry.side}${isLatest ? " is-latest" : ""}`}>
-			<PokemonImage className="battle-chat-avatar" src={pokemon.image} iconSize={62} />
+			<PokemonImage className="battle-chat-avatar" src={pokemon.image} fallbackIconSize={62} />
 			<div
 				className={`battle-chat-bubble${entry.isCrit ? " is-crit" : ""}`}
 				style={{ backgroundColor: color }}
@@ -275,7 +275,7 @@ const BattleWinnerBanner = ({ pokemon, color, confettiBurst, onCelebrateAgain })
 				className="battle-winner-image"
 				src={pokemon.image}
 				alt={pokemon.name}
-				iconSize={160}
+				fallbackIconSize={160}
 			/>
 		</div>
 		<button className="battle-winner-ribbon" onClick={onCelebrateAgain} title="Celebrate again!">

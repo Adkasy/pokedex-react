@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useSearchParams } from "react-router"
 import { MdShuffle } from "react-icons/md"
 import { getPrimaryTypeColor, getPrimaryCardColor } from "../constants/typeColors"
-import { STAT_LABELS } from "../constants/statLabels"
+import { STAT_LABELS, STAT_BAR_MAX } from "../constants/statLabels"
 import { getStat, getTotalStats } from "../utils/pokemonStats"
 import { TypeBadge, CompareIcon } from "../components/TypeIcon"
 import PokemonPicker from "../components/PokemonPicker"
@@ -10,8 +10,6 @@ import BattleArena from "../components/BattleArena"
 import PokemonImage from "../components/PokemonImage"
 import LoadingSpinner from "../components/LoadingSpinner"
 import { usePokemonStore } from "../store/usePokemonStore"
-
-const STAT_BAR_MAX = 200
 
 const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 	const scale = max ?? Math.max(rawA, rawB, 1) * 1.1
@@ -59,8 +57,8 @@ const CompareStatRow = ({ label, rawA, rawB, max, isTotal = false }) => {
 }
 
 const CompareHead = ({ pokemon, isStrongerTotal = false }) => {
-	// card-nya pake palette soft/pastel (bukan getTypeColor yang vivid)
-	// biar chip type di dalemnya selalu kebeda dari background-nya
+	// palette soft/pastel, bukan yang vivid — liat comment CARD_COLORS di
+	// typeColors.js buat alasannya
 	const color = getPrimaryCardColor(pokemon.types)
 
 	return (
@@ -70,7 +68,7 @@ const CompareHead = ({ pokemon, isStrongerTotal = false }) => {
 					Higher Total
 				</span>
 			)}
-			<PokemonImage className="compare-head-image" src={pokemon.image} alt={pokemon.name} iconSize={100} />
+			<PokemonImage className="compare-head-image" src={pokemon.image} alt={pokemon.name} fallbackIconSize={100} />
 			<p className="compare-head-id">#{String(pokemon.id).padStart(3, "0")}</p>
 			<p className="compare-head-name">{pokemon.name}</p>
 			<div className="type-badge-row">
@@ -132,6 +130,15 @@ const CompareResult = ({ pokemonA, pokemonB }) => {
 	)
 }
 
+// Halaman Compare. Alur datanya:
+// - `index` (semua Pokemon, ringan) dateng dari App.jsx lewat props,
+//   dipake buat isi 2 dropdown PokemonPicker & buat "Random Matchup"
+// - 2 Pokemon yang lagi dipilih DISIMPEN DI URL (?a=...&b=...), bukan
+//   useState — biar hasil compare-nya bisa di-share/refresh
+// - begitu ada nama kepilih, detail lengkapnya (stats, types, dll)
+//   di-fetch dari store (usePokemonStore) — sama persis kaya PokemonGridPage
+// - kalo dua-duanya udah ke-fetch, semuanya diserahin ke <CompareResult>
+//   (component di atas) yang ngurus tampilan head-to-head + battle arena
 const ComparePage = ({ index }) => {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const nameA = searchParams.get("a") ?? ""

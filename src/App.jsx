@@ -10,6 +10,13 @@ import TopBar from "./components/TopBar"
 import LoadingSpinner from "./components/LoadingSpinner"
 import { usePokemonStore } from "./store/usePokemonStore"
 
+// Root component — nge-load `index` (semua Pokemon, ringan) SEKALI di
+// sini terus dioper turun sebagai props ke tiap halaman yang butuh
+// (PokemonGridPage/PokemonDetailPage/ComparePage), biar gak di-fetch
+// ulang tiap pindah halaman. `keyword` (isi search bar) juga di sini
+// karena search bar-nya (TopBar) nempel di root, dipake bareng cuma
+// sama PokemonGridPage — lewat prop `onSearch`/`initialSearch` di
+// bawah, bukan lewat store, soalnya cuma kepake buat 1 halaman doang.
 const App = () => {
 	const index = usePokemonStore((state) => state.index)
 	const isLoading = usePokemonStore((state) => state.isIndexLoading)

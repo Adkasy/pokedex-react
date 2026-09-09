@@ -32,11 +32,9 @@ const createNoiseBuffer = (ctx, duration) => {
 	return buffer
 }
 
-/**
- * White noise yang di-filter (band-pass/high-pass, boleh nyapu naik/turun)
- * lalu dikasih envelope volume. gainAttack opsional — kalau di-isi,
- * volumenya naik dulu ke gainPeak (bukan langsung di titik puncak).
- */
+// White noise yang di-filter (band-pass/high-pass, boleh nyapu naik/turun)
+// lalu dikasih envelope volume. gainAttack opsional — kalau di-isi,
+// volumenya naik dulu ke gainPeak (bukan langsung di titik puncak).
 const playNoiseBurst = (
 	ctx,
 	{ startTime, duration, filterType = "bandpass", freq, freqTo, Q = 1, gainPeak, gainAttack = 0, decayTime = duration },
@@ -69,11 +67,9 @@ const playNoiseBurst = (
 	source.start(startTime)
 }
 
-/**
- * 1 oscillator (frequency boleh nyapu dari `freq` ke `freqTo`) + envelope
- * volume. gainAttack opsional — kalau di-isi, volumenya naik dulu ke
- * gainPeak (bukan langsung di titik puncak).
- */
+// 1 oscillator (frequency boleh nyapu dari `freq` ke `freqTo`) + envelope
+// volume. gainAttack opsional — kalau di-isi, volumenya naik dulu ke
+// gainPeak (bukan langsung di titik puncak).
 const playTone = (ctx, { startTime, duration, type = "sine", freq, freqTo, gainPeak, gainAttack = 0 }) => {
 	const osc = ctx.createOscillator()
 	osc.type = type
@@ -97,12 +93,10 @@ const playTone = (ctx, { startTime, duration, type = "sine", freq, freqTo, gainP
 	osc.stop(startTime + duration)
 }
 
-/**
- * 1 nada synth "futuristik" — 2 oscillator sawtooth dikit detuned (biar
- * kedengeran "lebar", bukan tipis kaya nada tunggal) numpuk lewat 1
- * lowpass filter yang cutoff-nya nyapu naik ("synth sweep"). Dipake
- * buat nyusun chord kemenangan, 1 pemanggilan = 1 nada di chord-nya.
- */
+// 1 nada synth "futuristik" — 2 oscillator sawtooth dikit detuned (biar
+// kedengeran "lebar", bukan tipis kaya nada tunggal) numpuk lewat 1
+// lowpass filter yang cutoff-nya nyapu naik ("synth sweep"). Dipake
+// buat nyusun chord kemenangan, 1 pemanggilan = 1 nada di chord-nya.
 const playSynthNote = (ctx, { startTime, freq, gainPeak, duration }) => {
 	const osc1 = ctx.createOscillator()
 	const osc2 = ctx.createOscillator()

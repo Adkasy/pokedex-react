@@ -1,5 +1,14 @@
 import { create } from "zustand"
 
+// nge-track ID Pokemon yang cry-nya lagi kepencet play — dibaca dari
+// PokemonCard & BattleArena (buat nunjukin tombol play mana yang lagi
+// aktif). Cuma boleh 1 cry nyala berbarengan se-APP, makanya di-taro di
+// store global (bukan state lokal masing-masing tombol).
+//
+// `activeAudio` (objek Audio-nya sendiri) SENGAJA ditaro di LUAR
+// state Zustand di atas — dia bukan data yang perlu bikin UI re-render,
+// cuma dipake internal buat `.pause()` cry sebelumnya kalau ada yang baru
+// diputer.
 let activeAudio = null
 
 export const useCryPlayerStore = create((set, get) => ({

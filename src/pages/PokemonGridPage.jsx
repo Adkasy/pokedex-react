@@ -9,6 +9,18 @@ import { useSearchParams } from "react-router"
 
 const PAGE_SIZE = 21
 
+// Halaman home. Alur datanya:
+// - `index` (semua Pokemon, ringan: id+nama+gambar doang) dan `keyword`
+//   (isi search bar) dateng dari App.jsx lewat props — App yang megang
+//   dua-duanya karena TopBar/search bar-nya nempel di App, bukan di sini
+// - filter type & nomor halaman DISIMPEN DI URL (?type=...&page=...),
+//   bukan useState — biar refresh/share link-nya tetep balik ke tampilan
+//   yang sama persis
+// - detail lengkap tiap Pokemon (stats, cries, dll) BARU di-fetch di
+//   sini, on-demand, cuma buat Pokemon yang beneran lagi ditampilin di
+//   halaman ini (liat ensureDetails/ensureTypeMembers di bawah) — hasil
+//   fetch-nya numpuk di store (usePokemonStore), jadi kepake bareng
+//   sama halaman lain juga tanpa fetch ulang
 const PokemonGridPage = ({ index, keyword }) => {
 	const addFavoritePokemon = useFavoriteStore((state) => state.addFavorite)
 	const detailsByName = usePokemonStore((state) => state.detailsByName)
@@ -60,11 +72,6 @@ const PokemonGridPage = ({ index, keyword }) => {
 	const paginatedPokemon = paginatedIndex.map(
 		(p) => detailsByName[p.name] ?? { name: p.name, pending: true },
 	)
-
-	const handleAddFavorite = (id) => {
-		const pokemon = Object.values(detailsByName).find((item) => item.id === id)
-		if (pokemon) addFavoritePokemon(pokemon)
-	}
 
 	const toggleType = (typeName) => {
 		setSearchParams((prev) => {
@@ -132,7 +139,7 @@ const PokemonGridPage = ({ index, keyword }) => {
 				<>
 					<PokemonList
 						data={paginatedPokemon}
-						onAddFavorite={handleAddFavorite}
+						onAddFavorite={addFavoritePokemon}
 					/>
 
 					<Pagination

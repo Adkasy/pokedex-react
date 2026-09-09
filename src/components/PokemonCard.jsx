@@ -7,6 +7,10 @@ import { useCryPlayerStore } from "../store/useCryPlayerStore"
 import { playFavoriteSound } from "../utils/sound"
 import PokemonImage from "./PokemonImage"
 
+// `onAddFavorite` di sini SENGAJA gak butuh argumen — pemanggilnya
+// (PokemonList) udah "nempelin" pokemon spesifik buat card ini duluan,
+// jadi PokemonCard sendiri gak perlu tau/oper data pokemon-nya lagi,
+// tinggal panggil doang pas tombolnya diklik.
 const PokemonCard = ({
 	id,
 	name,
@@ -17,8 +21,8 @@ const PokemonCard = ({
 	onAddFavorite,
 }) => {
 	const [frozenIndex] = useState(index)
-	// card-nya pake palette soft/pastel (bukan getTypeColor yang vivid)
-	// biar chip type di dalemnya selalu kebeda dari background-nya
+	// palette soft/pastel, bukan yang vivid — liat comment CARD_COLORS di
+	// typeColors.js buat alasannya
 	const primaryColor = getPrimaryCardColor(types)
 	const isFavorite = useFavoriteStore((state) =>
 		state.favorites.some((f) => f.id === id),
@@ -53,7 +57,7 @@ const PokemonCard = ({
 						if (isFavorite) {
 							removeFavorite(id)
 						} else {
-							onAddFavorite(id)
+							onAddFavorite()
 						}
 					}}
 					aria-label="Toggle favorite"
@@ -93,7 +97,7 @@ const PokemonCard = ({
 					className="pokemon-card-image"
 					src={image}
 					alt={name}
-					iconSize={100}
+					fallbackIconSize={100}
 				/>
 			</li>
 		</Link>
