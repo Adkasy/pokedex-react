@@ -126,109 +126,113 @@ const playSynthNote = (ctx, { startTime, freq, gainPeak, duration }) => {
 	osc2.stop(startTime + duration)
 }
 
-// Semua efek suara di bawah dibungkus lewat helper ini — kalau audio-nya
-// gagal nyala (misal browser nge-block autoplay sebelum user interaksi),
-// errornya ditelen di sini aja, gak boleh sampe bikin battle/favorite
-// toggle-nya ikut error cuma gara-gara suaranya gagal.
-const safePlay = (playFn) => {
-	try {
-		playFn()
-	} catch {
-		// silent, liat comment di atas
-	}
-}
-
 // Stinger pembuka battle — sword clash "tring!": 2 nada tinggi detuned
 // (logam beradu) + transient noise band-pass pendek (kilatnya).
-export const playBattleStartSound = () => safePlay(() => {
-	const ctx = getAudioContext()
-	const now = ctx.currentTime
+export const playBattleStartSound = () => {
+	try {
+		const ctx = getAudioContext()
+		const now = ctx.currentTime
 
-	;[2600, 3150].forEach((freq, i) => {
-		playTone(ctx, { startTime: now + i * 0.02, duration: 0.4, type: "triangle", freq, gainPeak: 0.18 })
-	})
+		;[2600, 3150].forEach((freq, i) => {
+			playTone(ctx, { startTime: now + i * 0.02, duration: 0.4, type: "triangle", freq, gainPeak: 0.18 })
+		})
 
-	playNoiseBurst(ctx, { startTime: now, duration: 0.12, freq: 3600, Q: 1.4, gainPeak: 0.4 })
-})
+		playNoiseBurst(ctx, { startTime: now, duration: 0.12, freq: 3600, Q: 1.4, gainPeak: 0.4 })
+	} catch {
+		// silent — audio gagal nyala (autoplay policy dll) gak boleh bikin battle-nya error
+	}
+}
 
 // Fanfare kemenangan, 4 lapis numpuk jadi 1: riser (kesan "membangun"
 // sebelum meledak) → sub impact (bobotnya) → chord synth 5 nada lewat
 // playSynthNote (badan "megah"-nya) → shimmer nada tinggi (efek sparkle).
-export const playVictorySound = () => safePlay(() => {
-	const ctx = getAudioContext()
-	const now = ctx.currentTime
-	const hitStart = now + 0.3
+export const playVictorySound = () => {
+	try {
+		const ctx = getAudioContext()
+		const now = ctx.currentTime
+		const hitStart = now + 0.3
 
-	playNoiseBurst(ctx, {
-		startTime: now,
-		duration: 0.34,
-		freq: 300,
-		freqTo: 4200,
-		Q: 0.7,
-		gainAttack: 0.28,
-		gainPeak: 0.22,
-		decayTime: 0.36,
-	})
+		playNoiseBurst(ctx, {
+			startTime: now,
+			duration: 0.34,
+			freq: 300,
+			freqTo: 4200,
+			Q: 0.7,
+			gainAttack: 0.28,
+			gainPeak: 0.22,
+			decayTime: 0.36,
+		})
 
-	playTone(ctx, { startTime: hitStart, duration: 0.5, freq: 95, freqTo: 40, gainPeak: 0.4 })
+		playTone(ctx, { startTime: hitStart, duration: 0.5, freq: 95, freqTo: 40, gainPeak: 0.4 })
 
-	const chordFreqs = [523.25, 659.25, 783.99, 987.77, 1046.5] // C5 E5 G5 B5 C6
-	chordFreqs.forEach((freq, i) => {
-		playSynthNote(ctx, { startTime: hitStart + i * 0.035, freq, gainPeak: 0.1, duration: 0.9 })
-	})
+		const chordFreqs = [523.25, 659.25, 783.99, 987.77, 1046.5] // C5 E5 G5 B5 C6
+		chordFreqs.forEach((freq, i) => {
+			playSynthNote(ctx, { startTime: hitStart + i * 0.035, freq, gainPeak: 0.1, duration: 0.9 })
+		})
 
-	const shimmerFreqs = [2093, 2637, 3136, 2794]
-	shimmerFreqs.forEach((freq, i) => {
-		playTone(ctx, { startTime: hitStart + 0.1 + i * 0.09, duration: 0.35, freq, gainPeak: 0.08, gainAttack: 0.01 })
-	})
-})
+		const shimmerFreqs = [2093, 2637, 3136, 2794]
+		shimmerFreqs.forEach((freq, i) => {
+			playTone(ctx, { startTime: hitStart + 0.1 + i * 0.09, duration: 0.35, freq, gainPeak: 0.08, gainAttack: 0.01 })
+		})
+	} catch {
+		// silent — audio gagal nyala (autoplay policy dll) gak boleh bikin battle-nya error
+	}
+}
 
 // Bunyi hit — whoosh (kesan ayunan/serangan motong angin) yang nyusul
 // jadi crack + body + sub punch (impact-nya). Crit dapet versi lebih
 // tebal/tinggi di semua lapisnya biar bedanya kerasa jelas.
-export const playHitSound = (isCrit = false) => safePlay(() => {
-	const ctx = getAudioContext()
-	const now = ctx.currentTime
+export const playHitSound = (isCrit = false) => {
+	try {
+		const ctx = getAudioContext()
+		const now = ctx.currentTime
 
-	playNoiseBurst(ctx, {
-		startTime: now,
-		duration: 0.09,
-		freq: 650,
-		freqTo: isCrit ? 3600 : 2800,
-		Q: 1.1,
-		gainAttack: 0.05,
-		gainPeak: isCrit ? 0.42 : 0.3,
-	})
+		playNoiseBurst(ctx, {
+			startTime: now,
+			duration: 0.09,
+			freq: 650,
+			freqTo: isCrit ? 3600 : 2800,
+			Q: 1.1,
+			gainAttack: 0.05,
+			gainPeak: isCrit ? 0.42 : 0.3,
+		})
 
-	// impact-nya nyusul abis whoosh-nya sempet kedenger dulu
-	const impactStart = now + 0.07
+		// impact-nya nyusul abis whoosh-nya sempet kedenger dulu
+		const impactStart = now + 0.07
 
-	playNoiseBurst(ctx, {
-		startTime: impactStart,
-		duration: 0.055,
-		filterType: "highpass",
-		freq: isCrit ? 2400 : 1800,
-		gainPeak: isCrit ? 0.8 : 0.6,
-	})
+		playNoiseBurst(ctx, {
+			startTime: impactStart,
+			duration: 0.055,
+			filterType: "highpass",
+			freq: isCrit ? 2400 : 1800,
+			gainPeak: isCrit ? 0.8 : 0.6,
+		})
 
-	playNoiseBurst(ctx, {
-		startTime: impactStart,
-		duration: 0.14,
-		freq: isCrit ? 550 : 380,
-		Q: 0.7,
-		gainPeak: isCrit ? 0.6 : 0.42,
-	})
+		playNoiseBurst(ctx, {
+			startTime: impactStart,
+			duration: 0.14,
+			freq: isCrit ? 550 : 380,
+			Q: 0.7,
+			gainPeak: isCrit ? 0.6 : 0.42,
+		})
 
-	playTone(ctx, {
-		startTime: impactStart,
-		duration: 0.16,
-		freq: isCrit ? 160 : 115,
-		freqTo: 35,
-		gainPeak: isCrit ? 0.55 : 0.4,
-	})
-})
+		playTone(ctx, {
+			startTime: impactStart,
+			duration: 0.16,
+			freq: isCrit ? 160 : 115,
+			freqTo: 35,
+			gainPeak: isCrit ? 0.55 : 0.4,
+		})
+	} catch {
+		// silent — audio gagal nyala (autoplay policy dll) gak boleh bikin battle-nya error
+	}
+}
 
-export const playFavoriteSound = () => safePlay(() => {
-	const ctx = getAudioContext()
-	playTone(ctx, { startTime: ctx.currentTime, duration: 0.2, freq: 600, freqTo: 1200, gainPeak: 0.15 })
-})
+export const playFavoriteSound = () => {
+	try {
+		const ctx = getAudioContext()
+		playTone(ctx, { startTime: ctx.currentTime, duration: 0.2, freq: 600, freqTo: 1200, gainPeak: 0.15 })
+	} catch {
+		// silent — audio gagal nyala (autoplay policy dll) gak boleh bikin favorite-nya error
+	}
+}

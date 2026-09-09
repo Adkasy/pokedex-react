@@ -122,8 +122,17 @@ export const TYPE_CHART = {
 	fairy: { fire: 0.5, fighting: 2, poison: 0.5, dragon: 2, dark: 2, steel: 0.5 },
 }
 
-export const getTypeMultiplier = (attackType, defenderTypes) =>
-	defenderTypes.reduce((mult, defType) => {
+// Pokemon bisa punya 2 type sekaligus, jadi multiplier-nya dikaliin dari
+// SEMUA type defender-nya — misal Water nyerang Pokemon Grass/Poison:
+// Water>Grass = 2x, Water>Poison = 1x (netral, gak ada di TYPE_CHART),
+// jadi total-nya 2 x 1 = 2x.
+export const getTypeMultiplier = (attackType, defenderTypes) => {
+	let multiplier = 1
+
+	for (const defType of defenderTypes) {
 		const relation = TYPE_CHART[attackType]?.[defType]
-		return mult * (relation ?? 1)
-	}, 1)
+		multiplier = multiplier * (relation ?? 1)
+	}
+
+	return multiplier
+}
