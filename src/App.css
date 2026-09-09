@@ -2018,6 +2018,12 @@
 	color: rgba(255, 255, 255, 0.4);
 }
 
+/* dipake pas gambar aslinya masih di-download — pulse yang sama kayak
+   skeleton card, biar gaya "loading"-nya konsisten se-app */
+.pokemon-image-fallback.is-loading {
+	animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
 .pokemon-card-image {
 	position: absolute;
 	z-index: 2;
