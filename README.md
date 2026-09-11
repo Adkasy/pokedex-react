@@ -2,7 +2,7 @@
 
 A Pokedex web app built with React + Vite, using live data from [PokeAPI](https://pokeapi.co/). Built as a practice/portfolio project while learning React fundamentals — components, hooks, custom hooks, derived state, client-side routing, URL-synced state, global state with Zustand, and a fair amount of animation/CSS along the way.
 
-**Live demo:** [pokedex-react-adkasy.vercel.app](https://pokedex-react-adkasy.vercel.app/)
+**Live demo:** [pokedex-react-adkasy.vercel.app](https://pokedex-adkasy.vercel.app/)
 
 <!--
 Screenshots — drop PNGs in docs/screenshots/ and uncomment:
